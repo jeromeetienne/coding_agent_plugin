@@ -140,7 +140,7 @@ return htmlContent;
 - A package is the one exception to the line above: every package has a single `src/index.ts` that names everything the package offers to the outside, and the `package.json` of the package has a single `".": "./src/index.ts"` entry under `exports`. Never write a list of separate files under `exports`.
 
 ### Section separators
-- Mark a section boundary with a 4-line block: two lines of exactly 79 `/` characters, a title line, then two more 79-`/` lines. Leave one blank line before and after the block.
+- Mark a section boundary with a 5-line block: two lines of exactly 79 `/` characters, a title line, then two more 79-`/` lines. Leave one blank line before and after the block.
 - The title line is `//` followed by a tab, then the title text — no trailing punctuation.
 - Two uses:
   - **File header** — once, right after the imports, naming the file's single responsibility: `ClassName — one-line description`.
@@ -161,7 +161,7 @@ export class WriteThrottlePaths {
   //	Helpers
   ///////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////
-  function emitResult(value: unknown): void {
+  private static _emitResult(value: unknown): void {
 	  // ...
   }
 }

@@ -1,4 +1,4 @@
-# Coding agent plugin
+# Coding agent skills
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
