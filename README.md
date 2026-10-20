@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains five skills that other projects can install. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains six skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -13,8 +13,11 @@ The repository contains five skills that other projects can install. A plugin ma
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
+| [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
 The `jerome-typescript-javascript-style` skill records Jérôme Étienne’s own way of coding. These are his personal preferences, not a general TypeScript or JavaScript standard. The skill includes the rules from his Claude Code user configuration.
+
+The `jerome-rust-style` skill is a first draft derived conservatively from that style. Its [adaptation review](skills/jerome-rust-style/references/adaptation-review.md) records the retained rules and the questions awaiting Jérôme’s decisions. The draft is not a complete Rust style.
 
 ## Install the skills
 
@@ -32,7 +35,7 @@ List the available skills without installing:
 npx skills add jeromeetienne/coding_agent_plugin --list
 ```
 
-Install all five skills for Claude Code and Codex without prompts:
+Install all available skills, including the Rust draft, for Claude Code and Codex without prompts:
 
 ```bash
 npx skills add jeromeetienne/coding_agent_plugin --skill '*' --agent claude-code --agent codex --yes
@@ -66,13 +69,21 @@ From the project that should receive the skills, give the path to the clone:
 npx skills add /path/to/coding_agent_plugin
 ```
 
+To install only the Rust draft from a local copy containing the draft:
+
+```bash
+npx skills add /path/to/coding_agent_plugin --skill jerome-rust-style
+```
+
+After the Rust skill is published, replace the local path with `jeromeetienne/coding_agent_plugin` to install the published version. Creating the draft does not install or enable the skill in receiving projects.
+
 Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow.
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
 ## Maintain the skills
 
-This repository is independent and is the authoritative location for all five skills. Make future skill changes directly in this repository. Projects that use the skills, including Heidrun, receive changes from this repository and do not control how the skills are maintained.
+This repository is independent and is the authoritative location for all skills. Make future skill changes directly in this repository. Projects that use the skills, including Heidrun, receive changes from this repository and do not control how the skills are maintained.
 
 Copies installed in other projects and user configurations are not synchronized automatically. Updating those copies is a separate action.
 

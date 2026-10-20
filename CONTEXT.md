@@ -1,7 +1,7 @@
 # Directory Context: `/`
 
 ## Purpose
-The standalone repository for shared workflow skills and Jérôme Étienne’s personal TypeScript and JavaScript coding style that other projects can install.
+The standalone repository for shared workflow skills and Jérôme Étienne’s personal coding styles that other projects can install.
 
 ## Key Exports & Entry Points
 - `skills/`: the skill folders, each with instructions in `SKILL.md`.
@@ -13,6 +13,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - This independent repository is the authoritative location for all skills; make future skill changes here, as [README.md](README.md#maintain-the-skills) describes.
 - Projects and user configurations that receive the skills are not synchronized automatically.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
+- The `jerome-rust-style` skill is a first draft containing clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
 - Repository-specific commands and branch choices for the Issue Fix Workflow belong in the receiving project's `AGENTS.md`.
 
 ## Background
