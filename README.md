@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains five skills that other projects can install independently of Heidrun. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains five skills that other projects can install. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -70,15 +70,19 @@ Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Work
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
-## Relationship with Heidrun
+## Maintain the skills
 
-The four workflow skills were extracted from Heidrun's temporary `packages/experiments/coding_agent_plugin` folder with the Git history of that folder. Heidrun's original skills remain in `.agents/skills` of the Heidrun repository. The copies in this repository are not synchronized automatically. While this arrangement remains, make changes to those four workflow skills in Heidrun's original skills first, then update the copies here.
+This repository is independent and is the authoritative location for all five skills. Make future skill changes directly in this repository. Projects that use the skills, including Heidrun, receive changes from this repository and do not control how the skills are maintained.
 
-The `jerome-typescript-javascript-style` skill was added separately from Jérôme Étienne’s personal Claude Code configuration. The original user configuration remains unchanged.
+Copies installed in other projects and user configurations are not synchronized automatically. Updating those copies is a separate action.
 
-Adding this repository to Heidrun as a Git submodule is a separate migration step. The agreed destination is `./submodules/coding_agent_plugin`; publishing this repository does not create that submodule.
+The `jerome-typescript-javascript-style` reference preserves Jérôme Étienne’s original personal rules. Do not rewrite those rules as part of general documentation maintenance; changes to the rules require his explicit instructions.
 
-The following Heidrun issues describe the extraction and the earlier work:
+## History
+
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration.
+
+The following issues describe the extraction and the earlier work:
 
 - https://github.com/heidrun-org/heidrun/issues/708
 - https://github.com/heidrun-org/heidrun/issues/682
