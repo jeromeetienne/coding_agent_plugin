@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains four skills that other projects can install independently of Heidrun. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains five skills that other projects can install independently of Heidrun. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -12,6 +12,9 @@ The repository contains four skills that other projects can install independentl
 | [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Collect and classify open issues, report recommendations, and close an issue only when the developer names its number. |
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
+| [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
+
+The `jerome-typescript-javascript-style` skill records Jérôme Étienne’s own way of coding. These are his personal preferences, not a general TypeScript or JavaScript standard. The skill includes the rules from his Claude Code user configuration.
 
 ## Install the skills
 
@@ -29,7 +32,7 @@ List the available skills without installing:
 npx skills add jeromeetienne/coding_agent_plugin --list
 ```
 
-Install all four skills for Claude Code and Codex without prompts:
+Install all five skills for Claude Code and Codex without prompts:
 
 ```bash
 npx skills add jeromeetienne/coding_agent_plugin --skill '*' --agent claude-code --agent codex --yes
@@ -39,6 +42,12 @@ Install only one skill:
 
 ```bash
 npx skills add jeromeetienne/coding_agent_plugin --skill issue_fix_workflow
+```
+
+Install Jérôme Étienne’s personal coding style:
+
+```bash
+npx skills add jeromeetienne/coding_agent_plugin --skill jerome-typescript-javascript-style
 ```
 
 Installation applies to the current project by default. Add `--global` to install for the user across projects, or `--copy` to copy files instead of creating symbolic links. See the [installation reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#skills-add) for requirements and other options.
@@ -63,7 +72,9 @@ The repository contains Markdown instructions. There is no `package.json`, depen
 
 ## Relationship with Heidrun
 
-The skills were extracted from Heidrun's temporary `packages/experiments/coding_agent_plugin` folder with the Git history of that folder. Heidrun's original skills remain in `.agents/skills` of the Heidrun repository. The copies in this repository are not synchronized automatically. While this arrangement remains, make shared skill changes in Heidrun's original skills first, then update the copies here.
+The four workflow skills were extracted from Heidrun's temporary `packages/experiments/coding_agent_plugin` folder with the Git history of that folder. Heidrun's original skills remain in `.agents/skills` of the Heidrun repository. The copies in this repository are not synchronized automatically. While this arrangement remains, make changes to those four workflow skills in Heidrun's original skills first, then update the copies here.
+
+The `jerome-typescript-javascript-style` skill was added separately from Jérôme Étienne’s personal Claude Code configuration. The original user configuration remains unchanged.
 
 Adding this repository to Heidrun as a Git submodule is a separate migration step. The agreed destination is `./submodules/coding_agent_plugin`; publishing this repository does not create that submodule.
 
