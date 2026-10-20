@@ -87,3 +87,7 @@ The following issues describe the extraction and the earlier work:
 - https://github.com/heidrun-org/heidrun/issues/708
 - https://github.com/heidrun-org/heidrun/issues/682
 - https://github.com/heidrun-org/heidrun/issues/658
+
+## License
+
+[MIT](LICENSE) © 2026 Jérôme Étienne.
