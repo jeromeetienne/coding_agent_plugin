@@ -1,87 +1,52 @@
 ---
 name: bug_triage_workflow
-description: Triage the open issues of a repository to keep the list small. Collect the open issues, give each issue one kind, write a report in the chat with a link, a recommendation, and the evidence for each issue, then close an issue only when the developer names its number. Use it when the developer asks to triage the issues, to clean the list of open issues, or to find which open issues to close.
+description: Review a repository's open issues and recommend which to handle first, keep, clarify, or close, with evidence. Use when the developer asks to triage issues or review the open issue list. The review is read-only; close an issue only when the developer explicitly asks and names its number.
 ---
 
 # Bug Triage Workflow
 
-This file gives the steps of the Bug Triage Workflow. The goal is to keep the list of open issues small. This file is a first draft ([issue 655](https://github.com/heidrun-org/heidrun/issues/655)). The developer changes it after each real triage. The short section "Bug Triage Workflow" in [AGENTS.md](../../../AGENTS.md) names this skill. The Bug Triage Workflow has the same shape as the Issue Fix Workflow in [AGENTS.md](../../../AGENTS.md): numbered steps, and one decision that only the developer makes.
+Review open issues so the developer can decide what needs attention and what can be closed. This workflow is a work in progress, refined through real use.
 
-## The numbers
+Start only when the developer asks for a triage. Use the repository and scope named by the developer. Do not assume that particular labels, configuration files, or another workflow exist.
 
-These numbers are first guesses. Change them here, and nowhere else.
+## 1. Collect
 
-- An old issue is an issue with no activity for 30 days.
-- An issue with the label `under-specified` is clarified within 7 days, or it is closed.
-- The daily list is too long when it has more than 30 issues.
+Collect all open issues in the requested scope from the repository’s issue tracker, whether GitHub or GitLab. Retrieve every page of results. Do not treat one page or a command’s default result limit as the complete issue list.
 
-## When a triage starts
+Read each issue and its comments. Read relevant code and history when needed to assess a claim. For a duplicate, read the proposed original issue. For a tracking issue, check the status of the linked work.
 
-A triage starts only when the developer asks for it in the chat, for example "triage the issues". Nothing starts a triage by itself. The developer decides when. A good time is the end of the week, or a day when the daily list is too long.
+If access or another limit prevents a complete review, state which issues were reviewed and what remains. Do not report a partial review as complete.
 
-## The daily list
+## 2. Assess
 
-The daily list is the list of open issues without the issues that can wait: the issues with the label `maybe later`, and the issues with the label `note`.
+Describe what each issue is about in plain words, such as a bug, feature request, question, note, tracking issue, or duplicate. These descriptions are for the report; they do not require matching labels in the repository.
 
-- GitHub: `gh issue list --search '-label:"maybe later" -label:note'`
-- GitLab: `glab issue list --not-label "maybe later,note"`
+Choose a recommendation based on the evidence:
 
-## The four steps
+- **Handle first:** the issue needs attention, especially when a bug risks data loss or blocks normal use. Explain the reason for the priority.
+- **Keep:** the issue describes useful work or information that still applies.
+- **Clarify:** the issue needs more information before a decision can be made. Name the missing information.
+- **Close:** there is evidence that the work is complete, the issue duplicates another issue, or the issue no longer applies. A decision not to pursue work belongs to the developer.
 
-### 1. Collect
+Age alone is not a reason to close an issue. Missing information is a reason to request clarification, without an automatic deadline for closure.
 
-List all open issues, oldest first. Then read each issue and its comments.
+The review is read-only. Do not change files, labels, or issues, write comments, start the application, or attempt to reproduce bugs during the review.
 
-- GitHub: `gh issue list --state open --limit 200 --search 'sort:created-asc'`, then `gh issue view <number> --json number,title,state,body,labels,comments`
-- GitLab: `glab issue list --order created_at --sort asc --per-page 100`, then `glab issue view <number> --comments`
+## 3. Report
 
-### 2. Classify
+Write the report in the chat. For each issue, include:
 
-Give each issue one kind from the table. The labels `bug`, `Simple Work`, `enhancement`, `idea`, `maybe later`, `under-specified`, and `duplicate` exist today. The label `note` is new. The report names the kind and the label of each issue. The coding agent puts a label on an issue only when the developer names the number of the issue.
+- A link to the issue and a short description.
+- The recommendation and the reason.
+- The evidence: what was read and what the evidence establishes.
+- What remains uncertain or was not checked. Mark bugs as “not tested” because the review does not reproduce them.
 
-| Kind | Label | What happens |
-| --- | --- | --- |
-| Bug | `bug` | Fix it. When it is old, the developer tests it again by hand. |
-| Small and clear | `Simple Work` | Fix it when there is a free hour. |
-| Feature request or early idea | `enhancement` or `idea` | It stays open only when it is planned. Otherwise it gets the label `maybe later`. |
-| Note: a thought that the developer wrote down, with no goal | `note` | The triage never closes it. The developer closes it, or turns it into an issue with a goal. |
-| Unclear | `under-specified` | Clarify it within 7 days, or close it. |
-| Report, plan, or master issue | no label | Close it when all its child issues are closed. |
-| Duplicate | `duplicate` | Close it with a link to the other issue. |
+Put issues needing attention first. Distinguish evidence that work is complete from an assumption based on an issue’s age, labels, or title.
 
-### 3. Report
+## 4. Decide
 
-Write the report in the chat. Do not write the report in a file, and do not write it in an issue. For each issue, write these four things:
+Wait for the developer’s decisions. A recommendation to close an issue is not permission to close the issue.
 
-- A link to the issue.
-- A recommendation: handle first, keep, or close.
-- The evidence: what you read, and what it showed.
-- What was not checked.
+Close an issue only when the developer explicitly requests closure and names the issue number. Record the reason and, for a duplicate, link to the original issue. Use the issue tracker’s appropriate closure status when available.
 
-In the report, write each issue number as a link to the issue. The coding agent only reads during a triage: it reads the issue, its comments, and the code history. It does not start the application, and it does not try to reproduce a bug. Put "not tested" in "what was not checked" for every bug.
-
-The order for "handle first" is:
-
-1. A bug that can do damage.
-2. A bug with a known cause.
-3. An issue with the label `Simple Work`.
-4. All the other issues.
-
-### 4. Decide
-
-The developer reads the report and the evidence. The developer tests the old bugs by hand. The coding agent closes an issue only when the developer names the number of the issue. When the developer names a number, close the issue with a reason:
-
-- Completed: the work is done.
-- Not planned: nobody will do the work.
-- Duplicate: write the link to the other issue.
-
-The commands:
-
-- GitHub: `gh issue close <number> --reason completed`, `gh issue close <number> --reason "not planned"`, or `gh issue close <number> --duplicate-of <other number>`. Add `--comment "<reason>"` to write the reason in words.
-- GitLab: `glab issue note <number> --message "<reason>"`, then `glab issue close <number>`. GitLab has no option for the reason of a closing, so the comment holds the reason.
-
-## Rules to keep the list small
-
-- Test an old bug once, by hand. When the developer cannot make the bug happen again, the developer names the number, and the coding agent closes the issue. When the bug still happens, keep the issue.
-- Every closed issue has a reason: completed, not planned, or duplicate with a link.
-- The coding agent never closes an issue, never changes a label, and never writes a comment without a number named by the developer.
+Make other issue changes, including labels and comments, only when the developer explicitly requests those changes for named issues. Fixing an issue is separate work from reviewing the issue list.

@@ -9,7 +9,7 @@ The repository contains five skills that other projects can install. A plugin ma
 | Skill | Purpose |
 | --- | --- |
 | [issue_fix_workflow](skills/issue_fix_workflow/SKILL.md) | Fix one issue through Issue Fix Setup, Issue Fix Implementation, Issue Fix Review, and Issue Fix Completion, using a temporary worktree. |
-| [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Collect and classify open issues, report recommendations, and close an issue only when the developer names its number. |
+| [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Review open issues with evidence and recommendations; issue closure requires the developer’s explicit request. This workflow is a work in progress. |
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
