@@ -1,72 +1,74 @@
 # Coding agent plugin
 
-This package is a temporary working folder. It holds a copy of the four skills that all the repositories of the developer share, so that the developer can work on the four skills as one group, and later turn the group into a plugin for a coding agent. A coding agent is Claude Code, Codex, or Antigravity. A plugin is the word that Claude Code and Codex use for a group of skills with a manifest file.
+Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-## What is in this package
+The repository contains four skills that other projects can install independently of Heidrun. A plugin manifest has not been added yet; the commands below install the individual skills.
 
-The package holds copies of text files and no code. It has no test and no script, because a test would only compare each copy with its original, and the originals change often.
+## Available skills
 
-- `skills/issue_fix_workflow/`: fixes one issue in four parts (the Issue Fix Setup, the Issue Fix Implementation, the Issue Fix Review, and the Issue Fix Completion), in a temporary worktree.
-- `skills/bug_triage_workflow/`: triages the open issues of a repository to keep the list small, and closes an issue only when the developer names its number.
-- `skills/git_cleanup_adviser/`: reviews the Git branches and the worktrees, and advises which ones appear safe to remove. It gives advice only and removes nothing.
-- `skills/context_md_system/`: reads, creates, updates, and verifies the `CONTEXT.md` files, the short files that hold the purpose, the exports, and the rules of one folder.
-- `CONTEXT.md`: the purpose, the exports, and the rules of this folder, for a coding agent.
-- `package.json`: the package file, with no dependency and no script.
+| Skill | Purpose |
+| --- | --- |
+| [issue_fix_workflow](skills/issue_fix_workflow/SKILL.md) | Fix one issue through Issue Fix Setup, Issue Fix Implementation, Issue Fix Review, and Issue Fix Completion, using a temporary worktree. |
+| [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Collect and classify open issues, report recommendations, and close an issue only when the developer names its number. |
+| [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
+| [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 
-## Install the skills with the skills command line
+## Install the skills
 
-The web site skills.sh belongs to the command line tool `skills`. The command `npx` runs this tool without a separate installation, and `npx` comes with Node.js. Run the commands below in the project that must receive the skills.
+Use the [skills command line tool](https://github.com/vercel-labs/skills). The command `npx` comes with Node.js. Run the commands from the project that should receive the skills.
 
-To install the four skills from the folder of this package on GitHub, give the address of the folder. The address names the branch `dev_jerome`.
-
-```bash
-npx skills add https://github.com/heidrun-org/heidrun/tree/dev_jerome/packages/experiments/coding_agent_plugin
-```
-
-To try the package before its branch has the folder, give the path of the folder on this computer in place of the address.
+Choose which skills and coding agents to install for:
 
 ```bash
-npx skills add /path/to/heidrun/packages/experiments/coding_agent_plugin
+npx skills add jeromeetienne/coding_agent_plugin
 ```
 
-Without options, the tool shows the four skills and asks which skills to install and for which coding agents. To install all four skills for Claude Code and Codex without any question, add the options as below.
+List the available skills without installing:
 
 ```bash
-npx skills add https://github.com/heidrun-org/heidrun/tree/dev_jerome/packages/experiments/coding_agent_plugin --skill '*' --agent claude-code --agent codex --yes
+npx skills add jeromeetienne/coding_agent_plugin --list
 ```
 
-The tool writes each skill in the folder `.agents/skills/<name>` of the project, which Codex reads. It adds a symbolic link in the folder `.claude/skills/<name>` for Claude Code, and it writes the file `skills-lock.json` at the root of the project.
-
-These options of the command `npx skills add` are the useful ones:
-
-- `--list` (or `-l`): shows the skills that the tool finds, and installs nothing.
-- `--skill <name>` (or `-s`): installs only the skill with this name. Repeat the option for several skills. `'*'` means all the skills.
-- `--agent <name>` (or `-a`): installs for this coding agent, for example `claude-code` or `codex`. Repeat the option for several coding agents.
-- `--global` (or `-g`): installs in the folder of the user, so that every project sees the skills, and not in the project.
-- `--copy`: copies the files in place of symbolic links.
-- `--yes` (or `-y`): asks no question.
-
-## How to work on the skills
-
-The original skills stay in the folder `.agents/skills` of the repository, and the links in the folder `.claude/skills` stay the same. The copy and the original can differ later, because the package does not keep them in sync. A change to a skill is made in `.agents/skills` first.
-
-To compare a copy with its original, run this command at the root of the repository, with the name of the skill in place of `issue_fix_workflow`. The command prints nothing when the two folders are identical.
+Install all four skills for Claude Code and Codex without prompts:
 
 ```bash
-diff -r .agents/skills/issue_fix_workflow packages/experiments/coding_agent_plugin/skills/issue_fix_workflow
+npx skills add jeromeetienne/coding_agent_plugin --skill '*' --agent claude-code --agent codex --yes
 ```
 
-## What this package does not do
+Install only one skill:
 
-- It makes no plugin manifest yet. The manifest comes in a later issue.
-- It does not install a plugin in a coding agent. The section "Install the skills with the skills command line" installs only the skills, one folder for each skill.
-- It makes no choice about the shared place for the skills of all the repositories.
-- It does not keep the copies in sync with the originals.
-- It changes nothing in the application, and nothing outside the folder `packages/experiments` imports it.
+```bash
+npx skills add jeromeetienne/coding_agent_plugin --skill issue_fix_workflow
+```
 
-## When this package goes away
+Installation applies to the current project by default. Add `--global` to install for the user across projects, or `--copy` to copy files instead of creating symbolic links. See the [installation reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#skills-add) for requirements and other options.
 
-The package is removed, or replaced by the real plugin, when the parent issue decides where the shared skills live.
+## Work with a local copy
 
-- [Issue 682](https://github.com/heidrun-org/heidrun/issues/682): the plan for the first step, which creates this package.
-- [Issue 658](https://github.com/heidrun-org/heidrun/issues/658): the parent issue, which decides the shared place.
+Clone this repository:
+
+```bash
+git clone https://github.com/jeromeetienne/coding_agent_plugin.git
+```
+
+From the project that should receive the skills, give the path to the clone:
+
+```bash
+npx skills add /path/to/coding_agent_plugin
+```
+
+Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow.
+
+The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
+
+## Relationship with Heidrun
+
+The skills were extracted from Heidrun's temporary `packages/experiments/coding_agent_plugin` folder with the Git history of that folder. Heidrun's original skills remain in `.agents/skills` of the Heidrun repository. The copies in this repository are not synchronized automatically. While this arrangement remains, make shared skill changes in Heidrun's original skills first, then update the copies here.
+
+Adding this repository to Heidrun as a Git submodule is a separate migration step. The agreed destination is `./submodules/coding_agent_plugin`; publishing this repository does not create that submodule.
+
+The following Heidrun issues describe the extraction and the earlier work:
+
+- https://github.com/heidrun-org/heidrun/issues/708
+- https://github.com/heidrun-org/heidrun/issues/682
+- https://github.com/heidrun-org/heidrun/issues/658
