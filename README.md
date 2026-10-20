@@ -76,7 +76,7 @@ This repository is independent and is the authoritative location for all five sk
 
 Copies installed in other projects and user configurations are not synchronized automatically. Updating those copies is a separate action.
 
-The `jerome-typescript-javascript-style` reference preserves Jérôme Étienne’s original personal rules. Do not rewrite those rules as part of general documentation maintenance; changes to the rules require his explicit instructions.
+The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’s personal rules, including changes he explicitly requests. Do not rewrite those rules as part of general documentation maintenance; changes to the rules require his explicit instructions.
 
 ## History
 

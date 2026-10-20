@@ -86,12 +86,7 @@ When generating TypeScript code, follow these conventions:
   - a variable holding an instance of a class must be named after the camelCase of that class name, not a shortened or unrelated word:
     - bad example: `let child: ChildProcess`
     - good example: `let childProcess: ChildProcess`
-- drop leading qualifiers down to the bare head noun when it is unambiguous in scope:
-  - `const client = new BlueskyClient(...)`, `const engine = new FastbrowserEngine(...)`, `const params = new UrlSearchParams()`
-- add the minimum qualifier back only to disambiguate, keeping at most two words — the head noun plus its most distinguishing qualifier:
-  - `const rssParser = new Parser(...)` (a plain `parser` would be unclear)
-  - `const sessionManager = new LocalSessionManager()` (drops `Local`)
-  - `const mcpClient = new McpMyClient(...)` (sits next to other clients)
+- Never drop leading qualifiers from names, even when a shorter name would be unambiguous. Always keep the full class name in camelCase for a variable holding an instance of that class.
 
 
 ### Formatting
