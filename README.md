@@ -2,13 +2,14 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains six skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains seven skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
 | Skill | Purpose |
 | --- | --- |
 | [issue_fix_workflow](skills/issue_fix_workflow/SKILL.md) | Fix one issue through Issue Fix Setup, Issue Fix Implementation, Issue Fix Review, and Issue Fix Completion, using a temporary worktree. |
+| [issue_creation](skills/issue_creation/SKILL.md) | Create an issue on GitHub with the `gh` command or on GitLab with the `glab` command, attach images to the issue, and write the text of the issue with links to files and to other issues. |
 | [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Organize the bug issue list and recommend the next bug to fix to improve software stability, with evidence for each priority. This workflow is a work in progress. |
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
@@ -91,7 +92,7 @@ The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’
 
 ## History
 
-The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration.
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun.
 
 The following issues describe the extraction and the earlier work:
 
