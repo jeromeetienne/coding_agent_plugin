@@ -4,7 +4,7 @@
 The standalone repository for shared workflow skills and Jérôme Étienne’s personal coding styles that other projects can install.
 
 ## Key Exports & Entry Points
-- `skills/`: the skill folders, each with instructions in `SKILL.md`.
+- `skills/`: the skill folders, each with instructions for the coding agent in `SKILL.md` and an overview of its purpose for people in `README.md`.
 - [README.md](README.md): installation commands, receiving-project configuration, and skill maintenance.
 
 ## Rules
