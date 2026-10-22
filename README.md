@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains seven skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains nine skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -13,6 +13,8 @@ The repository contains seven skills, including a first draft of Jérôme Étien
 | [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Organize the bug issue list and recommend the next bug to fix to improve software stability, with evidence for each priority. This workflow is a work in progress. |
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
+| [docs_folder_system](skills/docs_folder_system/SKILL.md) | Organize the documentation folder that the coding agents write and read: the metadata header of each file, the files `README.md` and `index.md` of each folder, and the update of `index.md`. |
+| [docs_folder_agents_rules_system](skills/docs_folder_agents_rules_system/SKILL.md) | Read, obey, and keep up to date the agent rules and the glossary in the documentation folder, and keep each rule file under the maximum size. Needs the skill `docs_folder_system`. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
@@ -78,7 +80,7 @@ npx skills add /path/to/coding_agent_plugin --skill jerome-rust-style
 
 After the Rust skill is published, replace the local path with `jeromeetienne/coding_agent_plugin` to install the published version. Creating the draft does not install or enable the skill in receiving projects.
 
-Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow.
+Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The skills `docs_folder_system` and `docs_folder_agents_rules_system` also read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values.
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
@@ -92,7 +94,7 @@ The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’
 
 ## History
 
-The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun.
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun.
 
 The following issues describe the extraction and the earlier work:
 
