@@ -94,7 +94,7 @@ The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’
 
 ## History
 
-The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun.
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun.
 
 The following issues describe the extraction and the earlier work:
 

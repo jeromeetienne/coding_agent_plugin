@@ -46,7 +46,7 @@ Never guess a value, and never use the value of another repository.
 
 - When a change makes a rule false, update the rule file in the same change.
 - When you add a part that has rules, add the rules to the rule file of its topic, or create a new rule file for a new topic.
-- The bullet of a rule file in the file `index.md` of its folder says what the file holds, then when to read it, for example "Read it each time that you change the status bar." The bullet is the only place that says when to read the file, so keep it accurate.
+- The bullet of a rule file in the file `index.md` of its folder says what the file holds, then when to read it, for example "Read it each time that you change the command line options." The bullet is the only place that says when to read the file, so keep it accurate.
 
 ## Keep each file small
 

@@ -40,21 +40,21 @@ Every file in the value "Documentation folder", and in all its subfolders, has a
 - Update `Last updated` in every change of the file, and keep the date accurate.
 - Write each link as a relative link that works from the folder of the file.
 
-Example, for the file `docs/team_collaboration_process/index.md`:
+Example, for the file `docs/guides/index.md`:
 
 ```markdown
-# Team collaboration process index
+# Guides index
 
 - Created: 4 October 2026
 - Last updated: 8 October 2026
 - Status: Maintained index for agents and tools
 - Related framing: [Project instructions](../../AGENTS.md)
-- Related rules: [Glossary](../agents_rules/glossary/index.md)
+- Related rules: [Glossary](<relative link to the file index.md of the glossary folder>)
 
 This file lists the files and the subfolders of this folder, for agents and tools.
 
 - [README.md](README.md): the overview of this folder, for people.
-- [team_workflow.md](team_workflow.md): the way several developers work on one repository.
+- [setup.md](setup.md): the steps to set up the development environment.
 ```
 
 ## The two files of each folder
