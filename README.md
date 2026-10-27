@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains nine skills, including a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains ten skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -15,6 +15,7 @@ The repository contains nine skills, including a first draft of Jérôme Étienn
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 | [docs_folder_system](skills/docs_folder_system/SKILL.md) | Organize the documentation folder that the coding agents write and read: the metadata header of each file, the files `README.md` and `index.md` of each folder, and the update of `index.md`. |
 | [docs_folder_agents_rules_system](skills/docs_folder_agents_rules_system/SKILL.md) | Read, obey, and keep up to date the agent rules and the glossary in the documentation folder, and keep each rule file under the maximum size. Needs the skill `docs_folder_system`. |
+| [symbio_spec](skills/symbio_spec/SKILL.md) | Initialize and maintain Symbiospec in `docs/symbio_spec/`, update the specification alongside software changes, and check for drift between the specification, software, and tests. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
