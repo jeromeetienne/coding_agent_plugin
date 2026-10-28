@@ -2,13 +2,14 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains ten skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains eleven skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
 | Skill | Purpose |
 | --- | --- |
 | [issue_fix_workflow](skills/issue_fix_workflow/SKILL.md) | Fix one issue through Issue Fix Setup, Issue Fix Implementation, Issue Fix Review, and Issue Fix Completion, using a temporary worktree. |
+| [issue_batch_workflow](skills/issue_batch_workflow/SKILL.md) | Fix a batch of related issues (one parent issue and its sub-issues): ask every question at once, run the independent groups at the same time with helper agents, check and merge each group, and send one short final message. Needs the skills `issue_fix_workflow` and `issue_creation`. |
 | [issue_creation](skills/issue_creation/SKILL.md) | Create an issue on GitHub with the `gh` command or on GitLab with the `glab` command, attach images to the issue, and write the text of the issue with links to files and to other issues. |
 | [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Organize the bug issue list and recommend the next bug to fix to improve software stability, with evidence for each priority. This workflow is a work in progress. |
 | [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
@@ -81,7 +82,7 @@ npx skills add /path/to/coding_agent_plugin --skill jerome-rust-style
 
 After the Rust skill is published, replace the local path with `jeromeetienne/coding_agent_plugin` to install the published version. Creating the draft does not install or enable the skill in receiving projects.
 
-Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The skills `docs_folder_system` and `docs_folder_agents_rules_system` also read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values.
+Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The Issue Batch Workflow uses the same values. The skills `docs_folder_system` and `docs_folder_agents_rules_system` also read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values.
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
@@ -95,7 +96,7 @@ The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’
 
 ## History
 
-The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun.
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun. The skill `issue_batch_workflow` was added from [heidrun-org/heidrun_notebook#217](https://github.com/heidrun-org/heidrun_notebook/issues/217), without the details of that repository ([#16](https://github.com/jeromeetienne/coding_agent_plugin/issues/16)).
 
 The following issues describe the extraction and the earlier work:
 

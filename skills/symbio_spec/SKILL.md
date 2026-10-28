@@ -48,7 +48,15 @@ Keep human-facing documents easy to navigate: a short numbered introduction, num
 
 Check affected links, indexes, section ownership, approval references, and the stated coverage. Run checks appropriate to the actual change; do not claim application behaviour was exercised from a documentation check. Report what changed, what was checked, and what remains proposed or unresolved.
 
-## 6. Design references
+## 6. Write the sub-issues of an implementation
+
+When the approved Symbiospec changes need several implementation changes, write them as one parent issue with one sub-issue for each change, so that the result goes directly into the skill [issue_batch_workflow](../issue_batch_workflow/SKILL.md):
+
+- Group the sub-issues by area, and order the groups by their dependencies. Write the groups and the order in the parent issue.
+- Ask every open question during the human review of section 4, and write the answers in the parent issue and in the sub-issues. A sub-issue has no open question when the implementation starts.
+- Link each sub-issue to the approved specifications that it implements.
+
+## 7. Design references
 
 The supporting references make this skill usable without network access. These issues provide design context rather than project-specific approval:
 
