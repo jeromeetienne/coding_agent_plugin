@@ -6,6 +6,8 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 ## Key Exports & Entry Points
 - `skills/`: the skill folders, each with instructions for the coding agent in `SKILL.md` and an overview of its purpose for people in `README.md`.
 - [README.md](README.md): installation commands, receiving-project configuration, and skill maintenance.
+- `docs/`: the documentation of this repository for people, organized by the skill `docs_folder_system`; start at [docs/index.md](docs/index.md).
+- [AGENTS.md](AGENTS.md): the instructions for the coding agents, with the values of the skill `docs_folder_system`.
 
 ## Rules
 - The repository contains Markdown instructions and has no `package.json`, build, or test suite.
@@ -14,6 +16,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - Projects and user configurations that receive the skills are not synchronized automatically.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
 - The `jerome-rust-style` skill is a first draft containing clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
+- The folder `docs` explains concepts to people and links to the files of a skill; the folder `docs` does not copy the instructions of a skill.
 - Repository-specific commands and branch choices for the Issue Fix Workflow and the Issue Batch Workflow belong in the receiving project's `AGENTS.md`, in the section "Issue Fix Workflow values".
 
 ## Background
