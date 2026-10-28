@@ -24,6 +24,8 @@ The `jerome-typescript-javascript-style` skill records Jérôme Étienne’s own
 
 The `jerome-rust-style` skill is a first draft derived conservatively from that style. Its [adaptation review](skills/jerome-rust-style/references/adaptation-review.md) records the retained rules and the questions awaiting Jérôme’s decisions. The draft is not a complete Rust style.
 
+To learn what Symbiospec is and why Symbiospec exists, read [About Symbiospec](docs/about_symbio_spec/README.md).
+
 ## Install the skills
 
 Use the [skills command line tool](https://github.com/vercel-labs/skills). The command `npx` comes with Node.js. Run the commands from the project that should receive the skills.
