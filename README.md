@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains eleven skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains twelve skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -16,6 +16,7 @@ The repository contains eleven skills, including Symbiospec and a first draft of
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 | [docs_folder_system](skills/docs_folder_system/SKILL.md) | Organize the documentation folder that the coding agents write and read: the metadata header of each file, the files `README.md` and `index.md` of each folder, and the update of `index.md`. |
 | [docs_folder_agents_rules_system](skills/docs_folder_agents_rules_system/SKILL.md) | Read, obey, and keep up to date the agent rules and the glossary in the documentation folder, and keep each rule file under the maximum size. Needs the skill `docs_folder_system`. |
+| [repo_folders_constraints](skills/repo_folders_constraints/SKILL.md) | Read, obey, and propose changes to the Repo Folders Constraints: the rules of the folders and of the packages of a repository, in one rules file owned by the human. The human chooses Approve, Cancel, or Refine before a rule changes. |
 | [symbio_spec](skills/symbio_spec/SKILL.md) | Initialize and maintain Symbiospec in `docs/symbio_spec/`, update the specification alongside software changes, and check for drift between the specification, software, and tests. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
@@ -84,7 +85,7 @@ npx skills add /path/to/coding_agent_plugin --skill jerome-rust-style
 
 After the Rust skill is published, replace the local path with `jeromeetienne/coding_agent_plugin` to install the published version. Creating the draft does not install or enable the skill in receiving projects.
 
-Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The Issue Batch Workflow uses the same values. The skills `docs_folder_system` and `docs_folder_agents_rules_system` also read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values.
+Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The Issue Batch Workflow uses the same values. The skills `docs_folder_system` and `docs_folder_agents_rules_system` also read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values. The skill `repo_folders_constraints` reads the path of its rules file from the section "Repo Folders Constraints" of the receiving project's `AGENTS.md`, or from The Rules of the Repo.
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
@@ -98,7 +99,7 @@ The `jerome-typescript-javascript-style` reference contains Jérôme Étienne’
 
 ## History
 
-The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun. The skill `issue_batch_workflow` was added from [heidrun-org/heidrun_notebook#217](https://github.com/heidrun-org/heidrun_notebook/issues/217), without the details of that repository ([#16](https://github.com/jeromeetienne/coding_agent_plugin/issues/16)).
+The four workflow skills were extracted from Heidrun with the Git history of their folder. The personal coding style skill was added from Jérôme Étienne’s Claude Code user configuration. The `issue_creation` skill was added from the section "GitHub and GitLab" of the file `AGENTS.md` of Heidrun. The skills `docs_folder_system` and `docs_folder_agents_rules_system` were added from the sections "Agent rules", "Documentation metadata", and "Documentation folders" of the file `AGENTS.md` of Heidrun. The skill `issue_batch_workflow` was added from [heidrun-org/heidrun_notebook#217](https://github.com/heidrun-org/heidrun_notebook/issues/217), without the details of that repository ([#16](https://github.com/jeromeetienne/coding_agent_plugin/issues/16)). The skill `repo_folders_constraints` was added from [heidrun-org/heidrun_notebook#248](https://github.com/heidrun-org/heidrun_notebook/issues/248) and [heidrun-org/heidrun_notebook#249](https://github.com/heidrun-org/heidrun_notebook/issues/249) ([#20](https://github.com/jeromeetienne/coding_agent_plugin/issues/20)).
 
 The following issues describe the extraction and the earlier work:
 
