@@ -26,7 +26,7 @@ The Docs folder system gives each file and each folder the same form, so that a 
 
 ## Configuration
 
-The skill `docs_folder_system` names no detail of one repository. The receiving project writes its values in the section "Docs folder system values" of its file `AGENTS.md`:
+The skill `docs_folder_system` names no detail of one repository. The caller gives the values: the configuration file of the skill in The Rules of the Repo, or, without The Rules of the Repo, the section "Docs folder system values" of the file `AGENTS.md` of the receiving project. The values are:
 
 - Documentation folder
 - Files with no metadata header
