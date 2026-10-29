@@ -13,7 +13,12 @@ The agent rules folder is inside the documentation folder, so every file and eve
 
 ## The values of the repository
 
-Read the section "Docs folder agents rules system values" of the file `AGENTS.md` before you read or change the agent rules. The section gives these values:
+Read the values of the repository before you read or change the agent rules. The caller always gives the values to this skill, and the skill works the same way for each caller:
+
+- With The Rules of the Repo: the configuration file of this skill, from the rules list of The Rules of the Repo.
+- Without The Rules of the Repo: the section "Docs folder agents rules system values" of the file `AGENTS.md`. See the section "The template".
+
+The values are:
 
 - Agent rules folder: the folder that holds the agent rules, inside the documentation folder.
 - Glossary folder: the folder of the glossary, inside the agent rules folder.
@@ -22,7 +27,7 @@ Read the section "Docs folder agents rules system values" of the file `AGENTS.md
 
 ### When the values are missing
 
-When the section is missing, or when one value is missing, do these steps, in this order:
+When no caller gives the values, or when one value is missing, do these steps, in this order:
 
 1. Do not change the agent rules.
 2. Warn the developer in one short message: "The docs folder agents rules system is not configured in this repository." Then list the missing values, one value on each line.
@@ -56,7 +61,7 @@ Never guess a value, and never use the value of another repository.
 
 ## The template
 
-Write this text in the file `AGENTS.md` of the repository. The first two lines are the pointer: the file `AGENTS.md` always loads, but a skill loads only when the coding agent decides that it matches, so the pointer makes sure that the skill is read.
+Write this text in the file `AGENTS.md` of the repository, when the repository has no The Rules of the Repo. The first two lines are the pointer: the file `AGENTS.md` always loads, but a skill loads only when the coding agent decides that it matches, so the pointer makes sure that the skill is read.
 
 ```markdown
 ## Agent rules

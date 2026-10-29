@@ -24,7 +24,7 @@ The Docs folder agents rules system puts these rules and the glossary in files, 
 
 ## Configuration
 
-The skill `docs_folder_agents_rules_system` names no detail of one repository. The receiving project writes its values in the section "Docs folder agents rules system values" of its file `AGENTS.md`:
+The skill `docs_folder_agents_rules_system` names no detail of one repository. The caller gives the values: the configuration file of the skill in The Rules of the Repo, or, without The Rules of the Repo, the section "Docs folder agents rules system values" of the file `AGENTS.md` of the receiving project. The values are:
 
 - Agent rules folder
 - Glossary folder
