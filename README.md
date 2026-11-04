@@ -2,7 +2,7 @@
 
 Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder with a `SKILL.md` file that tells a coding agent how to carry out a task.
 
-The repository contains thirteen skills, including Symbiospec and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
+The repository contains fourteen skills, including Symbiospec, Symbiospec to documentation and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
 ## Available skills
 
@@ -19,6 +19,7 @@ The repository contains thirteen skills, including Symbiospec and a first draft 
 | [repo_folders_constraints](skills/repo_folders_constraints/SKILL.md) | Read, obey, and propose changes to the Repo Folders Constraints: the rules of the folders and of the packages of a repository, in one rules file owned by the human. The human chooses Approve, Cancel, or Refine before a rule changes. |
 | [rules_of_the_repo](skills/rules_of_the_repo/SKILL.md) | The Rules of the Repo: the one entry point for the rules of a repository. Before each change, read the rules list, find the rule skills that apply, and give each rule skill the path of its configuration file. |
 | [symbio_spec](skills/symbio_spec/SKILL.md) | Initialize and maintain Symbiospec in `docs/symbio_spec/`, update the specification alongside software changes, and check for drift between the specification, software, and tests. |
+| [symbiospec_to_docs](skills/symbiospec_to_docs/SKILL.md) | Generate and update documentation for configured audiences from approved Symbiospec and current implementation. Each documentation set has its own destination folder. Requires `symbio_spec` and the project's Symbiospec data. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
@@ -89,6 +90,8 @@ After the Rust skill is published, replace the local path with `jeromeetienne/co
 Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The Issue Batch Workflow uses the same values. The skill `rules_of_the_repo` reads the path of its rules list from the receiving project's `AGENTS.md`, and gives each rule skill the path of its configuration file. Without The Rules of the Repo, the skills `docs_folder_system` and `docs_folder_agents_rules_system` read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values. The skill `repo_folders_constraints` reads the path of its rules file from the section "Repo Folders Constraints" of the receiving project's `AGENTS.md`, or from The Rules of the Repo.
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
+
+The skill [symbiospec_to_docs](skills/symbiospec_to_docs/README.md) requires `symbio_spec` and the receiving project's Symbiospec data. Each documentation set has its own audience, configuration and destination folder inside the repository. Supply the configuration path through The Rules of the Repo, `AGENTS.md` or a direct request; see the [configuration reference](skills/symbiospec_to_docs/references/configuration.md). The skill owns the generated documentation. Corrections go through Symbiospec or configuration, followed by regeneration.
 
 ## Maintain the skills
 
