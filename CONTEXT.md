@@ -14,7 +14,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - The repository has no plugin manifest; installation currently installs individual skills.
 - This independent repository is the authoritative location for all skills; make future skill changes here, as [README.md](README.md#maintain-the-skills) describes.
 - Projects and user configurations that receive the skills are not synchronized automatically.
-- The [symbiospec_to_docs](skills/symbiospec_to_docs/SKILL.md) skill requires `symbio_spec` and project Symbiospec data; project configuration and generated documentation stay outside the reusable skill.
+- The [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) skill requires `symbio_spec` and project Symbiospec data; project configuration and generated documentation stay outside the reusable skill.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
 - The `jerome-rust-style` skill is a first draft containing clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
 - The folder `docs` explains concepts to people and links to the files of a skill; the folder `docs` does not copy the instructions of a skill.

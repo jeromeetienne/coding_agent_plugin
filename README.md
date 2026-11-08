@@ -19,7 +19,7 @@ The repository contains fourteen skills, including Symbiospec, Symbiospec to doc
 | [repo_folders_constraints](skills/repo_folders_constraints/SKILL.md) | Read, obey, and propose changes to the Repo Folders Constraints: the rules of the folders and of the packages of a repository, in one rules file owned by the human. The human chooses Approve, Cancel, or Refine before a rule changes. |
 | [rules_of_the_repo](skills/rules_of_the_repo/SKILL.md) | The Rules of the Repo: the one entry point for the rules of a repository. Before each change, read the rules list, find the rule skills that apply, and give each rule skill the path of its configuration file. |
 | [symbio_spec](skills/symbio_spec/SKILL.md) | Initialize and maintain Symbiospec in `docs/symbio_spec/`, update the specification alongside software changes, and check for drift between the specification, software, and tests. |
-| [symbiospec_to_docs](skills/symbiospec_to_docs/SKILL.md) | Generate and update documentation for configured audiences from approved Symbiospec and current implementation. Each documentation set has its own destination folder. Requires `symbio_spec` and the project's Symbiospec data. |
+| [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) | Generate and update documentation for configured audiences from approved Symbiospec and current implementation. Each documentation set has its own destination folder. Requires `symbio_spec` and the project's Symbiospec data. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
@@ -91,7 +91,7 @@ Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Work
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
-The skill [symbiospec_to_docs](skills/symbiospec_to_docs/README.md) requires `symbio_spec` and the receiving project's Symbiospec data. Each documentation set has its own audience, configuration and destination folder inside the repository. Supply the configuration path through The Rules of the Repo, `AGENTS.md` or a direct request; see the [configuration reference](skills/symbiospec_to_docs/references/configuration.md). The skill owns the generated documentation. Corrections go through Symbiospec or configuration, followed by regeneration.
+The skill [symbio_spec_to_docs](skills/symbio_spec_to_docs/README.md) requires `symbio_spec` and the receiving project's Symbiospec data. Each documentation set has its own audience, configuration and destination folder inside the repository. Supply the configuration path through The Rules of the Repo, `AGENTS.md` or a direct request; see the [configuration reference](skills/symbio_spec_to_docs/references/configuration.md). The skill owns the generated documentation. Corrections go through Symbiospec or configuration, followed by regeneration.
 
 ## Maintain the skills
 
