@@ -1,9 +1,9 @@
 ---
-name: git_cleanup_adviser
+name: git_cleanup_review
 description: Review Git branches and worktrees and advise which ones appear safe to remove, with evidence and uncertainty. Use when a developer asks to audit, review, or identify cleanup candidates. This skill gives advice only and does not remove anything.
 ---
 
-# Git Cleanup Adviser
+# Git Cleanup Review
 
 Review branches and worktrees and explain which ones appear safe to remove. A worktree is a separate working folder connected to the same Git repository. The default action is advice only. Never remove a branch or worktree as part of an audit. A later, separate request to remove an item is required before taking that action.
 
