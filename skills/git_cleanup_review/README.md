@@ -11,11 +11,12 @@ The Git Cleanup Review gives the developer the facts before the developer remove
 ## What the coding agent does
 
 1. Chooses the destination branch, the branch where completed work lands. The coding agent uses the branch that the developer names, or the repository instructions, or asks the developer.
-2. Collects the evidence with read-only Git commands.
+2. Always keeps the main checkout and local and remote branches named `main`, `master`, or `dev`, in addition to branches protected by repository instructions. These items are never removal candidates. Collects the evidence with read-only Git commands.
 3. For each worktree, looks for staged changes, unstaged changes, untracked files, and submodule changes.
 4. For each branch, checks whether its commits are in the destination branch, also when the work arrived through a squash (several commits combined into one) or another equivalent commit.
 5. For each remote branch, separates the branch on the remote server from the local reference, which can be out of date, and checks open pull requests and protected branches when possible.
-6. Gives one recommendation for each local branch, each remote branch, and each worktree, in separate rows:
+6. Includes the last modification date of every listed branch and worktree. For branches, the date is the latest commit’s committer date. For worktrees, the date is the latest observed file or directory modification time, excluding Git administrative entries. The report explains the date source and any missing or incomplete evidence. Dates alone do not prove that removal is safe.
+7. Gives one recommendation for each local branch, each remote branch, and each worktree, in separate rows:
    - Deleteable
    - Keep
    - Needs inspection
