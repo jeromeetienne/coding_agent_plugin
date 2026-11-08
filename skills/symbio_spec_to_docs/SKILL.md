@@ -1,5 +1,5 @@
 ---
-name: symbiospec_to_docs
+name: symbio_spec_to_docs
 description: Generate and update documentation inside a repository from its approved Symbiospec and implementation evidence, for configured audiences. Requires the symbio_spec skill and the project's Symbiospec data. Use to create documentation sets, review coverage, or update generated documentation after product changes.
 ---
 
@@ -55,7 +55,7 @@ When sources disagree, record the disagreement and affected instructions. Omit u
 
 ## Ownership and updates
 
-`symbiospec_to_docs` owns the generated documentation in each configured destination folder and may rewrite generated passages during updates, including passages edited by people. Do not require detection of who edited each passage. Corrections belong in Symbiospec or the documentation configuration, followed by regeneration; do not maintain manual exceptions in generated pages.
+`symbio_spec_to_docs` owns the generated documentation in each configured destination folder and may rewrite generated passages during updates, including passages edited by people. Do not require detection of who edited each passage. Corrections belong in Symbiospec or the documentation configuration, followed by regeneration; do not maintain manual exceptions in generated pages.
 
 When Symbiospec or the application changes, use the source mapping to find affected pages. Recheck approval and implementation, revise the guidance, and update coverage and unresolved findings. Preserve accurate content and unrelated generated pages. Remove or revise guidance that no longer has both specification and implementation support. If no mapping exists, establish a mapping for the affected scope first. Ownership of generated output does not authorise changing other documentation sets or unrelated files; identify existing content that is outside the requested generated set before replacing content.
 
@@ -86,9 +86,9 @@ Without The Rules of the Repo, put this section in `AGENTS.md`, replacing the co
 ```markdown
 ## Symbiospec to documentation
 
-Follow the skill [symbiospec_to_docs](.agents/skills/symbiospec_to_docs/SKILL.md) when creating, reviewing or updating the configured documentation, or changing approved Symbiospec or application behaviour covered by that documentation. The skill requires the installed skill symbio_spec and this project's Symbiospec data.
+Follow the skill [symbio_spec_to_docs](.agents/skills/symbio_spec_to_docs/SKILL.md) when creating, reviewing or updating the configured documentation, or changing approved Symbiospec or application behaviour covered by that documentation. The skill requires the installed skill symbio_spec and this project's Symbiospec data.
 
 - <documentation name> configuration: <path of that documentation set's config.md>
 ```
 
-A direct request can also supply the configuration path. No repository-specific path is a default. When no caller supplies a path, report “symbiospec_to_docs has no configuration path”, show the section above, and stop generation. Configuration setup can be requested separately; never generate pages from an incomplete configuration.
+A direct request can also supply the configuration path. No repository-specific path is a default. When no caller supplies a path, report “symbio_spec_to_docs has no configuration path”, show the section above, and stop generation. Configuration setup can be requested separately; never generate pages from an incomplete configuration.

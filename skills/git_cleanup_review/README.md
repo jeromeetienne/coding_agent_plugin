@@ -1,12 +1,12 @@
-# git_cleanup_adviser
+# git_cleanup_review
 
-The skill `git_cleanup_adviser` examines the Git branches and the worktrees of a repository, and advises which branches and worktrees appear safe to remove. This skill is the Git Cleanup Adviser. A worktree is a separate working folder connected to the same Git repository.
+The skill `git_cleanup_review` examines the Git branches and the worktrees of a repository, and advises which branches and worktrees appear safe to remove. This skill is the Git Cleanup Review. A worktree is a separate working folder connected to the same Git repository.
 
 ## Purpose
 
 After many fixes and experiments, a repository has many branches and worktrees. Some branches hold work that is already in the destination branch. Other branches hold commits that exist nowhere else. Some worktrees hold files that are not committed. When the developer removes the wrong branch or the wrong worktree, the work is lost.
 
-The Git Cleanup Adviser gives the developer the facts before the developer removes anything. For each branch and each worktree, the Git Cleanup Adviser says whether the work is safe, with the evidence, and says what is not sure. The Git Cleanup Adviser gives advice only: the Git Cleanup Adviser never removes a branch or a worktree.
+The Git Cleanup Review gives the developer the facts before the developer removes anything. For each branch and each worktree, the Git Cleanup Review says whether the work is safe, with the evidence, and says what is not sure. The Git Cleanup Review gives advice only: the Git Cleanup Review never removes a branch or a worktree.
 
 ## What the coding agent does
 
@@ -29,12 +29,12 @@ The coding agent does not fetch, prune, delete a branch, or remove a worktree du
 
 ## Configuration
 
-The skill `git_cleanup_adviser` needs no configuration. The coding agent reads the repository instructions to find the destination branch and the branches that must be kept.
+The skill `git_cleanup_review` needs no configuration. The coding agent reads the repository instructions to find the destination branch and the branches that must be kept.
 
 ## Install
 
 ```bash
-npx skills add jeromeetienne/coding_agent_plugin --skill git_cleanup_adviser
+npx skills add jeromeetienne/coding_agent_plugin --skill git_cleanup_review
 ```
 
 ## Files

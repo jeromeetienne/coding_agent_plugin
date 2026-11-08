@@ -12,14 +12,14 @@ The repository contains fourteen skills, including Symbiospec, Symbiospec to doc
 | [issue_batch_workflow](skills/issue_batch_workflow/SKILL.md) | Fix a batch of related issues (one parent issue and its sub-issues): ask every question at once, run the independent groups at the same time with helper agents, check and merge each group, and send one short final message. Needs the skills `issue_fix_workflow` and `issue_creation`. |
 | [issue_creation](skills/issue_creation/SKILL.md) | Create an issue on GitHub with the `gh` command or on GitLab with the `glab` command, attach images to the issue, and write the text of the issue with links to files and to other issues. |
 | [bug_triage_workflow](skills/bug_triage_workflow/SKILL.md) | Organize the bug issue list and recommend the next bug to fix to improve software stability, with evidence for each priority. This workflow is a work in progress. |
-| [git_cleanup_adviser](skills/git_cleanup_adviser/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
+| [git_cleanup_review](skills/git_cleanup_review/SKILL.md) | Review Git branches and worktrees and advise which appear safe to remove, without removing anything. |
 | [context_md_system](skills/context_md_system/SKILL.md) | Read, create, update, and verify the `CONTEXT.md` files that describe the purpose, exports, and rules of folders. |
 | [docs_folder_system](skills/docs_folder_system/SKILL.md) | Organize the documentation folder that the coding agents write and read: the metadata header of each file, the files `README.md` and `index.md` of each folder, and the update of `index.md`. |
 | [docs_folder_agents_rules_system](skills/docs_folder_agents_rules_system/SKILL.md) | Read, obey, and keep up to date the agent rules and the glossary in the documentation folder, and keep each rule file under the maximum size. Needs the skill `docs_folder_system`. |
 | [repo_folders_constraints](skills/repo_folders_constraints/SKILL.md) | Read, obey, and propose changes to the Repo Folders Constraints: the rules of the folders and of the packages of a repository, in one rules file owned by the human. The human chooses Approve, Cancel, or Refine before a rule changes. |
 | [rules_of_the_repo](skills/rules_of_the_repo/SKILL.md) | The Rules of the Repo: the one entry point for the rules of a repository. Before each change, read the rules list, find the rule skills that apply, and give each rule skill the path of its configuration file. |
 | [symbio_spec](skills/symbio_spec/SKILL.md) | Initialize and maintain Symbiospec in `docs/symbio_spec/`, update the specification alongside software changes, and check for drift between the specification, software, and tests. |
-| [symbiospec_to_docs](skills/symbiospec_to_docs/SKILL.md) | Generate and update documentation for configured audiences from approved Symbiospec and current implementation. Each documentation set has its own destination folder. Requires `symbio_spec` and the project's Symbiospec data. |
+| [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) | Generate and update documentation for configured audiences from approved Symbiospec and current implementation. Each documentation set has its own destination folder. Requires `symbio_spec` and the project's Symbiospec data. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/SKILL.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style, including naming, formatting, documentation, and code organization. |
 | [jerome-rust-style](skills/jerome-rust-style/SKILL.md) | Apply the first draft of Jérôme Étienne’s personal Rust coding style, containing clearly transferable rules and adaptations he explicitly approves. |
 
@@ -91,7 +91,7 @@ Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Work
 
 The repository contains Markdown instructions. There is no `package.json`, dependency installation, build, or test suite for this repository.
 
-The skill [symbiospec_to_docs](skills/symbiospec_to_docs/README.md) requires `symbio_spec` and the receiving project's Symbiospec data. Each documentation set has its own audience, configuration and destination folder inside the repository. Supply the configuration path through The Rules of the Repo, `AGENTS.md` or a direct request; see the [configuration reference](skills/symbiospec_to_docs/references/configuration.md). The skill owns the generated documentation. Corrections go through Symbiospec or configuration, followed by regeneration.
+The skill [symbio_spec_to_docs](skills/symbio_spec_to_docs/README.md) requires `symbio_spec` and the receiving project's Symbiospec data. Each documentation set has its own audience, configuration and destination folder inside the repository. Supply the configuration path through The Rules of the Repo, `AGENTS.md` or a direct request; see the [configuration reference](skills/symbio_spec_to_docs/references/configuration.md). The skill owns the generated documentation. Corrections go through Symbiospec or configuration, followed by regeneration.
 
 ## Maintain the skills
 

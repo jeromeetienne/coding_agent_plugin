@@ -23,10 +23,10 @@ Keep one configuration per named documentation set, outside the installed skill 
 
 ## With The Rules of the Repo
 
-Use the repository's existing rules list and configuration root. Under that root, give `symbiospec_to_docs` its configuration folder, with a separate subfolder for each documentation set when several sets exist. For example, if a project has chosen `.agents/rules_of_the_repo/config/` as its configuration root:
+Use the repository's existing rules list and configuration root. Under that root, give `symbio_spec_to_docs` its configuration folder, with a separate subfolder for each documentation set when several sets exist. For example, if a project has chosen `.agents/rules_of_the_repo/config/` as its configuration root:
 
 ```text
-.agents/rules_of_the_repo/config/symbiospec_to_docs/
+.agents/rules_of_the_repo/config/symbio_spec_to_docs/
   user_documentation/config.md
   developer_documentation/config.md
 ```
@@ -36,24 +36,24 @@ If the rules list is `.agents/rules_of_the_repo/rules_list.md`, the correspondin
 ```markdown
 | Skill | When it applies | Rule type | Configuration |
 | --- | --- | --- | --- |
-| [symbiospec_to_docs](../skills/symbiospec_to_docs/SKILL.md) | User documentation or covered Symbiospec and application changes | Living rule with human approval | [User documentation](config/symbiospec_to_docs/user_documentation/config.md) |
-| [symbiospec_to_docs](../skills/symbiospec_to_docs/SKILL.md) | Developer documentation or covered Symbiospec and application changes | Living rule with human approval | [Developer documentation](config/symbiospec_to_docs/developer_documentation/config.md) |
+| [symbio_spec_to_docs](../skills/symbio_spec_to_docs/SKILL.md) | User documentation or covered Symbiospec and application changes | Living rule with human approval | [User documentation](config/symbio_spec_to_docs/user_documentation/config.md) |
+| [symbio_spec_to_docs](../skills/symbio_spec_to_docs/SKILL.md) | Developer documentation or covered Symbiospec and application changes | Living rule with human approval | [Developer documentation](config/symbio_spec_to_docs/developer_documentation/config.md) |
 ```
 
-Those paths and the rule type are examples, not requirements for another repository. Use the installed skill's actual path. Configuration changes follow the rule type of the matching row. Both matching rows may apply to a product change; pass each configuration separately and update only affected pages. Installing or registering `symbiospec_to_docs` does not install `symbio_spec` or create Symbiospec data.
+Those paths and the rule type are examples, not requirements for another repository. Use the installed skill's actual path. Configuration changes follow the rule type of the matching row. Both matching rows may apply to a product change; pass each configuration separately and update only affected pages. Installing or registering `symbio_spec_to_docs` does not install `symbio_spec` or create Symbiospec data.
 
 ## Without The Rules of the Repo
 
 A direct request can name the set and pass its configuration path:
 
-> Use symbiospec_to_docs with configuration `documentation_config/user_documentation/config.md` to update the user documentation.
+> Use symbio_spec_to_docs with configuration `documentation_config/user_documentation/config.md` to update the user documentation.
 
 Or register explicitly chosen paths in `AGENTS.md`:
 
 ```markdown
 ## Symbiospec to documentation
 
-Follow [symbiospec_to_docs](.agents/skills/symbiospec_to_docs/SKILL.md) when generating or updating the configured documentation and when covered Symbiospec or application behaviour changes. The installed skill symbio_spec and the project's Symbiospec data are required.
+Follow [symbio_spec_to_docs](.agents/skills/symbio_spec_to_docs/SKILL.md) when generating or updating the configured documentation and when covered Symbiospec or application behaviour changes. The installed skill symbio_spec and the project's Symbiospec data are required.
 
 - User documentation configuration: [config.md](documentation_config/user_documentation/config.md)
 - Developer documentation configuration: [config.md](documentation_config/developer_documentation/config.md)
@@ -65,4 +65,4 @@ These are representative paths chosen by an example project. The request or repo
 
 Give each set a distinct name, audience definition, configuration and destination folder. For example, a project could choose `docs/user_documentation/` and `docs/developer_documentation/`; neither folder is a default. Identical or nested destination folders would allow one generation to overwrite another set, so use separate folders. Keep generated destinations separate from Symbiospec data, application sources, configuration and review records.
 
-Each destination contains documentation owned by `symbiospec_to_docs`. Corrections go through the responsible Symbiospec data or configuration and then regeneration. An update may rewrite generated passages regardless of who last edited the passages. Accurate content should remain useful across updates, without requiring preservation of manual edits as a separate source of truth.
+Each destination contains documentation owned by `symbio_spec_to_docs`. Corrections go through the responsible Symbiospec data or configuration and then regeneration. An update may rewrite generated passages regardless of who last edited the passages. Accurate content should remain useful across updates, without requiring preservation of manual edits as a separate source of truth.
