@@ -14,3 +14,5 @@ This file lists the files and the subfolders of the folder `docs`, for agents an
 
 - [Skill inventory](skill_inventory.md): readiness, existing coverage, dependencies and documentation work for every skill.
 - [Documentation structure](documentation_structure.md): the approved locations, skill README coverage, navigation and publication plan.
+
+- [Repo Folders Constraints](repo_folders_constraints.md): folder responsibilities, package boundaries, setup, and human approval with a worked example.

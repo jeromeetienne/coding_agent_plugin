@@ -1,39 +1,18 @@
 # context_md_system
 
-The skill `context_md_system` tells a coding agent how to read, create, update, and verify the `CONTEXT.md` files of a repository. This system of files is the CONTEXT.md system. A `CONTEXT.md` file is a short file in a folder that says what the folder is for, what the folder offers to other folders, and what must not be broken.
-
 ## Purpose
 
-A coding agent that opens a folder does not know what the folder is for, what other folders can import from the folder, or which rules apply. The coding agent learns these facts by reading many files, or the coding agent guesses. A wrong guess breaks a boundary between modules.
+The skill `context_md_system` maintains the CONTEXT.md system: short folder notes explaining purpose, public exports and boundaries. The notes help a coding agent understand a folder before changing files, without repeatedly reconstructing the folder's responsibilities.
 
-A `CONTEXT.md` file gives these facts in one short file for each folder. The CONTEXT.md system keeps these files accurate, and small enough for the coding agent to read each time that the coding agent changes the folder.
+## When to use
 
-## What the coding agent does
+Use the skill before editing or adding files, when creating a source-code or component folder, when adding a core file or changing a folder's exports or responsibility, when a `CONTEXT.md` file exceeds 5500 bytes, or when adding checks for context files.
 
-- Read: before the coding agent edits or adds a file, the coding agent reads the nearest `CONTEXT.md` file, then the `CONTEXT.md` file of each parent folder. A rule of a subfolder overrides or narrows a rule of a parent folder.
-- Create: when the coding agent creates a folder that holds source code, the coding agent creates its `CONTEXT.md` file from the template.
-- Update: when a change adds a core file, changes an exported interface, or changes what a folder is responsible for, the coding agent updates the `CONTEXT.md` file in the same change.
-- Keep short: each `CONTEXT.md` file stays under 5500 bytes. A rule is one sentence in the present tense, and the history of the rule stays in the issue tracker, as a link.
-- Verify: when a repository has too many `CONTEXT.md` files to read by hand, the coding agent adds a test that checks the files.
+The coding agent reads the nearest `CONTEXT.md` first, then parent context files up to the repository root. A subfolder's notes override or narrow parent notes for that subfolder. Each context file covers its own folder and descendants without their own context file.
 
-## The sections of a CONTEXT.md file
+## Requirements
 
-1. Purpose: what the folder is responsible for.
-2. Key Exports & Entry Points: what other folders can import, and the command that runs the folder.
-3. Rules: what must not be broken, for example which folder must not import which other folder.
-4. Background: the reasons and the links behind the rules.
-
-## When the coding agent uses the skill
-
-- Before the coding agent edits or adds a file in a folder.
-- When the coding agent creates a folder that holds source code.
-- When a change alters the exported interface or the responsibility of a folder.
-- When a `CONTEXT.md` file grows over 5500 bytes.
-- When the coding agent adds a test that checks the `CONTEXT.md` files.
-
-## Configuration
-
-The skill `context_md_system` needs no configuration.
+The coding agent needs access to repository files and parent context files. No companion skill, configuration file or particular programming language is required. Tests become useful when there are too many context files to review by hand.
 
 ## Install
 
@@ -41,6 +20,58 @@ The skill `context_md_system` needs no configuration.
 npx skills add jeromeetienne/coding_agent_plugin --skill context_md_system
 ```
 
-## Files
+See the [collection installation options](../../README.md#install-the-skills). Installation does not rewrite repository notes or approve product changes.
 
-- [SKILL.md](SKILL.md): the instructions for the coding agent, with the template of a `CONTEXT.md` file.
+## Configuration
+
+No configuration values are needed. A receiving project can require the skill through `AGENTS.md`, for example:
+
+```markdown
+Before editing or adding files, follow the skill [context_md_system](.agents/skills/context_md_system/SKILL.md). Maintain affected CONTEXT.md files in the same change.
+```
+
+The skill can also be registered in The Rules of the Repo with rule type `Living rule without human approval` and configuration `none`.
+
+## Concrete example
+
+Illustrative folder `packages/totals` exports `calculateTotal` through `index.ts`. The folder's `CONTEXT.md` can read:
+
+```markdown
+# Directory Context: `/packages/totals`
+
+## Purpose
+Calculate invoice totals from supplied prices and quantities.
+
+## Key Exports & Entry Points
+- `index.ts`: exports calculateTotal.
+
+## Rules
+- This package never imports the user interface package.
+
+## Background
+The caller supplies prices so calculations remain independent of service access.
+```
+
+Request: “Add an exported `calculateDiscount` operation.” After reading the nearest and parent context files, the coding agent changes the implementation and updates the export description in the same change to “`index.ts`: exports calculateTotal and calculateDiscount.” The context file describes the public interface rather than listing every implementation file.
+
+If a later change introduces a distinct `packages/totals/discounts` source folder, the coding agent creates that folder's own `CONTEXT.md` immediately. The parent notes name the discounts subfolder and its purpose on one line, without listing the files inside the discounts subfolder.
+
+## Results
+
+Review the context file alongside the implementation change. Each context file has Purpose, Key Exports & Entry Points, Rules and Background sections, in that order. Each context file stays under 5500 bytes; a file that grows over 5500 bytes is reduced to 4500 bytes. Keep rules in present tense, link history, and link facts maintained elsewhere instead of copying facts.
+
+At larger scale, verification checks package/workspace coverage, heading paths, section order and the byte limit. The skill's context-file test does not check Markdown link destinations. Link checking is a separate check.
+
+## Approval boundaries
+
+Context files are agent-maintained notes and can be updated without human approval. Updating notes does not authorize changing human-owned rules or product decisions. When [Repo Folders Constraints](../repo_folders_constraints/README.md) disagrees with a context file, the human-owned rules file takes precedence and the coding agent corrects the context file.
+
+## Related skills and guides
+
+- [repo_folders_constraints](../repo_folders_constraints/README.md): optional human-owned boundaries complementing context notes.
+- [rules_of_the_repo](../rules_of_the_repo/README.md): optional coordination of applicable rule skills.
+- [Repo Folders Constraints guide](../../docs/repo_folders_constraints.md): ownership and conflict examples.
+
+## Instructions and references
+
+[SKILL.md](SKILL.md) gives the authoritative reading order, maintenance triggers, verification rules and context-file template.
