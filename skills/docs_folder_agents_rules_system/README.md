@@ -1,5 +1,7 @@
 # docs_folder_agents_rules_system
 
+**Obsolete:** [Symbiospec](../symbio_spec/SKILL.md) supersedes the Docs folder agents rules system. This skill remains available for existing projects.
+
 The skill `docs_folder_agents_rules_system` tells a coding agent to read, obey, and keep up to date the agent rules and the glossary of a project. This system is the Docs folder agents rules system. The agent rules are the rule files that every coding agent obeys. The glossary gives the definition of each word that the project uses for one of its parts.
 
 ## Purpose

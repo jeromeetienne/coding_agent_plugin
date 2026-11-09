@@ -1,9 +1,11 @@
 ---
 name: docs_folder_agents_rules_system
-description: Read, obey, and keep up to date the agent rules of a repository, the rule files in the documentation folder that every coding agent follows, with the glossary of the words of the project. Use it before you change the code, to read the glossary and the rule files that match the part that you change, when a rule or a word of the project changes, and when a rule file grows over the maximum size. It needs the skill docs_folder_system for the form of the files.
+description: Obsolete; superseded by Symbiospec. Retained for existing projects. Read, obey, and keep up to date the agent rules of a repository, the rule files in the documentation folder that every coding agent follows, with the glossary of the words of the project. Use it before you change the code, to read the glossary and the rule files that match the part that you change, when a rule or a word of the project changes, and when a rule file grows over the maximum size. It needs the skill docs_folder_system for the form of the files.
 ---
 
 # Docs folder agents rules system
+
+**Obsolete:** [Symbiospec](../symbio_spec/SKILL.md) supersedes the Docs folder agents rules system. This skill remains available for existing projects.
 
 The agent rules are the files that every coding agent obeys. They sit in the agent rules folder, a subfolder of the documentation folder. The glossary is a subfolder of the agent rules folder: it gives the definition of each word that the project uses for one of its parts. This skill gives what you do with the content of the agent rules: read them, obey them, and keep them up to date. This skill names no detail of one repository, so the folder of this skill can be copied to another repository.
 
