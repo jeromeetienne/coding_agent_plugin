@@ -1,14 +1,25 @@
 # The three workflows of Symbiospec
 
 - Created: 28 October 2026
-- Last updated: 28 October 2026
+- Last updated: 9 November 2026
 - Status: Maintained explanation of the workflows of Symbiospec for people
 - Related framing: [Agent instructions](../../AGENTS.md)
-- Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15)
+- Related rules: [docs_folder_system](../../skills/docs_folder_system/SKILL.md)
+- Related issue: [Issue 15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 10](https://github.com/jeromeetienne/coding_agent_plugin/issues/10), [Issue 11](https://github.com/jeromeetienne/coding_agent_plugin/issues/11)
+
+## 0. Introduction
+
+### 0.1. Three operations
+
+Explains Initialization, Update and Realignment without repeating the coding-agent procedures.
+
+### 0.2. Practical review
+
+Shows a small initialization cycle, an authorized update and a scoped comparison report, with approval and verification limits.
 
 ## 1. Overview
 
-Symbiospec has three workflows. Initialize occurs one time for each project. Update and realign occur again and again during all the development. This document explains each workflow as a concept. The steps for a coding agent are in [workflows.md](../../skills/symbio_spec/references/workflows.md) of the skill `symbio_spec`.
+Symbiospec has three workflows. Initialization establishes a baseline and may continue incrementally in uncovered areas while Update maintains already established areas. Update and Realignment repeat throughout development. This document explains each workflow as a concept. The steps for a coding agent are in [workflows.md](../../skills/symbio_spec/references/workflows.md) of the skill `symbio_spec`.
 
 ## 2. Initialize
 
@@ -37,7 +48,36 @@ Realign finds and corrects drift: a difference between Symbiospec, the software,
 
 The approved intent stays the reference. Realign never changes the approved specification only to make an incorrect implementation look correct.
 
-## 5. Sources
+## 5. A small initialization cycle
+
+For the fictional note editor in the [specification example](specification_example.md), the coding agent first inspects saving one Note. The coding agent prepares the Note definition, save expectations, evidence, uncertainties and the relationship to the Save control. The human reviews the prepared decisions and can accept, reject, revise or defer each decision. Questions requiring substantial new investigation move into a later batch.
+
+After actual approval, the coding agent records the source and scope of the decision, updates the topic and coverage records, and checks navigation and consistency. Saving one Note can be an approved baseline while sharing and deletion remain unexamined. An earlier specification is preserved and incrementally migrated rather than discarded; an unknown approval history stays explicit.
+
+## 6. Update and Realignment examples
+
+An authorized request to change save confirmation wording permits the corresponding Behaviour and User Interface updates in the same task without asking again. If implementation exposes a new question about overwriting another Note, that additional product decision needs review. A technical refactoring with unchanged product meaning needs no artificial rewrite of the specification.
+
+A request to review failed saves permits comparison and reporting. For example, a report might contain the following fictional finding:
+
+| Field | Example finding |
+| --- | --- |
+| Scope | Save failure only; sharing and deletion not examined. |
+| Expected | The approved save specification requires a failure message and no success confirmation. |
+| Observed and evidence | A permitted application exercise shows a success confirmation after a rejected write; the relevant test expects success. Link the actual observation and test when reporting a real finding. |
+| Severity and confidence | High impact because saving appears successful; high confidence within the exercised failure case. |
+| Recommendation | Correct the application and conflicting test while preserving approved intent. |
+| Decision and resolution | Investigation alone does not authorize corrections. Apply authorized corrections, repeat the failed-save exercise and record resolved or remaining findings. |
+
+A missing test is a coverage gap, not proof of a broken feature. Reports saved with authorization belong in `docs/symbio_spec/reports/`; otherwise findings can remain in the conversation. Approval, executed tests and live observations remain separate evidence.
+
+## 7. Limits and further work
+
+[Issue 11](https://github.com/jeromeetienne/coding_agent_plugin/issues/11) proposed these three operations; the current [workflow reference](../../skills/symbio_spec/references/workflows.md) supplies coding-agent instructions. The skill does not establish a recurring schedule, automatic scope selection, a dedicated executable comparison tool or complete alignment from a partial investigation. Saving a report and correcting software remain subject to the request's authorization.
+
+Review meaningful product differences rather than copying the whole specification into every review record. Reports identify examined and unexamined scope, approval evidence, unresolved questions and checks actually run. Product review complements technical verification; approval of documentation does not establish application correctness.
+
+## 8. Sources
 
 - [Issue #11](https://github.com/jeromeetienne/coding_agent_plugin/issues/11): Symbiospec workflow guide.
 - [workflows.md](../../skills/symbio_spec/references/workflows.md) of the skill `symbio_spec`.
