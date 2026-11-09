@@ -46,7 +46,7 @@ For example, a docs_folder_system adoption example can show a project choosing d
 
 Readers start at the root overview, choose a skill README, then follow shared guides for broader explanation. Coding agents follow instruction links for execution. Keep the existing [The Rules of the Repo guide](rules_of_the_repo.md) and [About Symbiospec documents](about_symbio_spec/README.md); preserve useful text and avoid duplicate full explanations.
 
-The dedicated Repo Folders Constraints guide is coordinated under [Issue 26](https://github.com/jeromeetienne/coding_agent_plugin/issues/26). The explanation of development skills working together is coordinated under [Issue 36](https://github.com/jeromeetienne/coding_agent_plugin/issues/36). Symbiospec definition and workflow requests remain coordinated under [Issue 10](https://github.com/jeromeetienne/coding_agent_plugin/issues/10) and [Issue 11](https://github.com/jeromeetienne/coding_agent_plugin/issues/11). This foundation group does not implement those future guides.
+The dedicated Repo Folders Constraints guide is coordinated under [Issue 26](https://github.com/jeromeetienne/coding_agent_plugin/issues/26). The explanation of development skills working together is coordinated under [Issue 36](https://github.com/jeromeetienne/coding_agent_plugin/issues/36). Symbiospec definition and workflow requests remain coordinated under [Issue 10](https://github.com/jeromeetienne/coding_agent_plugin/issues/10) and [Issue 11](https://github.com/jeromeetienne/coding_agent_plugin/issues/11). The guides are linked from the documentation overview.
 
 Use relative links for repository documents and descriptive link text. External issue links use the full GitHub issue address. Keep established names consistent.
 
@@ -54,7 +54,7 @@ Every docs file has a title followed immediately by Created, Last updated, Statu
 
 ## Review and evidence
 
-Compare reader explanations with the current instructions and relevant references. Preserve required inputs, stop conditions, ownership, approval boundaries and readiness warnings. Check relative file links, heading targets, metadata, folder indexes and changed Markdown; run git diff --check and the supplied documentation checker for this group.
+Compare reader explanations with the current instructions and relevant references. Preserve required inputs, stop conditions, ownership, approval boundaries and readiness warnings. Check relative file links, heading targets, metadata, folder indexes and changed Markdown; run git diff --check and appropriate documentation checks.
 
 Source review, installation, tool execution, application checks and publication checks are separate evidence. An example command is not a claim that the command ran successfully. This repository has no application, package manifest, build or test suite.
 
@@ -62,4 +62,4 @@ Source review, installation, tool execution, application checks and publication 
 
 Use built-in GitHub Pages/Jekyll branch publication. No package.json or separate build tool is planned. The publication destination is GitHub Pages, with updates from the main branch. The publication guide will describe how to maintain and check the website.
 
-[Issue 53](https://github.com/jeromeetienne/coding_agent_plugin/issues/53) owns publication configuration, website navigation, any rendered-link adjustments and ongoing update instructions, including the published branch and folder. Keep the Markdown source as maintained content and verify local links as well as rendered destinations. Completion should check published navigation, direct page loads, access without signing in and narrow-screen presentation. Report publication and live verification separately from content review. This foundation group records the plan without configuring or publishing a website.
+[Issue 53](https://github.com/jeromeetienne/coding_agent_plugin/issues/53) owns publication configuration, website navigation, any rendered-link adjustments and ongoing update instructions, including the published branch and folder. Keep the Markdown source as maintained content and verify local links as well as rendered destinations. Completion should check published navigation, direct page loads, access without signing in and narrow-screen presentation. Report publication and live verification separately from content review. The publication guide records the active configuration and verification procedure.

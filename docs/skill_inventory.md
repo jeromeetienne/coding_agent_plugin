@@ -10,9 +10,9 @@
 
 Source review on 9 November 2026 covers all 14 skill folders and their SKILL.md and README.md files. Every skill has both files. Twelve skills are current, one is a first draft and one is obsolete. “Current” describes the status presented by the instructions; current status does not claim successful installation or runtime verification. No live skill execution was required or performed for this inventory.
 
-The root README says fourteen skills but lists thirteen in its table: keep-a-changelog-workflow is missing. Record that correction for the overview work. The [agreed documentation structure](documentation_structure.md) defines the expected reader coverage; this inventory identifies gaps rather than implementing all remaining documentation.
+The [collection overview](../README.md) now lists all fourteen skills and links their introductions. The table below preserves the initial findings and links the work that addressed those findings; the final coverage section records the resulting documentation.
 
-## Coverage and gaps
+## Initial coverage and gaps
 
 Each row links the existing README and authoritative instructions. Existing useful text should be preserved.
 
@@ -64,4 +64,10 @@ Required inputs below come from current instructions. Optional relationships are
 4. Reconcile the concise root overview and shared navigation with all 14 skills, preserving obsolete/draft warnings. Check source accuracy, examples, dependencies, approval boundaries and local links.
 5. Publish through built-in GitHub Pages/Jekyll branch publication under [Issue 53](https://github.com/jeromeetienne/coding_agent_plugin/issues/53), with ongoing update instructions and published navigation checks. No package manifest or separate build tool is needed. See the [publication plan](documentation_structure.md#publication).
 
-Individual README improvements, deeper guide completion and publication remain assigned work outside this foundation group. No skill behaviour changes are proposed here.
+## Coverage after the documentation effort
+
+All thirteen current or draft skill README files now include practical adoption and use examples, required inputs, results, and approval boundaries. The obsolete skill keeps its existing warning and continuity guidance. The [shared workflow guide](skills_together.md) explains dependencies and optional combinations; the [Repo Folders Constraints guide](repo_folders_constraints.md) covers setup and human review. Symbiospec includes [a concrete specification](about_symbio_spec/specification_example.md) and [a configured documentation example](about_symbio_spec/documentation_example.md).
+
+The concise collection overview links all fourteen skill introductions. Detailed [installation](installing_skills.md) and [maintenance](maintaining_skills.md) remain available separately. The same Markdown is the source for the [documentation website](https://jeromeetienne.github.io/coding_agent_plugin/); the [publication guide](publishing.md) describes updates and verification.
+
+These changes document current instructions. No skill behaviour or personal coding-style rules were changed. Illustrative examples are not live skill-execution evidence. Keep the inventory current when a skill, required input, dependency, or readiness status changes.
