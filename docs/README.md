@@ -6,14 +6,14 @@
 - Related framing: [Agent instructions](../AGENTS.md)
 - Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 38](https://github.com/jeromeetienne/coding_agent_plugin/issues/38), [Issue 39](https://github.com/jeromeetienne/coding_agent_plugin/issues/39)
 
-This folder holds the documentation of this repository for people. The instructions for the coding agents stay in the folder of each skill, in the folder `skills`.
+This folder explains the skill collection for people. Start with [How the skills work together](skills_together.md), then choose an individual skill from the [collection overview](../README.md). Exact coding-agent procedures remain in each skill’s SKILL.md.
 
-Each folder has a file `README.md` for people and a file `index.md` for agents and tools. Start with the document or subfolder that has the subject you want to read about:
-
-- [The Rules of the Repo](rules_of_the_repo.md): why repository rules exist, how the rules are applied, and how Repo Folders Constraints fits into The Rules of the Repo.
-- [about_symbio_spec](about_symbio_spec/README.md): what Symbiospec is, and why Symbiospec exists.
-
-- [Skill inventory](skill_inventory.md): readiness, existing coverage, dependencies and documentation work for every skill.
-- [Documentation structure](documentation_structure.md): the approved locations, skill README coverage, navigation and publication plan.
-
-- [Repo Folders Constraints](repo_folders_constraints.md): folder responsibilities, package boundaries, setup, and human approval with a worked example.
+- [Skill inventory](skill_inventory.md): readiness, dependencies, initial gaps, and resulting coverage.
+- [How the skills work together](skills_together.md): required dependencies, optional combinations, and complete development examples.
+- [Install and configure the skills](installing_skills.md): installation options, local copies, and receiving-project configuration.
+- [Maintain the shared skills](maintaining_skills.md): ownership, installed copies, contributor guidance, and history.
+- [The Rules of the Repo](rules_of_the_repo.md): rule selection, configuration, and ownership.
+- [Repo Folders Constraints](repo_folders_constraints.md): folder boundaries, setup, and human review with an example.
+- [About Symbiospec](about_symbio_spec/README.md): the six areas, workflows, and specification and documentation examples.
+- [Documentation structure](documentation_structure.md): documentation locations and agreed README coverage.
+- [Publish and maintain the documentation](publishing.md): website publication, updates, and verification.

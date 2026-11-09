@@ -1,0 +1,23 @@
+title: Coding agent skills
+description: Shared workflow skills and personal coding styles for coding agents.
+url: https://jeromeetienne.github.io
+baseurl: /coding_agent_plugin
+theme: jekyll-theme-cayman
+show_downloads: false
+
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-relative-links
+
+include:
+  # Keep the human overviews renderable alongside the agent indexes.
+  - docs/README.md
+  - docs/about_symbio_spec/README.md
+  # Publish the repository rules configuration linked from the documentation.
+  - .agents
+
+exclude:
+  - .agents/skills
+  - .agents/worktrees
+  - .claude
