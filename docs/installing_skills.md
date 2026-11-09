@@ -23,7 +23,7 @@ List the available skills without installing:
 npx skills add jeromeetienne/coding_agent_plugin --list
 ```
 
-Install all available skills, including the Rust draft, for Claude Code and Codex without prompts:
+Install all available skills, including the Rust coding style, for Claude Code and Codex without prompts:
 
 ```bash
 npx skills add jeromeetienne/coding_agent_plugin --skill '*' --agent claude-code --agent codex --yes
@@ -57,13 +57,13 @@ From the project that should receive the skills, give the path to the clone:
 npx skills add /path/to/coding_agent_plugin
 ```
 
-To install only the Rust draft from a local copy containing the draft:
+To install only the Rust coding style from a local copy containing the skill:
 
 ```bash
 npx skills add /path/to/coding_agent_plugin --skill jerome-rust-style
 ```
 
-Use `jeromeetienne/coding_agent_plugin` instead of the local path to install the published Rust draft. Installing the draft does not decide the open adaptations in the draft.
+Use `jeromeetienne/coding_agent_plugin` instead of the local path to install the published Rust coding style. Installing the skill does not decide possible extensions recorded in the adaptation review.
 
 Read a skill's `SKILL.md` before using or changing the skill. The Issue Fix Workflow reads repository-specific commands and branch choices from the receiving project's `AGENTS.md`; configure those values before using the workflow. The Issue Batch Workflow uses the same values. The skill `rules_of_the_repo` reads the path of its rules list from the receiving project's `AGENTS.md`, and gives each rule skill the path of its configuration file. Without The Rules of the Repo, the skills `docs_folder_system` and `docs_folder_agents_rules_system` read their values from the receiving project's `AGENTS.md`; each skill gives the template of its values. The skill `repo_folders_constraints` reads the path of its rules file from the section "Repo Folders Constraints" of the receiving project's `AGENTS.md`, or from The Rules of the Repo.
 

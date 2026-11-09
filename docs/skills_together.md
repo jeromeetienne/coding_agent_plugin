@@ -47,7 +47,7 @@ Issue Fix Workflow -- optional --> Keep a Changelog Workflow
 Completed development -- optional --> Git Cleanup Review
 ```
 
-[Docs folder agents rules system](../skills/docs_folder_agents_rules_system/README.md) also requires Docs folder system, but is obsolete and retained for existing projects. New adoption should use Symbiospec for the responsibilities that supersede the obsolete system. [Jérôme Étienne’s Rust coding style](../skills/jerome-rust-style/README.md) remains a draft; adopting the draft does not decide the open adaptations.
+[Docs folder agents rules system](../skills/docs_folder_agents_rules_system/README.md) also requires Docs folder system, but is obsolete and retained for existing projects. New adoption should use Symbiospec for the responsibilities that supersede the obsolete system. [Jérôme Étienne’s Rust coding style](../skills/jerome-rust-style/README.md) is ready for use; adopting the style does not decide the possible extensions in the adaptation review.
 
 The Rules of the Repo does not make every published skill mandatory. Only the applicable entries in the receiving project's rules list are selected. Individual rule skills can work without The Rules of the Repo when their required configuration comes from another supported caller. Neither Keep a Changelog Workflow nor Git Cleanup Review is automatically performed after every fix.
 

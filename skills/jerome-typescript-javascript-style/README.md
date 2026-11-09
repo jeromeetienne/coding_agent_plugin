@@ -62,7 +62,7 @@ Personal style rules remain unchanged unless Jérôme Étienne explicitly instru
 
 ## Related skills and guides
 
-No companion skill is required. [jerome-rust-style](../jerome-rust-style/README.md) is an optional, separate first-draft adaptation; TypeScript and JavaScript rules do not automatically become Rust rules. [rules_of_the_repo](../rules_of_the_repo/README.md) can select coding rules when a project adopts that system.
+No companion skill is required. [jerome-rust-style](../jerome-rust-style/README.md) is an optional, separate ready-to-use adaptation; TypeScript and JavaScript rules do not automatically become Rust rules. [rules_of_the_repo](../rules_of_the_repo/README.md) can select coding rules when a project adopts that system.
 
 ## Instructions and references
 

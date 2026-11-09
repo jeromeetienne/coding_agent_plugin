@@ -1,18 +1,20 @@
 # jerome-rust-style
 
+**Status: Ready for use.**
+
 ## Purpose
 
-Apply the **first draft** of Jérôme Étienne’s personal Rust coding style. These are personal preferences, not a general Rust standard. The draft includes clearly transferable source rules and explicitly approved adaptations from the TypeScript and JavaScript style.
+Apply Jérôme Étienne’s personal Rust coding style. These are personal preferences, not a general Rust standard. The style includes clearly transferable source rules and explicitly approved adaptations from the TypeScript and JavaScript style.
 
 Clear, explicit, complete names are the most important requirement, above casing. Use `camelCase` for values, functions, fields, modules, constants, static items, macros, files and folders; use `PascalCase` for types and enum variants. Underscore-separated names are prohibited. A leading underscore on a private helper remains permitted.
 
 ## When to use
 
-Use before creating or editing Rust source files in a project or request adopting Jérôme Étienne’s draft personal style. The active draft covers control flow, names, documentation, formatting, code organization and section separators.
+Use before creating or editing Rust source files in a project or request adopting Jérôme Étienne’s personal style. The style covers control flow, names, documentation, formatting, code organization and section separators.
 
 ## Requirements
 
-Read the [active Rust rules](references/rust-style.md) in full before editing Rust. Read the [adaptation review](references/adaptation-review.md) when discussing or extending the draft. No companion skill or original user configuration is required. Source compilation, documentation generation and formatter checks use the receiving project's tools.
+Read the [active Rust rules](references/rust-style.md) in full before editing Rust. Read the [adaptation review](references/adaptation-review.md) when discussing or extending the style. No companion skill or original user configuration is required. Source compilation, documentation generation and formatter checks use the receiving project's tools.
 
 ## Install
 
@@ -30,7 +32,7 @@ No configuration file is required. The project or request adopts the style. Rust
 
 Illustrative request:
 
-> In `launchPolicy.rs`, apply the approved draft's explicit boolean checks and complete names while preserving behaviour.
+> In `launchPolicy.rs`, apply the approved style’s explicit boolean checks and complete names while preserving behaviour.
 
 Before, inside an existing implementation method:
 
@@ -48,7 +50,7 @@ if isReady == false {
 }
 ```
 
-The example assumes `isReady` is a boolean. The approved rules require explicit `== false` and `== true` checks. The draft does not establish a preference for handling optional values.
+The example assumes `isReady` is a boolean. The approved rules require explicit `== false` and `== true` checks. The style does not establish a preference for handling optional values.
 
 A value of type `RemoteChildProcess` is named `remoteChildProcess`, including leading qualifiers. An operation returning that value keeps the full name, such as `getRemoteChildProcess`. A file `projectLauncher.rs` keeps its primary `ProjectLauncher` type and `impl ProjectLauncher` together. Operations without instance state are associated functions without `self`; operations with state use methods with `self`. Private helpers go last and can have names such as `_readConfig`.
 
@@ -62,9 +64,9 @@ Report compiler or formatter conflicts during a source-file trial. Language-requ
 
 ## Approval boundaries and undecided adaptations
 
-The adaptation review records decisions; the adaptation review is not a second set of active rules. Optional-value handling, data-shape preferences, module re-exports and file-header naming without a single main type remain undecided. Do not infer those preferences from TypeScript or JavaScript rules. Ask Jérôme Étienne before adopting an uncertain adaptation. Clearly transferable rules can be carried over when extending the draft; approved casing changes do not need approval again.
+The adaptation review records decisions; the adaptation review is not a second set of active rules. Optional-value handling, data-shape preferences, module re-exports and file-header naming without a single main type remain undecided. Do not infer those preferences from TypeScript or JavaScript rules. Ask Jérôme Étienne before adopting an uncertain adaptation. Clearly transferable rules can be carried over when extending the style; approved casing changes do not need approval again.
 
-Keep the first-draft status visible when adopting the skill. A documentation example does not resolve an open question or authorize changing the personal style.
+The approved rules are ready for use. Possible extensions recorded in the adaptation review remain undecided; readiness does not approve those extensions or authorize changing the personal style.
 
 ## Related skills and guides
 
@@ -72,6 +74,6 @@ No companion skill is required. [jerome-typescript-javascript-style](../jerome-t
 
 ## Instructions and references
 
-- [SKILL.md](SKILL.md): activation, naming priority and draft boundaries.
+- [SKILL.md](SKILL.md): activation, naming priority and approval boundaries.
 - [Active Rust rules](references/rust-style.md): the rules to apply to Rust source.
 - [Adaptation review](references/adaptation-review.md): approved transfers, removed language-specific rules and unresolved questions.

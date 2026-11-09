@@ -2,7 +2,7 @@
 
 Reusable instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder containing a SKILL.md instruction file and a README explaining adoption and use.
 
-Read the **[documentation website](https://jeromeetienne.github.io/coding_agent_plugin/)** or the [documentation overview](docs/README.md). The collection contains 14 skills: twelve current skills, one Rust style draft, and one obsolete skill retained for existing projects. Installation currently selects individual skills; there is no plugin manifest.
+Read the **[documentation website](https://jeromeetienne.github.io/coding_agent_plugin/)** or the [documentation overview](docs/README.md). The collection contains 14 skills: thirteen current skills and one obsolete skill retained for existing projects. Installation currently selects individual skills; there is no plugin manifest.
 
 ## Choose skills
 
@@ -22,10 +22,10 @@ Start with [How the skills work together](docs/skills_together.md) for required 
 | [symbio_spec_to_docs](skills/symbio_spec_to_docs/README.md) | Generate audience-specific documentation from approved Symbiospec and implementation evidence. |
 | [keep-a-changelog-workflow](skills/keep-a-changelog-workflow/README.md) | Write and maintain release notes from pull request evidence and version tags. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/README.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript preferences. |
-| [jerome-rust-style](skills/jerome-rust-style/README.md) | Apply the approved rules of Jérôme Étienne’s Rust style draft; undecided adaptations remain open. |
+| [jerome-rust-style](skills/jerome-rust-style/README.md) | Apply the approved rules of Jérôme Étienne’s Rust coding style; undecided adaptations remain open. |
 | [docs_folder_agents_rules_system](skills/docs_folder_agents_rules_system/README.md) | **Obsolete:** retained for existing projects; Symbiospec supersedes this skill. |
 
-The coding styles are personal preferences, not general language standards. The Rust draft includes only clearly transferable rules and explicitly approved adaptations. The obsolete Docs folder agents rules system is not recommended for new adoption.
+The coding styles are personal preferences, not general language standards. The Rust coding style includes only clearly transferable rules and explicitly approved adaptations. The obsolete Docs folder agents rules system is not recommended for new adoption.
 
 ## Install the skills
 

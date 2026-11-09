@@ -16,7 +16,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - Projects and user configurations that receive the skills are not synchronized automatically.
 - The [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) skill requires `symbio_spec` and project Symbiospec data; project configuration and generated documentation stay outside the reusable skill.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
-- The `jerome-rust-style` skill is a first draft containing clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
+- The `jerome-rust-style` skill is ready for use and contains clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
 - The folder `docs` explains concepts to people and links to the files of a skill; the folder `docs` does not copy the instructions of a skill.
 - Repository-specific commands and branch choices for the Issue Fix Workflow and the Issue Batch Workflow belong in the receiving project's `AGENTS.md`, in the section "Issue Fix Workflow values".
 
