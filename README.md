@@ -4,6 +4,8 @@ Shared instructions for coding agents, maintained in [jeromeetienne/coding_agent
 
 The repository contains fourteen skills, including Symbiospec, Symbiospec to documentation and a first draft of Jérôme Étienne’s Rust coding style. A plugin manifest has not been added yet; the commands below install the individual skills.
 
+Start with the [documentation overview](docs/README.md), [skill inventory](docs/skill_inventory.md), or [agreed documentation structure](docs/documentation_structure.md).
+
 ## Available skills
 
 | Skill | Purpose |
