@@ -1,33 +1,18 @@
 # jerome-typescript-javascript-style
 
-The skill `jerome-typescript-javascript-style` gives a coding agent Jérôme Étienne’s personal TypeScript and JavaScript coding style. These rules are his personal preferences, not a general TypeScript or JavaScript standard.
-
 ## Purpose
 
-A coding agent does not know the preferences of a developer. Without this skill, the coding agent writes code in a general style, and Jérôme Étienne must correct the same points again and again. The skill `jerome-typescript-javascript-style` gives the coding agent his full rules, so that the code that the coding agent writes looks like the code that he writes.
+Apply Jérôme Étienne’s personal TypeScript and JavaScript coding style. These rules express personal preferences, not a general language standard. The complete rules are bundled with the skill; access to Jérôme Étienne’s user configuration is unnecessary, and installation does not change that configuration.
 
-The full rules are inside the skill. The skill does not need access to his Claude Code user configuration, so the skill works in every project and for every coding agent that installs the skill.
+## When to use
 
-## What the rules cover
+Use before creating or editing `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` files in a project or request adopting Jérôme Étienne’s personal style. Apply relevant rules to requested changes.
 
-- Conditionals, for example `=== null` instead of `!varName`.
-- Control flow, for example braces around the body of every `if` and every loop.
-- Types, for example `type` aliases, Zod schemas, and `unknown` instead of `any`.
-- Documentation, for example JSDoc on every exported type, with `@param` and `@returns`.
-- Naming, for example `snake_case` file names, and a variable named after its class.
-- Formatting, for example tab indentation, single quotes, and semicolons.
-- HTML construction, with one template literal marked with `/* html */`.
-- Code organization, for example one static class for each file, named after the file.
-- Section separators, with lines of 79 `/` characters.
-- Standalone JavaScript scripts.
+The rules cover explicit condition checks, braces, types, documentation comments, complete names, tab indentation, single quotes, semicolons, HTML construction, file organization, section separators and standalone JavaScript scripts.
 
-## When the coding agent uses the skill
+## Requirements
 
-- The coding agent creates or edits a TypeScript, TSX, JavaScript, JSX, MJS, or CJS file in his personal style, or in a project that adopts his conventions.
-
-## Configuration
-
-The skill `jerome-typescript-javascript-style` needs no configuration. A change to the rules needs the explicit instructions of Jérôme Étienne.
+Read the [full personal style reference](references/typescript-javascript-style.md) before creating or editing a matching source file. No companion skill or access to the original Claude Code configuration is required. Project-specific compiler, validation and check tools remain receiving-project responsibilities; this skill does not install dependencies.
 
 ## Install
 
@@ -35,7 +20,51 @@ The skill `jerome-typescript-javascript-style` needs no configuration. A change 
 npx skills add jeromeetienne/coding_agent_plugin --skill jerome-typescript-javascript-style
 ```
 
-## Files
+See [shared installation options](../../README.md#install-the-skills). Installation does not adopt the style on behalf of a project or approve wider changes.
 
-- [SKILL.md](SKILL.md): the instructions for the coding agent.
-- [references/typescript-javascript-style.md](references/typescript-javascript-style.md): the full rules.
+## Configuration
+
+No configuration file is needed. The project or request adopts the personal style; the bundled reference supplies the rules. The reference's original source was Jérôme Étienne’s user configuration, but the installed skill is self-contained.
+
+## Concrete example
+
+Illustrative request:
+
+> In `launch_policy.ts`, make the boolean check explicit and keep the body on separate lines, following Jérôme Étienne’s personal style.
+
+Before, inside an existing class method:
+
+```typescript
+if (!isReady) return false;
+```
+
+After, as a method-body excerpt with tab indentation:
+
+```typescript
+if (isReady === false) {
+	return false;
+}
+```
+
+The example assumes `isReady` is a boolean, so the explicit comparison preserves the intended condition. Nullable or unknown values need their appropriate explicit checks; replacing every negation with `=== false` would not preserve all JavaScript behaviour.
+
+A second representative naming correction changes a value of type `RemoteChildProcess` from `child` to `remoteChildProcess`. Keep the complete type-derived name, including leading qualifiers. File names use `snake_case`; classes and type aliases use `PascalCase`.
+
+## Results and review
+
+Expect requested source changes to follow the full reference, with behaviour preserved unless a behaviour change was requested. The small example illustrates conditionals and braces; the example is not a complete module or a substitute for the other rules.
+
+Review documentation on exported classes and every type and field, parameter and return documentation when documenting functions, named exports, multiline object literals and class-based function organization. Exported operations without instance state belong in a static class named after the file; stateful classes use instance methods. Standalone JavaScript scripts also have editor type-checking requirements in the reference.
+
+## Approval boundaries
+
+Personal style rules remain unchanged unless Jérôme Étienne explicitly instructs a rule change. Applying the skill to requested code does not authorize rewriting unrelated files or modifying the original user configuration. The reference is the authority for the exact preferences.
+
+## Related skills and guides
+
+No companion skill is required. [jerome-rust-style](../jerome-rust-style/README.md) is an optional, separate first-draft adaptation; TypeScript and JavaScript rules do not automatically become Rust rules. [rules_of_the_repo](../rules_of_the_repo/README.md) can select coding rules when a project adopts that system.
+
+## Instructions and references
+
+- [SKILL.md](SKILL.md): activation, source and rule-change boundary.
+- [Personal TypeScript and JavaScript rules](references/typescript-javascript-style.md): full authoritative style, including code examples and section separators.
