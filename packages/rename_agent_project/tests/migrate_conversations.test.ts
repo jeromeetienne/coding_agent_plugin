@@ -5,9 +5,9 @@ import Os from 'node:os';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
 import Test from 'node:test';
-import { ConversationPlan } from '../migration/conversation_plan.js';
-import { MigrationStorage } from '../migration/migration_storage.js';
-import type { BackupManifest, JsonObject, MigrationOptions } from '../migration/migration_types.js';
+import { ConversationPlan } from '../src/migration/conversation_plan.js';
+import { MigrationStorage } from '../src/migration/migration_storage.js';
+import type { BackupManifest, JsonObject, MigrationOptions } from '../src/migration/migration_types.js';
 
 const __dirname = import.meta.dirname;
 
@@ -142,15 +142,17 @@ class MigrateConversationsTest {
 			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
 		});
 
-		Test('command requires stopped applications and a backup for apply', (context) => {
+		Test('rename command rejects missing sources and destination conflicts before writes', (context) => {
 			const fixture = this._fixture(context);
 			const before = this._snapshot(fixture.root);
 			const result = this._cli(fixture, ['--apply']);
 			Assert.equal(result.status, 1);
-			Assert.match(result.stderr, /applications-stopped/);
-			const missing = this._cli(fixture, ['--apply', '--applications-stopped']);
-			Assert.equal(missing.status, 1);
-			Assert.match(missing.stderr, /backup is required/);
+			Assert.match(result.stderr, /ENOENT|no such file/);
+			Assert.deepEqual(this._snapshot(fixture.root), before);
+			Fs.mkdirSync(fixture.options.from);
+			const conflict = this._cli(fixture, ['--apply']);
+			Assert.equal(conflict.status, 1);
+			Assert.match(conflict.stderr, /Destination already exists/);
 			Assert.deepEqual(this._snapshot(fixture.root), before);
 		});
 	}
@@ -282,7 +284,7 @@ class MigrateConversationsTest {
 	private static _cli(fixture: Fixture, extra: string[] = []): ChildProcess.SpawnSyncReturns<string> {
 		return ChildProcess.spawnSync(process.execPath, [
 			'--import', import.meta.resolve('tsx'),
-			Path.join(__dirname, '..', 'cli.ts'),
+			Path.join(__dirname, '..', 'src', 'cli.ts'),
 			'--from', fixture.options.from,
 			'--to', fixture.options.to,
 			'--codex-home', fixture.options.codexHome,

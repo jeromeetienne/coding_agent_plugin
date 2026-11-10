@@ -1,12 +1,13 @@
 #!/usr/bin/env -S tsx
-import Fs from 'node:fs';
 import Os from 'node:os';
 import Path from 'node:path';
 import Url from 'node:url';
 import { Command } from 'commander';
 import { ConversationPlan } from './migration/conversation_plan.js';
-import { MigrationStorage } from './migration/migration_storage.js';
-import type { CommandOptions } from './migration/migration_types.js';
+import { OperationJob } from './operation/operation_job.js';
+import { OperationJournal } from './operation/operation_journal.js';
+import type { OperationRecord } from './operation/operation_types.js';
+import type { CommandOptions, MigrationOptions } from './migration/migration_types.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,10 +21,10 @@ export class Cli {
 	 * @param argv Node command-line arguments.
 	 * @returns Prints a preview or applies the requested migration or restore.
 	 */
-	static run(argv: string[]): void {
+	static async run(argv: string[]): Promise<void> {
 		const command = new Command();
 		command.name('rename_agent_project')
-			.description('Migrate existing conversations after renaming a project. Preview only unless --apply is given.')
+			.description('Rename a project folder and preserve its Codex and Claude Code conversations.')
 			.option('--from <path>', 'Old absolute project directory')
 			.option('--to <path>', 'New absolute project directory')
 			.option('--only <application>', 'codex, claude, or both', 'both')
@@ -32,20 +33,34 @@ export class Cli {
 			.option('--claude-home <path>', 'Claude Code storage directory',
 				process.env.CLAUDE_CONFIG_DIR ?? Path.join(Os.homedir(), '.claude'))
 			.option('--claude-config <path>', 'Claude Code global configuration file')
-			.option('--backup <path>', 'New backup directory outside project and application storage')
-			.option('--restore <path>', 'Preview restoration of a migration backup')
-			.option('--apply', 'Write the migration or restoration')
-			.option('--applications-stopped', 'Confirm all applications and background servers using these stores are stopped')
+			.option('--backup <path>', 'Optional new operation and backup directory; chosen automatically if omitted')
+			.option('--restore <path>', 'Preview restoration of a complete rename operation')
+			.option('--status <path>', 'Show durable status for an operation directory')
+			.option('--detach', 'Return once the independent worker starts')
+			.option('--apply', 'Perform the complete rename or restoration; otherwise preview only')
 			.parse(argv);
 		const options = command.opts<CommandOptions>();
-		if (options.apply === true && options.applicationsStopped !== true) {
-			throw new Error('Stop applications and background servers using these stores; then pass --applications-stopped.');
+		if (options.status !== undefined) {
+			if (options.from !== undefined || options.to !== undefined
+				|| options.restore !== undefined || options.apply === true) {
+				throw new Error('--status cannot be combined with a rename or restoration.');
+			}
+			this._report(OperationJournal.read(this._absolute(options.status)));
+			return;
 		}
 		if (options.restore !== undefined) {
 			if (options.from !== undefined || options.to !== undefined || options.backup !== undefined) {
 				throw new Error('--restore cannot be combined with --from, --to, or --backup.');
 			}
-			MigrationStorage.restore(this._absolute(options.restore), options.apply === true);
+			const directory = this._absolute(options.restore);
+			const record = OperationJob.restore(directory, options.apply === true);
+			if (options.apply !== true) {
+				console.log('Restoration preview only. Add --apply to restore the folder and its conversation records.');
+			} else if (options.detach === true) {
+				console.log(`Restoration started. Status and backup: ${directory}`);
+			} else {
+				this._report(await OperationJob.wait(record.directory, undefined, (progress) => this._waiting(progress)));
+			}
 			return;
 		}
 		if (options.from === undefined || options.to === undefined) {
@@ -67,14 +82,15 @@ export class Cli {
 		}
 		options.claudeConfig = options.claudeConfig === undefined
 			? this._claudeConfig(options.claudeHome) : this._absolute(options.claudeConfig);
-		const plan = ConversationPlan.build({
+		const migrationOptions: MigrationOptions = {
 			from: options.from,
 			to: options.to,
 			codexHome: options.codexHome,
 			claudeHome: options.claudeHome,
 			claudeConfig: options.claudeConfig,
 			only,
-		});
+		};
+		const plan = ConversationPlan.build(migrationOptions);
 		console.log(`${options.from} -> ${options.to}`);
 		for (const entry of plan.conversations) {
 			console.log(`${entry.application}: ${entry.id}\n  ${entry.from} -> ${entry.to}`);
@@ -86,23 +102,56 @@ export class Cli {
 			console.log('Preview only. No conversation data changed.');
 			return;
 		}
-		if (Fs.existsSync(options.from) || Fs.statSync(options.to).isDirectory() === false) {
-			throw new Error('Rename the project first: the old path must be absent and the new directory must exist.');
+		const directory = OperationJob.start({
+			...migrationOptions,
+			backup: options.backup === undefined ? undefined : this._absolute(options.backup),
+		});
+		console.log(`Independent rename started. Status and backup: ${directory}`);
+		if (options.detach !== true && plan.conversations.some((entry) => entry.id === process.env.CODEX_THREAD_ID)
+			=== false) {
+			this._report(await OperationJob.wait(directory, undefined, (progress) => this._waiting(progress)));
+		} else {
+			console.log('Close affected clients manually. The shared server and unrelated clients stay running.');
+			console.log(`Read waiting instructions with --status ${directory}`);
 		}
-		if (options.backup === undefined) {
-			throw new Error('--backup is required with --apply. Choose a new directory outside application storage.');
+	}
+
+	/**
+	 * @param record Progress containing manual closure instructions.
+	 * @returns No value after printing the affected terminals and selected background tasks.
+	 */
+	private static _waiting(record: OperationRecord): void {
+		console.log('Waiting for affected clients. Keep the shared server and unrelated clients running.');
+		for (const message of record.waitingFor ?? []) {
+			console.log(message);
 		}
-		const backup = this._absolute(options.backup);
-		for (const root of [options.from, options.to, options.codexHome, options.claudeHome]) {
-			if (ConversationPlan.contains(backup, root) || ConversationPlan.contains(root, backup)) {
-				throw new Error('Backup directory and project/application storage must not contain one another.');
+		console.log('Keep affected clients closed until the operation completes.');
+	}
+
+	/**
+	 * @param record Durable operation result.
+	 * @returns No value; sets a failure exit status when the operation did not succeed.
+	 */
+	private static _report(record: OperationRecord): void {
+		console.log(`${record.state}: ${record.phase}`);
+		if (record.waitingFor !== undefined) {
+			this._waiting(record);
+		}
+		console.log(`Project: ${record.options.from} -> ${record.options.to}`);
+		console.log(`Conversations: ${record.counts.codex} Codex, ${record.counts.claude} Claude Code.`);
+		console.log(`Status and backup: ${record.directory}`);
+		if (record.error !== undefined) {
+			console.error(record.error);
+		}
+		if (record.state === 'complete') {
+			for (const limitation of record.limitations) {
+				console.log(limitation);
 			}
 		}
-		if (plan.files.length === 0 && plan.moves.length === 0 && rows === 0) {
-			console.log('Nothing to migrate.');
-			return;
+		if (record.state === 'failed' || record.state === 'recovery_required'
+			|| (record.state === 'rolled_back' && record.action === 'rename')) {
+			process.exitCode = 1;
 		}
-		MigrationStorage.apply(plan, backup);
 	}
 
 	/**
@@ -132,7 +181,7 @@ export class Cli {
 
 if (process.argv[1] !== undefined && import.meta.url === Url.pathToFileURL(Path.resolve(process.argv[1])).href) {
 	try {
-		Cli.run(process.argv);
+		await Cli.run(process.argv);
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : String(error));
 		process.exitCode = 1;

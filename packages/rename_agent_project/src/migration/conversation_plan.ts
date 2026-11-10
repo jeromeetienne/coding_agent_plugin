@@ -48,7 +48,7 @@ export class ConversationPlan {
 	 * @param root Original project root.
 	 * @returns Whether the path is the root or a descendant.
 	 */
-	static contains(value: unknown, root: string): value is string {
+	static contains(value: unknown, root: string): boolean {
 		return typeof value === 'string' && (value === root || value.startsWith(`${root}/`));
 	}
 

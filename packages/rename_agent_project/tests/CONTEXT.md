@@ -1,8 +1,8 @@
-# Directory Context: `/packages/rename_agent_project/src/tests`
+# Directory Context: `/packages/rename_agent_project/tests`
 
 ## Purpose
 
-Verify migration isolation, recoverable storage changes, and command-line validation with disposable data.
+Verify folder renames, conversation migration, manual client closure and shared server preservation, independent execution, and recovery with disposable data.
 
 ## Key Exports & Entry Points
 
@@ -13,7 +13,7 @@ Verify migration isolation, recoverable storage changes, and command-line valida
 
 - Tests create their own synthetic data and temporary application stores.
 - Tests do not migrate actual user project folders or existing user conversations.
-- Command-line tests execute the parent folder's cli.ts with explicit synthetic storage paths.
+- Command-line tests execute src/cli.ts with explicit synthetic storage paths.
 - Temporary test data is removed after each test.
 
 ## Background

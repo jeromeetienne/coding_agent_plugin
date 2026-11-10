@@ -6,7 +6,8 @@ Own the rename_agent_project tool and its package configuration.
 
 ## Key Exports & Entry Points
 
-- `src/`: conversation migration implementation and tests; see [CONTEXT.md](src/CONTEXT.md).
+- `src/`: project rename and conversation migration implementation; see [CONTEXT.md](src/CONTEXT.md).
+- `tests/`: disposable storage and command-line tests; see [CONTEXT.md](tests/CONTEXT.md).
 - Command-line entry point: src/cli.ts.
 - Command from this package: `pnpm start --help`.
 - [README.md](README.md): package usage and verification commands.
@@ -16,7 +17,8 @@ Own the rename_agent_project tool and its package configuration.
 - Runtime and development dependencies belong in this package's package.json.
 - TypeScript uses strict checking with an ES2020 target and runs through tsx.
 - The public package interface is src/index.ts.
-- The package does not rename project folders or stop applications automatically.
+- Complete operations run independently, wait for manual closure of affected clients without stopping any client or shared server, and verify backups and recovery.
+- Development tests use synthetic project folders and application stores only.
 
 ## Background
 

@@ -9,13 +9,13 @@ Provide the public package interface and the command-line entry point for rename
 - `index.ts`: the public package interface.
 - `cli.ts`: all supported command-line options and operation dispatch.
 - `migration/`: conversation discovery, migration plans, storage changes, and shared types; see [CONTEXT.md](migration/CONTEXT.md).
-- `tests/`: disposable storage and command-line tests; see [CONTEXT.md](tests/CONTEXT.md).
+- `operation/`: independent execution, manual client closure checks, project backup, rename, verification, and recovery; see [CONTEXT.md](operation/CONTEXT.md).
 - Command from the repository root: `pnpm --filter rename_agent_project start --help`.
 
 ## Rules
 
 - Only index.ts and cli.ts are TypeScript files directly in this folder.
-- Implementation and tests stay in their respective subfolders.
+- Implementation stays in migration/ and operation/; tests stay in the package-level tests/ folder.
 - All command-line options are declared in cli.ts.
 - Internal modules import specific implementation files rather than the public package interface.
 

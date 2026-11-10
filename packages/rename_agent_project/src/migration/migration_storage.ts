@@ -64,6 +64,7 @@ export class MigrationStorage {
 				});
 			}
 			this._manifest(backup, manifest);
+			this.verifyBackup(backup);
 			for (const file of plan.files) {
 				this._assertHash(file.path, this._hash(Buffer.from(file.original)));
 				this._write(file.path, file.updated);
@@ -110,7 +111,7 @@ export class MigrationStorage {
 		try {
 			console.log(`Restore ${manifest.files.length} files and ${manifest.moves.length} project directories.`);
 			if (isApply === false) {
-				console.log('Preview only. Add --apply --applications-stopped to restore.');
+				console.log('Storage restoration preview only; no data changed.');
 				return;
 			}
 			for (const move of [...manifest.moves].reverse()) {
@@ -127,6 +128,22 @@ export class MigrationStorage {
 			console.log('Original conversation metadata restored. The project folder was not renamed.');
 		} finally {
 			this._closeDatabases(databases);
+		}
+	}
+
+	/**
+	 * @param backup Private migration backup directory.
+	 * @returns No value; rejects unreadable or incomplete backup copies before migration writes.
+	 */
+	static verifyBackup(backup: string): void {
+		const manifest = JSON.parse(Fs.readFileSync(Path.join(backup, 'manifest.json'), 'utf8')) as BackupManifest;
+		for (const file of manifest.files) {
+			this._assertHash(Path.join(backup, file.backup), file.before);
+		}
+		for (const [index, move] of manifest.moves.entries()) {
+			if (this._tree(Path.join(backup, `project_${index}`)) !== move.before) {
+				throw new Error('Migration backup directory failed verification.');
+			}
 		}
 	}
 

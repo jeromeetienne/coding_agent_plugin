@@ -173,6 +173,8 @@ export type CommandOptions = {
 	restore?: string;
 	/** Whether the command writes data. */
 	apply?: boolean;
-	/** Operator confirmation that storage writers have stopped. */
-	applicationsStopped?: boolean;
+	/** Operation directory whose durable status should be displayed. */
+	status?: string;
+	/** Return after the independent worker starts. */
+	detach?: boolean;
 };
