@@ -52,3 +52,7 @@ The [skill inventory](docs/skill_inventory.md) records readiness, dependencies, 
 ## License
 
 [MIT](LICENSE) © 2026 Jérôme Étienne.
+
+## Conversation migration script
+
+The [JavaScript script in src](src/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.

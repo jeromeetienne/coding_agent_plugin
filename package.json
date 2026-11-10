@@ -1,0 +1,19 @@
+{
+  "name": "coding-agent-conversation-tools",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "test": "node --test src/*.test.mjs",
+    "check": "tsc --allowJs --checkJs --noEmit --module nodenext --target es2022 src/*.mjs"
+  },
+  "dependencies": {
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}
