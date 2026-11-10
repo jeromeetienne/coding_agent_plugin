@@ -10,12 +10,12 @@
 
 ## One-time batch migration script
 
-The [JavaScript script](../src/migrate_conversations.mjs) migrates all indexed Codex conversations and identifiable Claude Code project directories belonging to the old project path, including descendants. The script never renames the repository folder. After migration, launch the command-line applications normally from the new folder and use their ordinary conversation pickers.
+The [TypeScript tool](../packages/rename_agent_project/src/migrate_conversations.ts) migrates all indexed Codex conversations and identifiable Claude Code project directories belonging to the old project path, including descendants. The script never renames the repository folder. After migration, launch the command-line applications normally from the new folder and use their ordinary conversation pickers.
 
 Use Node.js 24 or later. From the checkout containing the script, install dependencies once with `pnpm install`. Preview before renaming:
 
 ```bash
-node src/migrate_conversations.mjs \
+pnpm --filter rename_agent_project start \
   --from /Users/jetienne/webwork/coding_agent_plugin \
   --to /Users/jetienne/webwork/coding_agent_plugins
 ```
@@ -27,7 +27,7 @@ Before applying, follow the preparation checklist below, stop all applications u
 After the project folder has been renamed, run from the new checkout:
 
 ```bash
-node src/migrate_conversations.mjs \
+pnpm --filter rename_agent_project start \
   --from /Users/jetienne/webwork/coding_agent_plugin \
   --to /Users/jetienne/webwork/coding_agent_plugins \
   --backup /Users/jetienne/conversation_backup_61 \
@@ -36,7 +36,7 @@ node src/migrate_conversations.mjs \
 
 Choose a new, unused backup directory whose parent exists, outside both project paths and application storage. The backup contains private conversation data. The script saves original changed files, copies moved Claude Code project directories, and records the original affected Codex row fields before changing conversation storage. Unmodified Codex transcripts are not copied by the script; retain the separate full preparation backup as well.
 
-To preview restoration, use `node src/migrate_conversations.mjs --restore /Users/jetienne/conversation_backup_61`. Add `--apply --applications-stopped` to restore. Restoration reverses the conversation metadata migration; restoration does not rename the project folder. Changed rollback targets cause refusal, rather than overwriting newer content. The same backup can recover an interrupted migration when the only intervening changes belong to that migration.
+To preview restoration, use `pnpm --filter rename_agent_project start --restore /Users/jetienne/conversation_backup_61`. Add `--apply --applications-stopped` to restore. Restoration reverses the conversation metadata migration; restoration does not rename the project folder. Changed rollback targets cause refusal, rather than overwriting newer content. The same backup can recover an interrupted migration when the only intervening changes belong to that migration.
 
 Use `--only codex` or `--only claude` to select one application. `--codex-home`, `--claude-home`, and `--claude-config` select explicit stores for disposable tests or custom installations. The default homes honour `CODEX_HOME` and `CLAUDE_CONFIG_DIR`. `--help` lists the options. A second migration preview after a completed migration reports no remaining changes for the old path.
 

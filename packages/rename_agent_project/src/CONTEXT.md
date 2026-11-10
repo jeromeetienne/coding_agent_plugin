@@ -1,4 +1,4 @@
-# Directory Context: `/src`
+# Directory Context: `/packages/rename_agent_project/src`
 
 ## Purpose
 
@@ -6,11 +6,14 @@ Migrate existing Codex and Claude Code command-line conversations after a projec
 
 ## Key Exports & Entry Points
 
-- Command: `node src/migrate_conversations.mjs --help`.
+- Command from the repository root: `pnpm --filter rename_agent_project start --help`.
+- `index.ts`: the public package interface.
+- `migration_types.ts`: shared migration and backup record types.
+- `JsonRecords`: typed JSON parsing and checked object boundaries.
 - `MigrateConversations`: command-line validation and preview.
 - `ConversationPlan`: selection of conversation records and directory moves.
 - `MigrationStorage`: backup, checked application, and checked restoration.
-- `migrate_conversations.test.mjs`: disposable storage tests with Node.js's test runner.
+- `migrate_conversations.test.ts`: disposable storage tests with Node.js's test runner.
 
 ## Rules
 

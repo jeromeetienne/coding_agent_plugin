@@ -55,4 +55,4 @@ The [skill inventory](docs/skill_inventory.md) records readiness, dependencies, 
 
 ## Conversation migration script
 
-The [JavaScript script in src](src/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.
+The [rename_agent_project package](packages/rename_agent_project/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.
