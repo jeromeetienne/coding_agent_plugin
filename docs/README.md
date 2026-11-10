@@ -1,10 +1,10 @@
 # Documentation
 
 - Created: 28 October 2026
-- Last updated: 9 November 2026
+- Last updated: 10 November 2026
 - Status: Maintained overview for people
 - Related framing: [Agent instructions](../AGENTS.md)
-- Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 38](https://github.com/jeromeetienne/coding_agent_plugin/issues/38), [Issue 39](https://github.com/jeromeetienne/coding_agent_plugin/issues/39)
+- Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 38](https://github.com/jeromeetienne/coding_agent_plugin/issues/38), [Issue 39](https://github.com/jeromeetienne/coding_agent_plugin/issues/39), [Issue 61](https://github.com/jeromeetienne/coding_agent_plugin/issues/61)
 
 This folder explains the skill collection for people. Start with [How the skills work together](skills_together.md), then choose an individual skill from the [collection overview](../README.md). Exact coding-agent procedures remain in each skill’s SKILL.md.
 
@@ -17,3 +17,5 @@ This folder explains the skill collection for people. Start with [How the skills
 - [About Symbiospec](about_symbio_spec/README.md): the six areas, workflows, and specification and documentation examples.
 - [Documentation structure](documentation_structure.md): documentation locations and agreed README coverage.
 - [Publish and maintain the documentation](publishing.md): website publication, updates, and verification.
+
+- [Preserve conversations after a folder rename](conversations_after_folder_rename.md): tested command-line recovery, preparation, and rollback for Codex and Claude Code.

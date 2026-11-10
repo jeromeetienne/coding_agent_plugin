@@ -1,16 +1,17 @@
 # Directory Context: `/`
 
 ## Purpose
-The standalone repository for shared workflow skills and Jérôme Étienne’s personal coding styles that other projects can install.
+The standalone repository for shared workflow skills and Jérôme Étienne’s personal coding styles that other projects can install, plus a conversation migration script.
 
 ## Key Exports & Entry Points
+- `src/`: the JavaScript conversation migration script; see [src/CONTEXT.md](src/CONTEXT.md).
 - `skills/`: the skill folders, each with instructions for the coding agent in `SKILL.md` and an overview of its purpose for people in `README.md`.
 - [README.md](README.md): installation commands, receiving-project configuration, and skill maintenance.
 - `docs/`: the documentation of this repository for people, organized by the skill `docs_folder_system`; start at [docs/index.md](docs/index.md).
 - [AGENTS.md](AGENTS.md): the instructions for the coding agents, with the values of the skill `docs_folder_system`.
 
 ## Rules
-- The repository contains Markdown instructions and has no `package.json`, build, or test suite.
+- Skills remain Markdown instructions; the private Node.js package runs and checks the conversation migration script with `pnpm test` and `pnpm check`.
 - The repository has no plugin manifest; installation currently installs individual skills.
 - This independent repository is the authoritative location for all skills; make future skill changes here, as [README.md](README.md#maintain-the-skills) describes.
 - Projects and user configurations that receive the skills are not synchronized automatically.
