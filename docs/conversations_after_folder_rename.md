@@ -10,7 +10,7 @@
 
 ## One-time batch migration script
 
-The [TypeScript tool](../packages/rename_agent_project/src/migrate_conversations.ts) migrates all indexed Codex conversations and identifiable Claude Code project directories belonging to the old project path, including descendants. The script never renames the repository folder. After migration, launch the command-line applications normally from the new folder and use their ordinary conversation pickers.
+The [TypeScript tool](../packages/rename_agent_project/src/cli.ts) migrates all indexed Codex conversations and identifiable Claude Code project directories belonging to the old project path, including descendants. The script never renames the repository folder. After migration, launch the command-line applications normally from the new folder and use their ordinary conversation pickers.
 
 Use Node.js 24 or later. From the checkout containing the script, install dependencies once with `pnpm install`. Preview before renaming:
 

@@ -4,25 +4,25 @@ import Os from 'node:os';
 import Path from 'node:path';
 import Url from 'node:url';
 import { Command } from 'commander';
-import { ConversationPlan } from './conversation_plan.js';
-import { MigrationStorage } from './migration_storage.js';
-import type { CommandOptions } from './migration_types.js';
+import { ConversationPlan } from './migration/conversation_plan.js';
+import { MigrationStorage } from './migration/migration_storage.js';
+import type { CommandOptions } from './migration/migration_types.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//	MigrateConversations — previews or applies a one-time folder migration
+//	Cli — previews or applies a one-time folder migration
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Command-line entry point for migrating Codex and Claude Code conversations. */
-export class MigrateConversations {
+export class Cli {
 	/**
 	 * @param argv Node command-line arguments.
 	 * @returns Prints a preview or applies the requested migration or restore.
 	 */
 	static run(argv: string[]): void {
 		const command = new Command();
-		command.name('migrate_conversations')
+		command.name('rename_agent_project')
 			.description('Migrate existing conversations after renaming a project. Preview only unless --apply is given.')
 			.option('--from <path>', 'Old absolute project directory')
 			.option('--to <path>', 'New absolute project directory')
@@ -132,7 +132,7 @@ export class MigrateConversations {
 
 if (process.argv[1] !== undefined && import.meta.url === Url.pathToFileURL(Path.resolve(process.argv[1])).href) {
 	try {
-		MigrateConversations.run(process.argv);
+		Cli.run(process.argv);
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : String(error));
 		process.exitCode = 1;

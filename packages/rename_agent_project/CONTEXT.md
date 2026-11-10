@@ -7,6 +7,7 @@ Own the rename_agent_project tool and its package configuration.
 ## Key Exports & Entry Points
 
 - `src/`: conversation migration implementation and tests; see [CONTEXT.md](src/CONTEXT.md).
+- Command-line entry point: src/cli.ts.
 - Command from this package: `pnpm start --help`.
 - [README.md](README.md): package usage and verification commands.
 

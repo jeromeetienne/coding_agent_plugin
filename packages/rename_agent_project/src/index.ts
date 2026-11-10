@@ -4,8 +4,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export { ConversationPlan } from './conversation_plan.js';
-export { JsonRecords } from './json_records.js';
-export { MigrateConversations } from './migrate_conversations.js';
-export { MigrationStorage } from './migration_storage.js';
-export type * from './migration_types.js';
+export { ConversationPlan } from './migration/conversation_plan.js';
+export { JsonRecords } from './migration/json_records.js';
+export { Cli } from './cli.js';
+export { MigrationStorage } from './migration/migration_storage.js';
+export type * from './migration/migration_types.js';

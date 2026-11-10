@@ -5,9 +5,9 @@ import Os from 'node:os';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
 import Test from 'node:test';
-import { ConversationPlan } from './conversation_plan.js';
-import { MigrationStorage } from './migration_storage.js';
-import type { BackupManifest, JsonObject, MigrationOptions } from './migration_types.js';
+import { ConversationPlan } from '../migration/conversation_plan.js';
+import { MigrationStorage } from '../migration/migration_storage.js';
+import type { BackupManifest, JsonObject, MigrationOptions } from '../migration/migration_types.js';
 
 const __dirname = import.meta.dirname;
 
@@ -282,7 +282,7 @@ class MigrateConversationsTest {
 	private static _cli(fixture: Fixture, extra: string[] = []): ChildProcess.SpawnSyncReturns<string> {
 		return ChildProcess.spawnSync(process.execPath, [
 			'--import', import.meta.resolve('tsx'),
-			Path.join(__dirname, 'migrate_conversations.ts'),
+			Path.join(__dirname, '..', 'cli.ts'),
 			'--from', fixture.options.from,
 			'--to', fixture.options.to,
 			'--codex-home', fixture.options.codexHome,
