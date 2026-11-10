@@ -2,7 +2,14 @@ import Crypto from 'node:crypto';
 import Fs from 'node:fs';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
-import { ConversationPlan } from './conversation_plan.mjs';
+import { ConversationPlan } from './conversation_plan.js';
+import type {
+	BackupManifest,
+	BackupMove,
+	MigrationPlan,
+	OpenDatabase,
+	TreeReplacement,
+} from './migration_types.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -13,13 +20,13 @@ import { ConversationPlan } from './conversation_plan.mjs';
 /** Applies a prepared migration with backups and optimistic rollback checks. */
 export class MigrationStorage {
 	/**
-	 * @param {object} plan Prepared changes from ConversationPlan.
-	 * @param {string} backup New backup directory outside project and application storage.
-	 * @returns {void} Writes a manifest before changing any conversation data.
+	 * @param plan Prepared changes from ConversationPlan.
+	 * @param backup New backup directory outside project and application storage.
+	 * @returns Writes a manifest before changing any conversation data.
 	 */
-	static apply(plan, backup) {
+	static apply(plan: MigrationPlan, backup: string): void {
 		this._safePath(Path.dirname(backup));
-		const manifest = {
+		const manifest: BackupManifest = {
 			version: 1,
 			from: plan.from,
 			to: plan.to,
@@ -57,6 +64,7 @@ export class MigrationStorage {
 				});
 			}
 			this._manifest(backup, manifest);
+			this.verifyBackup(backup);
 			for (const file of plan.files) {
 				this._assertHash(file.path, this._hash(Buffer.from(file.original)));
 				this._write(file.path, file.updated);
@@ -82,12 +90,12 @@ export class MigrationStorage {
 	}
 
 	/**
-	 * @param {string} backup Directory created by apply.
-	 * @param {boolean} isApply Whether to perform restoration instead of previewing.
-	 * @returns {void} Restores only unchanged migration output; newer work causes refusal.
+	 * @param backup Directory created by apply.
+	 * @param isApply Whether to perform restoration instead of previewing.
+	 * @returns Restores only unchanged migration output; newer work causes refusal.
 	 */
-	static restore(backup, isApply) {
-		const manifest = JSON.parse(Fs.readFileSync(Path.join(backup, 'manifest.json'), 'utf8'));
+	static restore(backup: string, isApply: boolean): void {
+		const manifest = JSON.parse(Fs.readFileSync(Path.join(backup, 'manifest.json'), 'utf8')) as BackupManifest;
 		if (manifest.version !== 1 || Array.isArray(manifest.files) === false) {
 			throw new Error('Unsupported backup manifest.');
 		}
@@ -103,7 +111,7 @@ export class MigrationStorage {
 		try {
 			console.log(`Restore ${manifest.files.length} files and ${manifest.moves.length} project directories.`);
 			if (isApply === false) {
-				console.log('Preview only. Add --apply --applications-stopped to restore.');
+				console.log('Storage restoration preview only; no data changed.');
 				return;
 			}
 			for (const move of [...manifest.moves].reverse()) {
@@ -124,12 +132,28 @@ export class MigrationStorage {
 	}
 
 	/**
+	 * @param backup Private migration backup directory.
+	 * @returns No value; rejects unreadable or incomplete backup copies before migration writes.
+	 */
+	static verifyBackup(backup: string): void {
+		const manifest = JSON.parse(Fs.readFileSync(Path.join(backup, 'manifest.json'), 'utf8')) as BackupManifest;
+		for (const file of manifest.files) {
+			this._assertHash(Path.join(backup, file.backup), file.before);
+		}
+		for (const [index, move] of manifest.moves.entries()) {
+			if (this._tree(Path.join(backup, `project_${index}`)) !== move.before) {
+				throw new Error('Migration backup directory failed verification.');
+			}
+		}
+	}
+
+	/**
 	 * Refuse changed files before a migration or restoration.
 	 * @param manifest Backup manifest.
 	 * @param isRestore Whether this is restoration.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _checkFiles(manifest, isRestore) {
+	private static _checkFiles(manifest: BackupManifest, isRestore: boolean): void {
 		for (const file of manifest.files) {
 			let path = file.path;
 			if (isRestore) {
@@ -154,7 +178,7 @@ export class MigrationStorage {
 	 * @param isRestore Whether this is restoration.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _checkMoves(manifest, isRestore) {
+	private static _checkMoves(manifest: BackupManifest, isRestore: boolean): void {
 		for (const move of manifest.moves) {
 			this._safePath(Path.dirname(move.to));
 			const isSource = Fs.existsSync(move.from);
@@ -178,7 +202,7 @@ export class MigrationStorage {
 	 * @param manifest Backup manifest.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _partialTree(move, manifest) {
+	private static _partialTree(move: BackupMove, manifest: BackupManifest): boolean {
 		const files = manifest.files.filter((file) => ConversationPlan.contains(file.path, move.from));
 		for (const file of files) {
 			const hash = this._hash(Fs.readFileSync(file.path));
@@ -188,7 +212,6 @@ export class MigrationStorage {
 		}
 		const replacements = files.map((file) => ({
 			path: file.path,
-			updated: null,
 			hash: file.before,
 		}));
 		return this._tree(move.from, replacements) === move.before;
@@ -201,8 +224,12 @@ export class MigrationStorage {
 	 * @param isReadOnly Whether to open read-only.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _openDatabases(manifest, isRestore, isReadOnly = false) {
-		const opened = [];
+	private static _openDatabases(
+		manifest: BackupManifest,
+		isRestore: boolean,
+		isReadOnly = false,
+	): OpenDatabase[] {
+		const opened: OpenDatabase[] = [];
 		try {
 			for (const entry of manifest.databases) {
 				this._safePath(entry.path);
@@ -239,7 +266,7 @@ export class MigrationStorage {
 	 * @param isRestore Whether to restore original values.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _updateDatabases(databases, isRestore) {
+	private static _updateDatabases(databases: OpenDatabase[], isRestore: boolean): void {
 		for (const { databaseSync, entry } of databases) {
 			for (const row of entry.rows) {
 				const value = isRestore ? row.before : row.after;
@@ -255,7 +282,7 @@ export class MigrationStorage {
 	 * @param databases Open databases.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _closeDatabases(databases) {
+	private static _closeDatabases(databases: OpenDatabase[]): void {
 		for (const { databaseSync } of databases) {
 			if (databaseSync.isTransaction) {
 				databaseSync.exec('ROLLBACK');
@@ -270,7 +297,7 @@ export class MigrationStorage {
 	 * @param replacements Planned content replacements.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _tree(root, replacements = []) {
+	private static _tree(root: string, replacements: readonly TreeReplacement[] = []): string {
 		this._safePath(root);
 		const entries = [];
 		for (const path of ConversationPlan.walk(root)) {
@@ -290,7 +317,7 @@ export class MigrationStorage {
 	 * @param path Existing absolute path.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _safePath(path) {
+	private static _safePath(path: string): void {
 		let current = Path.resolve(path);
 		while (current !== Path.dirname(current)) {
 			if (Fs.lstatSync(current).isSymbolicLink()) {
@@ -306,7 +333,7 @@ export class MigrationStorage {
 	 * @param expected Expected checksum.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _assertHash(path, expected) {
+	private static _assertHash(path: string, expected: string): void {
 		this._safePath(path);
 		if (this._hash(Fs.readFileSync(path)) !== expected) {
 			throw new Error(`File changed since planning: ${path}`);
@@ -318,7 +345,7 @@ export class MigrationStorage {
 	 * @param content Content buffer.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _hash(content) {
+	private static _hash(content: Uint8Array): string {
 		return Crypto.createHash('sha256').update(content).digest('hex');
 	}
 
@@ -328,7 +355,7 @@ export class MigrationStorage {
 	 * @param content New file contents.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _write(path, content) {
+	private static _write(path: string, content: string | Uint8Array): void {
 		this._safePath(path);
 		const temporary = `${path}.migration-${Crypto.randomUUID()}`;
 		try {
@@ -350,7 +377,7 @@ export class MigrationStorage {
 	 * @param manifest Backup manifest.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _manifest(backup, manifest) {
+	private static _manifest(backup: string, manifest: BackupManifest): void {
 		const path = Path.join(backup, 'manifest.json');
 		Fs.writeFileSync(path, `${JSON.stringify(manifest, null, 2)}\n`, {
 			mode: 0o600,

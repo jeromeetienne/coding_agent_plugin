@@ -1,6 +1,16 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
+import { JsonRecords } from './json_records.js';
+import type {
+	CodexRow,
+	JsonObject,
+	JsonValue,
+	MigrationOptions,
+	MigrationPlan,
+	PathMapping,
+	RowChange,
+} from './migration_types.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -11,11 +21,11 @@ import Sqlite from 'node:sqlite';
 /** Builds a migration without changing conversation storage. */
 export class ConversationPlan {
 	/**
-	 * @param {object} options Command options with absolute paths.
-	 * @returns {object} File changes, directory moves, and database row changes.
+	 * @param options Command options with absolute paths.
+	 * @returns File changes, directory moves, and database row changes.
 	 */
-	static build(options) {
-		const plan = {
+	static build(options: MigrationOptions): MigrationPlan {
+		const plan: MigrationPlan = {
 			version: 1,
 			from: options.from,
 			to: options.to,
@@ -34,28 +44,28 @@ export class ConversationPlan {
 	}
 
 	/**
-	 * @param {string} value Candidate absolute path.
-	 * @param {string} root Original project root.
-	 * @returns {boolean} Whether the path is the root or a descendant.
+	 * @param value Candidate absolute path.
+	 * @param root Original project root.
+	 * @returns Whether the path is the root or a descendant.
 	 */
-	static contains(value, root) {
+	static contains(value: unknown, root: string): boolean {
 		return typeof value === 'string' && (value === root || value.startsWith(`${root}/`));
 	}
 
 	/**
-	 * @param {string} value Candidate path.
-	 * @param {object} options Original and destination roots.
-	 * @returns {string} Path with only a complete root prefix changed.
+	 * @param value Candidate path.
+	 * @param options Original and destination roots.
+	 * @returns Path with only a complete root prefix changed.
 	 */
-	static replace(value, options) {
+	static replace(value: string, options: PathMapping): string {
 		return this.contains(value, options.from) ? options.to + value.slice(options.from.length) : value;
 	}
 
 	/**
-	 * @param {string} root Directory to inspect.
-	 * @returns {string[]} Regular file paths; symbolic links are rejected.
+	 * @param root Directory to inspect.
+	 * @returns Regular file paths; symbolic links are rejected.
 	 */
-	static walk(root) {
+	static walk(root: string): string[] {
 		if (Fs.existsSync(root) === false) {
 			return [];
 		}
@@ -78,12 +88,12 @@ export class ConversationPlan {
 	 * @param plan Prepared migration.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _codex(options, plan) {
+	private static _codex(options: MigrationOptions, plan: MigrationPlan): void {
 		const names = Fs.readdirSync(options.codexHome).filter((name) => /^state_\d+\.sqlite$/.test(name));
 		if (names.length > 1 || names.some((name) => name !== 'state_5.sqlite')) {
 			throw new Error('Unsupported or multiple Codex state databases; no changes were made.');
 		}
-		const indexed = new Map();
+		const indexed = new Map<string, CodexRow>();
 		if (names.length === 1) {
 			const path = Path.join(options.codexHome, names[0]);
 			const databaseSync = new Sqlite.DatabaseSync(path, {
@@ -96,14 +106,20 @@ export class ConversationPlan {
 						throw new Error(`Unsupported Codex threads schema: missing ${column}`);
 					}
 				}
-				const rows = [];
-				for (const row of databaseSync.prepare('SELECT id, cwd, rollout_path, sandbox_policy FROM threads').all()) {
+				const rows: RowChange[] = [];
+				for (const record of databaseSync.prepare('SELECT id, cwd, rollout_path, sandbox_policy FROM threads').all()) {
 					for (const key of ['id', 'cwd', 'rollout_path', 'sandbox_policy']) {
-						if (typeof row[key] !== 'string') {
+						if (typeof record[key] !== 'string') {
 							throw new Error(`Unsupported Codex row field: ${key}`);
 						}
 					}
-					const rollout = String(row.rollout_path);
+					const row: CodexRow = {
+						id: String(record.id),
+						cwd: String(record.cwd),
+						rollout_path: String(record.rollout_path),
+						sandbox_policy: String(record.sandbox_policy),
+					};
+					const rollout = row.rollout_path;
 					const cwd = String(row.cwd);
 					if (indexed.has(Path.resolve(rollout))) {
 						throw new Error(`Duplicate Codex transcript index entry: ${rollout}`);
@@ -146,7 +162,7 @@ export class ConversationPlan {
 			for (const path of this.walk(Path.join(options.codexHome, name))) {
 				if (path.endsWith('.jsonl') && indexed.has(path) === false) {
 					const metadata = this._metadata(path);
-					if (this.contains(metadata?.payload?.cwd, options.from)) {
+					if (this.contains(JsonRecords.object(metadata.payload, path).cwd, options.from)) {
 						throw new Error(`Unindexed Codex conversation: ${path}; let Codex index it before migration.`);
 					}
 				}
@@ -157,7 +173,7 @@ export class ConversationPlan {
 				continue;
 			}
 			const metadata = this._metadata(path);
-			if (metadata.type !== 'session_meta' || metadata.payload?.id !== row.id) {
+			if (metadata.type !== 'session_meta' || JsonRecords.object(metadata.payload, path).id !== row.id) {
 				throw new Error(`Missing or mismatched Codex session metadata: ${path}`);
 			}
 			plan.conversations.push({
@@ -175,13 +191,17 @@ export class ConversationPlan {
 	 * @param plan Prepared migration.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _claude(options, plan) {
+	private static _claude(options: MigrationOptions, plan: MigrationPlan): void {
 		const root = Path.join(options.claudeHome, 'projects');
 		if (Fs.existsSync(root) === false) {
 			return;
 		}
 		const config = Fs.existsSync(options.claudeConfig)
-			? JSON.parse(Fs.readFileSync(options.claudeConfig, 'utf8')) : null;
+			? JsonRecords.object(JsonRecords.parse(Fs.readFileSync(options.claudeConfig, 'utf8')), options.claudeConfig)
+			: null;
+		const empty: JsonObject = {
+		};
+		const projects = JsonRecords.object(config?.projects ?? empty, options.claudeConfig);
 		const prefix = this._encode(options.from);
 		for (const name of Fs.readdirSync(root).sort()) {
 			if (name !== prefix && name.startsWith(`${prefix}-`) === false) {
@@ -189,7 +209,7 @@ export class ConversationPlan {
 			}
 			const from = Path.join(root, name);
 			const files = this.walk(from);
-			const candidates = new Set(Object.keys(config?.projects ?? {}).filter((path) => this._encode(path) === name));
+			const candidates = new Set(Object.keys(projects).filter((path) => this._encode(path) === name));
 			for (const path of files.filter((file) => file.endsWith('.jsonl'))) {
 				for (const record of this._records(Fs.readFileSync(path, 'utf8'), path)) {
 					if (typeof record?.cwd === 'string' && this._encode(record.cwd) === name) {
@@ -233,14 +253,15 @@ export class ConversationPlan {
 						});
 					}
 				} else if (Path.basename(path) === 'sessions-index.json') {
-					const value = JSON.parse(original);
+					const value = JsonRecords.object(JsonRecords.parse(original), path);
 					if (Array.isArray(value.entries) === false) {
 						throw new Error(`Unsupported Claude Code session index: ${path}`);
 					}
-					for (const entry of [value, ...value.entries]) {
+					for (const entry of [value, ...value.entries.map((record) => JsonRecords.object(record, path))]) {
 						for (const key of ['originalPath', 'projectPath', 'fullPath', 'cwd']) {
-							if (typeof entry[key] === 'string') {
-								entry[key] = this.replace(this.replace(entry[key], options), {
+							const current = entry[key];
+							if (typeof current === 'string') {
+								entry[key] = this.replace(this.replace(current, options), {
 									from,
 									to,
 								});
@@ -263,14 +284,14 @@ export class ConversationPlan {
 		}
 		if (config !== null) {
 			const original = Fs.readFileSync(options.claudeConfig, 'utf8');
-			for (const path of Object.keys(config.projects ?? {})) {
+			for (const path of Object.keys(projects)) {
 				if (this.contains(path, options.from)) {
 					const to = this.replace(path, options);
-					if (config.projects[to] !== undefined) {
+					if (projects[to] !== undefined) {
 						throw new Error(`Claude Code settings already exist for destination: ${to}`);
 					}
-					config.projects[to] = config.projects[path];
-					delete config.projects[path];
+					projects[to] = projects[path];
+					delete projects[path];
 				}
 			}
 			if (JSON.stringify(JSON.parse(original)) !== JSON.stringify(config)) {
@@ -284,7 +305,7 @@ export class ConversationPlan {
 	 * @param path Transcript path.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _metadata(path) {
+	private static _metadata(path: string): JsonObject {
 		const descriptor = Fs.openSync(path, 'r');
 		try {
 			const buffer = Buffer.alloc(65536);
@@ -294,7 +315,7 @@ export class ConversationPlan {
 			if (end < 0) {
 				throw new Error(`Unsupported or incomplete Codex transcript header: ${path}`);
 			}
-			return JSON.parse(content.slice(0, end));
+			return JsonRecords.object(JsonRecords.parse(content.slice(0, end)), path);
 		} finally {
 			Fs.closeSync(descriptor);
 		}
@@ -308,7 +329,7 @@ export class ConversationPlan {
 	 * @param updated Updated contents.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _file(plan, path, original, updated) {
+	private static _file(plan: MigrationPlan, path: string, original: string, updated: string): void {
 		if (original !== updated) {
 			plan.files.push({
 				path,
@@ -323,7 +344,7 @@ export class ConversationPlan {
 	 * @param path Absolute project path.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _encode(path) {
+	private static _encode(path: string): string {
 		return path.replace(/[^a-zA-Z0-9-]/g, '-');
 	}
 
@@ -333,8 +354,8 @@ export class ConversationPlan {
 	 * @param options Command options.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _policy(value, options) {
-		return JSON.stringify(this._paths(JSON.parse(value), options));
+	private static _policy(value: string, options: PathMapping): string {
+		return JSON.stringify(this._paths(JsonRecords.parse(value), options));
 	}
 
 	/**
@@ -343,7 +364,7 @@ export class ConversationPlan {
 	 * @param options Original and new roots.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _paths(value, options) {
+	private static _paths(value: JsonValue, options: PathMapping): JsonValue {
 		if (typeof value === 'string') {
 			return this.replace(value, options);
 		}
@@ -362,10 +383,10 @@ export class ConversationPlan {
 	 * @param path File path for diagnostics.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _records(value, path) {
+	private static _records(value: string, path: string): JsonObject[] {
 		return value.split('\n').filter((line) => line.trim().length > 0).map((line, index) => {
 			try {
-				return JSON.parse(line);
+				return JsonRecords.object(JsonRecords.parse(line), path);
 			} catch {
 				throw new Error(`Invalid JSON in ${path}, record ${index + 1}; no changes were made.`);
 			}
@@ -379,12 +400,16 @@ export class ConversationPlan {
 	 * @param updateFn Record mutation callback.
 	 * @returns The result of the operation, or no value for writes and checks.
 	 */
-	static _lines(value, path, updateFn) {
+	private static _lines(
+		value: string,
+		path: string,
+		updateFn: (record: JsonObject) => void,
+	): string {
 		return value.split('\n').map((line) => {
 			if (line.trim().length === 0) {
 				return line;
 			}
-			const record = JSON.parse(line);
+			const record = JsonRecords.object(JsonRecords.parse(line), path);
 			const original = JSON.stringify(record);
 			updateFn(record);
 			return original === JSON.stringify(record) ? line : JSON.stringify(record) + (line.endsWith('\r') ? '\r' : '');

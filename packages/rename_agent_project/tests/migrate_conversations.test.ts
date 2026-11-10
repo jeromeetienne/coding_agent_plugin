@@ -5,8 +5,11 @@ import Os from 'node:os';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
 import Test from 'node:test';
-import { ConversationPlan } from './conversation_plan.mjs';
-import { MigrationStorage } from './migration_storage.mjs';
+import { ConversationPlan } from '../src/migration/conversation_plan.js';
+import { MigrationStorage } from '../src/migration/migration_storage.js';
+import type { BackupManifest, JsonObject, MigrationOptions } from '../src/migration/migration_types.js';
+
+const __dirname = import.meta.dirname;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -14,8 +17,26 @@ import { MigrationStorage } from './migration_storage.mjs';
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+/** Files and storage paths owned by one disposable test. */
+type Fixture = {
+	/** Root removed after the test. */
+	root: string;
+	/** Application stores and project path mapping. */
+	options: MigrationOptions;
+	/** Codex index database. */
+	database: string;
+	/** Representative Codex transcript. */
+	transcript: string;
+	/** Original Claude Code project storage. */
+	claudeSource: string;
+	/** Migrated Claude Code project storage. */
+	claudeTarget: string;
+	/** Backup destination. */
+	backup: string;
+};
+
 class MigrateConversationsTest {
-	static register() {
+	static register(): void {
 		Test('batch migration preserves messages, unrelated projects, and archived conversations', (context) => {
 			const fixture = this._fixture(context);
 			const before = this._snapshot(fixture.root);
@@ -39,7 +60,9 @@ class MigrateConversationsTest {
 			Assert.equal(records[2].payload.text, `Remember 731 and this historical path: ${fixture.options.from}`);
 			Assert.equal(Fs.existsSync(fixture.claudeSource), false);
 			Assert.equal(Fs.readFileSync(Path.join(fixture.claudeTarget, 'memory/MEMORY.md'), 'utf8'), 'keep memory bytes');
-			const config = JSON.parse(Fs.readFileSync(fixture.options.claudeConfig, 'utf8'));
+			const config = JSON.parse(Fs.readFileSync(fixture.options.claudeConfig, 'utf8')) as {
+				projects: Record<string, JsonObject>;
+			};
 			Assert.deepEqual(config.projects[fixture.options.to].allowedTools, ['Read']);
 			Assert.equal(config.projects[fixture.options.from], undefined);
 			const index = JSON.parse(Fs.readFileSync(Path.join(fixture.claudeTarget, 'sessions-index.json'), 'utf8'));
@@ -86,7 +109,9 @@ class MigrateConversationsTest {
 			Fs.symlinkSync(fixture.transcript, target);
 			Assert.throws(() => ConversationPlan.build(fixture.options), /Symbolic links/);
 			Fs.unlinkSync(target);
-			const config = JSON.parse(Fs.readFileSync(fixture.options.claudeConfig, 'utf8'));
+			const config = JSON.parse(Fs.readFileSync(fixture.options.claudeConfig, 'utf8')) as {
+				projects: Record<string, JsonObject>;
+			};
 			config.projects[fixture.options.from.replace('project_old', 'project-old')] = {
 			};
 			Fs.writeFileSync(fixture.options.claudeConfig, JSON.stringify(config));
@@ -98,11 +123,12 @@ class MigrateConversationsTest {
 			const plan = ConversationPlan.build(fixture.options);
 			const before = this._snapshot(fixture.root);
 			MigrationStorage.apply(plan, fixture.backup);
-			const manifest = JSON.parse(Fs.readFileSync(Path.join(fixture.backup, 'manifest.json'), 'utf8'));
+			const manifest = JSON.parse(Fs.readFileSync(Path.join(fixture.backup, 'manifest.json'), 'utf8')) as BackupManifest;
 			for (const move of manifest.moves) {
 				Fs.renameSync(move.to, move.from);
 			}
 			const file = manifest.files.find((entry) => entry.path.startsWith(fixture.claudeSource));
+			Assert.ok(file !== undefined);
 			Fs.copyFileSync(Path.join(fixture.backup, file.backup), file.path);
 			Fs.chmodSync(file.path, file.mode);
 			const databaseSync = new Sqlite.DatabaseSync(fixture.database);
@@ -110,32 +136,34 @@ class MigrateConversationsTest {
 			databaseSync.close();
 			MigrationStorage.restore(fixture.backup, true);
 			const restored = new Sqlite.DatabaseSync(fixture.database);
-			Assert.equal(restored.prepare('SELECT cwd FROM threads WHERE id = ?').get('c').cwd, '/unrelated/new');
+			Assert.equal(restored.prepare('SELECT cwd FROM threads WHERE id = ?').get('c')?.cwd, '/unrelated/new');
 			restored.prepare('UPDATE threads SET cwd = ? WHERE id = ?').run(`${fixture.options.from}-other`, 'c');
 			restored.close();
 			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
 		});
 
-		Test('command requires stopped applications and a backup for apply', (context) => {
+		Test('rename command rejects missing sources and destination conflicts before writes', (context) => {
 			const fixture = this._fixture(context);
 			const before = this._snapshot(fixture.root);
 			const result = this._cli(fixture, ['--apply']);
 			Assert.equal(result.status, 1);
-			Assert.match(result.stderr, /applications-stopped/);
-			const missing = this._cli(fixture, ['--apply', '--applications-stopped']);
-			Assert.equal(missing.status, 1);
-			Assert.match(missing.stderr, /backup is required/);
+			Assert.match(result.stderr, /ENOENT|no such file/);
+			Assert.deepEqual(this._snapshot(fixture.root), before);
+			Fs.mkdirSync(fixture.options.from);
+			const conflict = this._cli(fixture, ['--apply']);
+			Assert.equal(conflict.status, 1);
+			Assert.match(conflict.stderr, /Destination already exists/);
 			Assert.deepEqual(this._snapshot(fixture.root), before);
 		});
 	}
 
-	static _fixture(context) {
+	private static _fixture(context: Test.TestContext): Fixture {
 		const root = Fs.mkdtempSync(Path.join(Fs.realpathSync(Os.tmpdir()), 'conversation-test-'));
 		context.after(() => Fs.rmSync(root, {
 			recursive: true,
 			force: true,
 		}));
-		const options = {
+		const options: MigrationOptions = {
 			from: Path.join(root, 'project_old'),
 			to: Path.join(root, 'project_new'),
 			codexHome: Path.join(root, 'codex'),
@@ -150,8 +178,7 @@ class MigrateConversationsTest {
 		databaseSync.exec('CREATE TABLE threads ('
 			+ 'id TEXT PRIMARY KEY, cwd TEXT, rollout_path TEXT, sandbox_policy TEXT, title TEXT, archived INTEGER)');
 		let transcript = '';
-		/** @type {Array<[string, string, boolean]>} */
-		const cases = [
+		const cases: Array<[string, string, boolean]> = [
 			['a', options.from, false],
 			['b', `${options.from}/.agents/worktrees/task`, true],
 			['c', `${options.from}-other`, false],
@@ -236,7 +263,7 @@ class MigrateConversationsTest {
 		};
 	}
 
-	static _snapshot(root, excluded = []) {
+	private static _snapshot(root: string, excluded: string[] = []): string[][] {
 		return ConversationPlan.walk(root).filter((path) => excluded.some((item) => path.startsWith(item)) === false)
 			.map((path) => {
 				if (path.endsWith('.sqlite')) {
@@ -254,9 +281,10 @@ class MigrateConversationsTest {
 			});
 	}
 
-	static _cli(fixture, extra = []) {
+	private static _cli(fixture: Fixture, extra: string[] = []): ChildProcess.SpawnSyncReturns<string> {
 		return ChildProcess.spawnSync(process.execPath, [
-			Path.join(import.meta.dirname, 'migrate_conversations.mjs'),
+			'--import', import.meta.resolve('tsx'),
+			Path.join(__dirname, '..', 'src', 'cli.ts'),
 			'--from', fixture.options.from,
 			'--to', fixture.options.to,
 			'--codex-home', fixture.options.codexHome,
