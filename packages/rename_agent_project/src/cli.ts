@@ -3,6 +3,7 @@ import Os from 'node:os';
 import Path from 'node:path';
 import Url from 'node:url';
 import { Command } from 'commander';
+import Chalk from 'chalk';
 import { ConversationPlan } from './migration/conversation_plan.js';
 import { OperationJob } from './operation/operation_job.js';
 import { OperationJournal } from './operation/operation_journal.js';
@@ -38,6 +39,13 @@ export class Cli {
 			.option('--status <path>', 'Show durable status for an operation directory')
 			.option('--detach', 'Return once the independent worker starts')
 			.option('--apply', 'Perform the complete rename or restoration; otherwise preview only')
+			.configureOutput({
+				outputError: (message, writeFn) => writeFn(Chalk.red(message)),
+			})
+			.configureHelp({
+				styleTitle: (title) => Chalk.bold(title),
+				styleOptionTerm: (term) => Chalk.cyan(term),
+			})
 			.parse(argv);
 		const options = command.opts<CommandOptions>();
 		if (options.status !== undefined) {
@@ -55,9 +63,11 @@ export class Cli {
 			const directory = this._absolute(options.restore);
 			const record = OperationJob.restore(directory, options.apply === true);
 			if (options.apply !== true) {
-				console.log('Restoration preview only. Add --apply to restore the folder and its conversation records.');
+				console.log(Chalk.yellow(
+					'Restoration preview only. Add --apply to restore the folder and its conversation records.'
+				));
 			} else if (options.detach === true) {
-				console.log(`Restoration started. Status and backup: ${directory}`);
+				console.log(`Restoration started. Status and backup: ${Chalk.cyan(directory)}`);
 			} else {
 				this._report(await OperationJob.wait(record.directory, undefined, (progress) => this._waiting(progress)));
 			}
@@ -91,28 +101,29 @@ export class Cli {
 			only,
 		};
 		const plan = ConversationPlan.build(migrationOptions);
-		console.log(`${options.from} -> ${options.to}`);
+		console.log(`${Chalk.cyan(options.from)} -> ${Chalk.cyan(options.to)}`);
 		for (const entry of plan.conversations) {
-			console.log(`${entry.application}: ${entry.id}\n  ${entry.from} -> ${entry.to}`);
+			console.log(`${Chalk.bold(entry.application)}: ${entry.id}`
+				+ `\n  ${Chalk.cyan(entry.from)} -> ${Chalk.cyan(entry.to)}`);
 		}
 		const rows = plan.databases.reduce((total, database) => total + database.rows.length, 0);
 		console.log(`${plan.conversations.length} conversations; ${plan.files.length} files; `
 			+ `${plan.moves.length} Claude Code project directories; ${rows} Codex index rows.`);
 		if (options.apply !== true) {
-			console.log('Preview only. No conversation data changed.');
+			console.log(Chalk.yellow('Preview only. No conversation data changed.'));
 			return;
 		}
 		const directory = OperationJob.start({
 			...migrationOptions,
 			backup: options.backup === undefined ? undefined : this._absolute(options.backup),
 		});
-		console.log(`Independent rename started. Status and backup: ${directory}`);
+		console.log(`Independent rename started. Status and backup: ${Chalk.cyan(directory)}`);
 		if (options.detach !== true && plan.conversations.some((entry) => entry.id === process.env.CODEX_THREAD_ID)
 			=== false) {
 			this._report(await OperationJob.wait(directory, undefined, (progress) => this._waiting(progress)));
 		} else {
-			console.log('Close affected clients manually. The shared server and unrelated clients stay running.');
-			console.log(`Read waiting instructions with --status ${directory}`);
+			console.log(Chalk.yellow('Close affected clients manually. The shared server and unrelated clients stay running.'));
+			console.log(`Read waiting instructions with --status ${Chalk.cyan(directory)}`);
 		}
 	}
 
@@ -121,11 +132,11 @@ export class Cli {
 	 * @returns No value after printing the affected terminals and selected background tasks.
 	 */
 	private static _waiting(record: OperationRecord): void {
-		console.log('Waiting for affected clients. Keep the shared server and unrelated clients running.');
+		console.log(Chalk.yellow('Waiting for affected clients. Keep the shared server and unrelated clients running.'));
 		for (const message of record.waitingFor ?? []) {
-			console.log(message);
+			console.log(Chalk.yellow(message));
 		}
-		console.log('Keep affected clients closed until the operation completes.');
+		console.log(Chalk.yellow('Keep affected clients closed until the operation completes.'));
 	}
 
 	/**
@@ -133,19 +144,21 @@ export class Cli {
 	 * @returns No value; sets a failure exit status when the operation did not succeed.
 	 */
 	private static _report(record: OperationRecord): void {
-		console.log(`${record.state}: ${record.phase}`);
+		const stateColor = record.state === 'complete' ? Chalk.green
+			: record.state === 'failed' || record.state === 'recovery_required' ? Chalk.red : Chalk.yellow;
+		console.log(`${stateColor(record.state)}: ${record.phase}`);
 		if (record.waitingFor !== undefined) {
 			this._waiting(record);
 		}
-		console.log(`Project: ${record.options.from} -> ${record.options.to}`);
+		console.log(`Project: ${Chalk.cyan(record.options.from)} -> ${Chalk.cyan(record.options.to)}`);
 		console.log(`Conversations: ${record.counts.codex} Codex, ${record.counts.claude} Claude Code.`);
-		console.log(`Status and backup: ${record.directory}`);
+		console.log(`Status and backup: ${Chalk.cyan(record.directory)}`);
 		if (record.error !== undefined) {
-			console.error(record.error);
+			console.error(Chalk.red(record.error));
 		}
 		if (record.state === 'complete') {
 			for (const limitation of record.limitations) {
-				console.log(limitation);
+				console.log(Chalk.yellow(limitation));
 			}
 		}
 		if (record.state === 'failed' || record.state === 'recovery_required'
@@ -183,7 +196,7 @@ if (process.argv[1] !== undefined && import.meta.url === Url.pathToFileURL(Path.
 	try {
 		await Cli.run(process.argv);
 	} catch (error) {
-		console.error(error instanceof Error ? error.message : String(error));
+		console.error(Chalk.red(error instanceof Error ? error.message : String(error)));
 		process.exitCode = 1;
 	}
 }
