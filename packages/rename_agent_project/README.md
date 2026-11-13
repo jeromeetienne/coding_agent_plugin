@@ -22,6 +22,8 @@ pnpm --filter rename_agent_project start --restore /absolute/operation-directory
 pnpm --filter rename_agent_project start --restore /absolute/operation-directory --apply
 ```
 
+Verification requires every migrated conversation to remain discoverable and allows additional Codex conversations already associated with the destination. Those existing conversations are preserved during rename and restoration.
+
 Restoration refuses to overwrite newer project work or changed conversation records. Keep the operation directory until you have checked the renamed project and conversations.
 
 Use `--help` for every option, including `--only`, custom application storage, `--backup`, and `--detach`. All options are defined in [src/cli.ts](src/cli.ts). A rename started inside an affected Codex conversation returns immediately. Use the printed status command to see which clients to close manually. Closing a client can leave its task running; the tool also waits for affected tasks to finish.

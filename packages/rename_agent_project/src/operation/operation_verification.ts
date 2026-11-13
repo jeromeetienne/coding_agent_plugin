@@ -105,9 +105,10 @@ export class OperationVerification {
 			from: expectedRoot,
 			to: otherRoot,
 		}).conversations;
-		const identityFn = (plan: MigrationPlan['conversations']): string => JSON.stringify(plan
-			.map((conversation) => `${conversation.application}:${conversation.id}`).sort());
-		if (identityFn(discovered) !== identityFn(operation.plan.conversations)) {
+		const identities = new Set(discovered.map((conversation) => `${conversation.application}:${conversation.id}`));
+		const isMissing = operation.plan.conversations.some((conversation) =>
+			identities.has(`${conversation.application}:${conversation.id}`) === false);
+		if (isMissing) {
 			throw new Error('The expected conversations are not discoverable under the final directory.');
 		}
 	}
