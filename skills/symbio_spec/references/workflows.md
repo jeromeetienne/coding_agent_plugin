@@ -93,3 +93,7 @@ Preserve approved intent while applying authorized changes. Do not rewrite the s
 ### 3.5. Verify the result
 
 Repeat the affected comparisons and appropriate implementation checks. Update the report, decisions, indexes, and coverage with resolved and unresolved findings. Report the actual scope verified; no difference found in one area does not prove that the entire software matches Symbiospec.
+
+## 4. Propose user interface structure
+
+Use the separate [symbio_spec_to_ux draft](../../symbio_spec_to_ux/SKILL.md) for screens and navigation derived from approved concepts and behaviour. Expose missing product decisions and preserve existing approvals. After human approval, use Update to maintain affected User Interface specifications and decisions. The draft remains untested on a real project and does not authorize implementation or a prototype.

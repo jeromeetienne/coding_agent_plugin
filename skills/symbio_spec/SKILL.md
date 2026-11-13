@@ -56,7 +56,11 @@ When the approved Symbiospec changes need several implementation changes, write 
 - Ask every open question during the human review of section 4, and write the answers in the parent issue and in the sub-issues. A sub-issue has no open question when the implementation starts.
 - Link each sub-issue to the approved specifications that it implements.
 
-## 7. Design references
+## 7. Propose screens and navigation
+
+For user interface structure derived from approved Symbiospec, use the separate [symbio_spec_to_ux draft](../symbio_spec_to_ux/SKILL.md). The draft proposes objects, relationships, calls to action, attributes, screens, and navigation for human review. The draft remains untested on a real project and does not authorize implementation.
+
+## 8. Design references
 
 The supporting references make this skill usable without network access. These issues provide design context rather than project-specific approval:
 
