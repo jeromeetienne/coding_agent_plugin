@@ -19,6 +19,7 @@ Start with [How the skills work together](docs/skills_together.md) for required 
 | [context_md_system](skills/context_md_system/README.md) | Maintain short folder notes describing purpose, exports, and rules. |
 | [docs_folder_system](skills/docs_folder_system/README.md) | Keep documentation metadata and folder navigation consistent. |
 | [symbio_spec](skills/symbio_spec/README.md) | Maintain a shared product specification with approved human intent. |
+| [symbio_spec_to_ux](skills/symbio_spec_to_ux/README.md) | **Draft, untested:** propose screens and navigation from approved Symbiospec. |
 | [symbio_spec_to_docs](skills/symbio_spec_to_docs/README.md) | Generate audience-specific documentation from approved Symbiospec and implementation evidence. |
 | [keep-a-changelog-workflow](skills/keep-a-changelog-workflow/README.md) | Write and maintain release notes from pull request evidence and version tags. |
 | [jerome-typescript-javascript-style](skills/jerome-typescript-javascript-style/README.md) | Apply Jérôme Étienne’s personal TypeScript and JavaScript preferences. |
