@@ -47,6 +47,59 @@ class RenameOperationTest {
 			ProjectFiles.verify(record.options.from, original, true);
 		});
 
+		Test('existing destination conversation survives an independent rename and checked restore', async (context) => {
+			const record = this._fixture(context);
+			const transcript = Path.join(record.options.codexHome, 'sessions', 'destination.jsonl');
+			const content = `${JSON.stringify({
+				type: 'session_meta',
+				payload: {
+					id: 'existing-destination',
+					cwd: record.options.to,
+				},
+			})}\n`;
+			Fs.writeFileSync(transcript, content);
+			const databaseSync = new Sqlite.DatabaseSync(Path.join(record.options.codexHome, 'state_5.sqlite'));
+			context.after(() => databaseSync.close());
+			databaseSync.prepare('INSERT INTO threads VALUES (?, ?, ?, ?)')
+				.run('existing-destination', record.options.to, transcript, '{"type":"read-only"}');
+			const row = databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('existing-destination');
+			Fs.rmdirSync(record.directory);
+			const directory = OperationJob.start(record.options);
+			const result = await OperationJob.wait(directory, 30000);
+			Assert.equal(result.state, 'complete', result.error);
+			Assert.deepEqual(result.counts, {
+				codex: 1,
+				claude: 1,
+			});
+			Assert.equal(Fs.existsSync(record.options.from), false);
+			Assert.equal(Fs.existsSync(record.options.to), true);
+			OperationVerification.verify(result);
+			Assert.deepEqual(databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('existing-destination'), row);
+			Assert.equal(Fs.readFileSync(transcript, 'utf8'), content);
+			OperationJob.restore(directory, true);
+			const restored = await OperationJob.wait(directory, 30000);
+			Assert.equal(restored.state, 'rolled_back', restored.error);
+			Assert.equal(Fs.existsSync(record.options.to), false);
+			OperationVerification.verify(restored, true);
+			Assert.deepEqual(databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('existing-destination'), row);
+			Assert.equal(Fs.readFileSync(transcript, 'utf8'), content);
+		});
+
+		Test('discovery still rejects a missing migrated conversation whose contents needed no changes', async (context) => {
+			const record = this._fixture(context);
+			const name = record.options.from.replace(/[^a-zA-Z0-9-]/g, '-');
+			const transcript = Path.join(record.options.claudeHome, 'projects', name, 'unchanged.jsonl');
+			Fs.writeFileSync(transcript, '{"type":"user","message":{"content":"synthetic fact"}}\n');
+			const result = await RenameOperation.execute(record);
+			Assert.equal(result.state, 'complete', result.error);
+			Assert.equal(result.counts.claude, 2);
+			const move = result.plan?.moves.find((entry) => entry.from === Path.dirname(transcript));
+			Assert.ok(move);
+			Fs.unlinkSync(Path.join(move.to, 'unchanged.jsonl'));
+			Assert.throws(() => OperationVerification.verify(result),
+				/The expected conversations are not discoverable under the final directory/);
+		});
+
 		for (const phase of ['backing-up-project', 'migrating-conversations', 'renaming-project',
 			'repairing-worktrees', 'verifying-result']) {
 			Test(`failure at ${phase} returns the folder and conversations to the original state`, async (context) => {
