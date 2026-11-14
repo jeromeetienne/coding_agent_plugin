@@ -2,7 +2,7 @@
 
 Reusable instructions for coding agents, maintained in [jeromeetienne/coding_agent_plugin](https://github.com/jeromeetienne/coding_agent_plugin). A skill is a folder containing a SKILL.md instruction file and a README explaining adoption and use.
 
-Read the **[documentation website](https://jeromeetienne.github.io/coding_agent_plugin/)** or the [documentation overview](docs/README.md). The collection contains 14 skills: thirteen current skills and one obsolete skill retained for existing projects. Installation currently selects individual skills; there is no plugin manifest.
+Read the **[documentation website](https://jeromeetienne.github.io/coding_agent_plugin/)** or the [documentation overview](docs/README.md). The collection contains sixteen skills: fifteen current skills and one obsolete skill retained for existing projects. Installation currently selects individual skills; there is no plugin manifest.
 
 ## Choose skills
 
@@ -11,6 +11,7 @@ Start with [How the skills work together](docs/using_skills/skills_together.md) 
 | Skill | Purpose |
 | --- | --- |
 | [issue_creation](skills/issue_creation/README.md) | Record a request or problem on GitHub or GitLab. |
+| [pull_request_creation](skills/pull_request_creation/README.md) | Publish a reviewable GitHub pull request with a concrete description and validation evidence. |
 | [issue_fix_workflow](skills/issue_fix_workflow/README.md) | Fix one issue in a temporary worktree with human review before completion. |
 | [issue_batch_workflow](skills/issue_batch_workflow/README.md) | Implement related issues in dependency order with helper agents after the initial decisions. |
 | [git_cleanup_review](skills/git_cleanup_review/README.md) | Review redundant branches and worktrees and recommend a removal order; advice only. |
