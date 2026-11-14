@@ -5,7 +5,7 @@ description: Create and maintain Symbiospec, the shared product specification in
 
 # Symbiospec
 
-## 1. Purpose and location
+## 1. Purpose and location 
 
 Symbiospec is the shared product specification through which humans and coding agents define software together. Humans understand and approve product decisions; coding agents use those decisions to guide implementation and verification.
 
