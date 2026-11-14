@@ -42,7 +42,23 @@ Or install one skill:
 npx skills add jeromeetienne/coding_agent_plugin --skill issue_fix_workflow
 ```
 
-Installation provides instructions; required receiving-project values still need configuration. Read [Install and configure the skills](docs/using_skills/installing_skills.md) for prerequisites, companion skills, local copies, and installation options. Read the selected skill’s configuration section before starting work.
+## Configure the installed skills
+
+Installing skills adds their instructions. Before using the skills, copy this prompt into your coding agent in the receiving repository:
+
+```text
+Configure all skills newly installed in this repository.
+
+Read each installed skill’s SKILL.md and the repository’s existing instructions. Identify required companion skills, configuration files, and repository-specific values.
+
+Inspect the repository and propose suitable configuration values. Reuse existing conventions. Ask me together about any missing choices and any values that require my approval.
+
+After the required approvals, create the configuration files and update AGENTS.md so future coding agents know when and how to use each skill. Keep repository-specific configuration outside the installed skill folders.
+
+Verify that required companion skills are available, configuration is complete, and file links resolve. Report which skills are ready to use and anything that remains unfinished.
+```
+
+Read [Install and configure the skills](docs/using_skills/installing_skills.md) for prerequisites, companion skills, local copies, and installation options.
 
 ## Maintain the skills
 
