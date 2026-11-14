@@ -1,8 +1,10 @@
 # Initialize Symbiospec
 
+Before setup, follow [version detection and migration](versioning.md). Existing unversioned folders use format `1.0.0`; establish the record under the adoption rules without changing existing content. Unsupported formats or an incomplete migration must be resolved before initialization continues.
+
 ## 1. New software
 
-Read [format.md](format.md), repository instructions, and existing documentation. Create the agreed structure at `docs/symbio_spec/`, with folder contracts in the overviews and accurate navigation in the indexes. Start `decisions.md` and `coverage.md` with honest, empty initial records. Do not invent product concepts or approvals to fill the folders.
+Read [format.md](format.md), repository instructions, and existing documentation. Create the agreed structure at `docs/symbio_spec/`, including `format-version.md` with version `1.0.0`, folder contracts in the overviews, and accurate navigation in the indexes. Include the version record in the initial root index. Start `decisions.md` and `coverage.md` with honest, empty initial records. Do not invent product concepts or approvals to fill the folders.
 
 Add the repository instruction pointer described in the format reference during authorized setup. Then use Update as the first concepts and capabilities are developed. Product decisions already supplied by the human can populate the specification within their actual scope.
 

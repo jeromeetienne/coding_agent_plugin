@@ -6,6 +6,8 @@ The [skill instructions](SKILL.md) propose screens and navigation from approved 
 
 The receiving project needs an approved Symbiospec for the selected scope. Missing decisions remain explicit. No visual framework or prototype tool is required.
 
+The expected Symbiospec format is `1.0.0`, including its unversioned equivalent. The shared [version check](../symbio_spec/references/versioning.md) runs before proposals; unsupported or malformed versions and incomplete migrations stop normal work. A proposal request does not authorize source migration.
+
 Example request:
 
 > Use symbio_spec_to_ux to propose screens and navigation for this feature's approved Symbiospec. Identify missing decisions and do not implement the proposal.

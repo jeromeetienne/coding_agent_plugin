@@ -1,5 +1,7 @@
 # Symbiospec workflows
 
+Before any workflow, follow [version detection and migration](versioning.md), including for read-only audits and companion skills. Use the supported version's definition; do not initialize over an unsupported or interrupted format.
+
 ## 1. [Initialize Symbiospec](workflow_initialize.md)
 
 Create the structure for new software or progressively establish a validated specification for existing software.

@@ -30,6 +30,8 @@ See the [collection installation guidance](../../README.md#install-the-skills). 
 
 `symbio_spec` needs no separate configuration file. Project data belongs at `docs/symbio_spec/`, relative to the receiving repository root. During authorized initialization, the coding agent adds a short instruction pointer using the actual installed skill path. The [format reference](references/format.md#1-repository-structure) gives the structure and pointer requirements.
 
+The whole-folder format starts at `1.0.0`, separately from the skill release version. The [versioning reference](references/versioning.md) defines the Markdown version record, Semantic Versioning, compatibility checks, and consecutive migrations. An absent record means the existing unversioned format, equivalent to `1.0.0`; adopting the record preserves every existing specification file. Malformed or unsupported versions and incomplete migrations stop normal work. Installation alone does not add the record or migrate a project.
+
 New software starts with folder overviews, indexes, decisions and coverage records, then develops useful content through Update. Empty templates are not approved definitions. Existing software requires a bounded inspection, prepared human review and repeated small increments. Adoption effort depends on the examined scope, evidence quality and decisions needed; installation does not reconstruct a whole product. Preserve useful existing specifications and approvals, proposing moves or splits before migration.
 
 ## Concrete example
@@ -68,7 +70,10 @@ Existing product authorization applies without asking again. Additional product 
 ## Instructions and references
 
 - [SKILL.md](SKILL.md): workflow selection, intent, human review and evidence requirements.
-- [Format](references/format.md): authoritative structure, six area responsibilities, document conventions, decisions and coverage.
+- [Format registry](references/format.md): published versions and links to retained definitions.
+- [Format 1.0.0](references/format-v1.0.0.md): authoritative structure, six area responsibilities, document conventions, decisions and coverage.
+- [Versioning and migration](references/versioning.md): version record, detection, compatibility, consecutive conversion and recovery.
+- [Worked verification examples](references/versioning_examples.md): representative adoption, detection, conversion and interruption exercises.
 - [Workflows](references/workflows.md): overview linking to the separate workflow procedures.
 - [Symbiospec Audit for self-consistency](references/workflow_audit_self_consistency.md): review agreement within the selected specification scope.
 - [Symbiospec Audit for software compliance](references/workflow_audit_software_compliance.md): compare software and approved Symbiospec in both directions.
