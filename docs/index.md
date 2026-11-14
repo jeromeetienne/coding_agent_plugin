@@ -1,7 +1,7 @@
 # Documentation index
 
 - Created: 28 October 2026
-- Last updated: 10 November 2026
+- Last updated: 14 November 2026
 - Status: Maintained index for agents and tools
 - Related framing: [Agent instructions](../AGENTS.md)
 - Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 38](https://github.com/jeromeetienne/coding_agent_plugin/issues/38), [Issue 39](https://github.com/jeromeetienne/coding_agent_plugin/issues/39), [Issue 61](https://github.com/jeromeetienne/coding_agent_plugin/issues/61)
@@ -20,3 +20,5 @@ This file lists shared documentation for coding agents and tools.
 - [Publish and maintain the documentation](publishing.md): website publication, updates, and verification.
 
 - [Preserve conversations after a folder rename](conversations_after_folder_rename.md): tested command-line recovery, preparation, and rollback for Codex and Claude Code.
+
+- [PR in AI era](<PR in AI era/index.md>): discussion notes about preserving informed acceptance when AI code production exceeds human review capacity.

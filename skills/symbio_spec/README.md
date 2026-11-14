@@ -1,6 +1,10 @@
 # symbio_spec
 
-Symbiospec is a shared product specification that humans can understand and approve, and coding agents use to guide implementation and verification. The skill `symbio_spec` keeps each receiving project's specification and related records under `docs/symbio_spec/`.
+Symbiospec is the shared product specification for humans and AI. Humans can understand and approve Symbiospec, and AI uses Symbiospec to guide implementation and verification. The skill `symbio_spec` keeps each receiving project's specification and related records under `docs/symbio_spec/`.
+
+## Why the name Symbiospec
+
+Symbiospec is short for “Symbiotic Spec”. “Symbiotic” expresses the collaboration between humans and AI toward one shared goal: building the same product together. Humans and AI contribute different abilities, and Symbiospec gives humans and AI a common reference for describing, discussing, and agreeing on the product to build.
 
 ## When to use
 
