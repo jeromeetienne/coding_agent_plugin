@@ -149,6 +149,16 @@ Each authoritative topic document identifies its approval evidence. If approval 
 
 Use `coverage.md` to record examined areas, approved scope, partial coverage, unresolved questions, known software differences, and the next proposed increment. Keep the record concise and link to specifications and reports. An empty structure is an unpopulated starting point, not complete coverage.
 
-### 4.4. Realignment reports
+### 4.4. Audit and Realignment reports
 
-Use `reports/<topic>.md` for an authorized comparison report. Each finding records its affected specification, expected and observed results, evidence, severity, confidence, recommendation, and resolution or deferral. Record which checks actually ran and the limits of the examined scope. Approval of the specification and execution of tests remain separate facts.
+Present findings in the conversation unless saving a report is authorized. Use `reports/<topic>.md` for an authorized saved report. Identify Symbiospec Audit for self-consistency, Symbiospec Audit for software compliance, or both audits, as applicable. Record the requested scope, reviewed specification and approval references, examined and unexamined areas, and evidence limitations. For software comparison, identify the software revision and environment and report coverage of both comparison directions.
+
+For each finding, record:
+
+- Classification: confirmed conflict, missing description, unresolved product decision, or behaviour not verified. Add specific information such as a test coverage gap when useful; a missing test alone does not establish a conflict.
+- Affected specification descriptions, approval evidence, and user scenarios, with links where present. For an undocumented capability, state that no matching description was found in the examined scope and identify the documents searched; do not invent a specification reference.
+- Expected and observed results, or the two conflicting specification descriptions. Mark unavailable or inapplicable evidence explicitly.
+- Evidence links and checks actually performed. Separate source and test inspection from executed tests and direct application observations; include actual execution output or observations when checks ran.
+- Severity, confidence, recommended action, any human product decision needed, and resolution or deferral. Keep evidence distinct from inference and confidence distinct from approval.
+
+Report partial coverage even when no findings are discovered. Do not claim exhaustive consistency, complete software compliance, or tests that were not performed. Findings do not authorize changes; keep proposed corrections separate from the audit results. Approval of the specification and execution of tests remain separate facts.

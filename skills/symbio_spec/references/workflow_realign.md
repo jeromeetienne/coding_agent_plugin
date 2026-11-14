@@ -4,13 +4,11 @@ Run this workflow when requested, or as part of an explicitly authorized recurri
 
 ## 1. Compare without modifying
 
-Identify the approved references and an explicit scope. Compare the current specification with implementation paths, relevant test expectations, and permitted application observations. Record examined and unexamined areas. Read-only comparison does not permit unrequested code or specification corrections.
+Identify the approved references and an explicit scope. For software comparison, use [Symbiospec Audit for software compliance](workflow_audit_software_compliance.md), including both comparison directions. Use [Symbiospec Audit for self-consistency](workflow_audit_self_consistency.md) when internal specification review is requested. A request for software comparison does not automatically request both audits. An existing scoped report may supply the findings; repeat comparisons only where changes or missing evidence require further investigation. Read-only comparison does not permit unrequested code or specification corrections.
 
 ## 2. Report differences
 
-Write the report under `docs/symbio_spec/reports/` when saving the report is authorized. Otherwise present the findings in the conversation. Check outdated descriptions, undocumented capabilities, conflicting requirements, implementation regressions, missing or contradictory test coverage, terminology, section ownership, and broken references.
-
-For each finding, distinguish evidence from inference and confidence from severity. Include expected and observed results, affected references, recommended correction, and whether a new product decision is needed. A missing test is a coverage gap, not proof that the feature is broken.
+Follow the [audit and Realignment report conventions](format.md#44-audit-and-realignment-reports) and the selected audit procedure. Report the differences before proposing or applying corrections. An audit-only request ends with findings; it does not authorize the remaining correction steps.
 
 ## 3. Review proposed corrections
 
