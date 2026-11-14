@@ -134,6 +134,23 @@ console.log('large individual files renamed and restored; peak RSS KiB=' + proce
 			ProjectFiles.verify(record.options.from, original, true);
 		});
 
+		Test('status watch waits for the independent worker and reports its terminal result', (context) => {
+			const record = this._fixture(context);
+			Fs.rmdirSync(record.directory);
+			const directory = OperationJob.start(record.options);
+			const result = ChildProcess.spawnSync(process.execPath, [
+				'--import', import.meta.resolve('tsx'),
+				new URL('../src/cli.ts', import.meta.url).pathname,
+				'--status', directory, '--watch',
+			], {
+				encoding: 'utf8',
+				timeout: 30000,
+			});
+			Assert.equal(result.status, 0, result.stderr);
+			Assert.match(result.stdout, /complete: verified/);
+			Assert.equal(Fs.existsSync(record.options.to), true);
+		});
+
 		Test('missing indexed transcript preserves its row while available conversations rename and restore', async (context) => {
 			const record = this._fixture(context);
 			const path = Path.join(record.options.codexHome, 'sessions', 'missing.jsonl');
@@ -147,8 +164,20 @@ console.log('large individual files renamed and restored; peak RSS KiB=' + proce
 			Assert.ok(plan.warnings?.[0].includes(path));
 			Assert.equal(plan.conversations.filter((entry) => entry.application === 'Codex').length, 1);
 			Fs.rmdirSync(record.directory);
-			const directory = OperationJob.start(record.options);
-			const result = await OperationJob.wait(directory, 30000);
+			const directory = record.directory;
+			const command = ChildProcess.spawnSync(process.execPath, [
+				'--import', import.meta.resolve('tsx'),
+				new URL('../src/cli.ts', import.meta.url).pathname,
+				'--from', record.options.from, '--to', record.options.to,
+				'--codex-home', record.options.codexHome, '--claude-home', record.options.claudeHome,
+				'--claude-config', record.options.claudeConfig, '--backup', directory, '--apply',
+			], {
+				encoding: 'utf8',
+				timeout: 30000,
+			});
+			Assert.equal(command.status, 0, command.stderr);
+			Assert.equal((command.stdout + command.stderr).split('Missing Codex transcript for missing').length - 1, 1);
+			const result = OperationJob.status(directory);
 			Assert.equal(result.state, 'complete', result.error);
 			Assert.ok(result.limitations.some((message) => message.includes(path)));
 			Assert.equal(Fs.existsSync(record.options.to), true);

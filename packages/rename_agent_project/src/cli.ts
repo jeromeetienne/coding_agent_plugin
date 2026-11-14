@@ -49,6 +49,7 @@ export class Cli {
 			.option('--backup <path>', 'Optional new operation and backup directory; chosen automatically if omitted')
 			.option('--restore <path>', 'Preview restoration of a complete rename operation')
 			.option('--status <path>', 'Show durable status for an operation directory')
+			.option('--watch', 'With --status, display live progress until the operation finishes')
 			.option('--detach', 'Return once the independent worker starts')
 			.option('--apply', 'Perform the complete rename or restoration; otherwise preview only')
 			.configureOutput({
@@ -60,12 +61,16 @@ export class Cli {
 			})
 			.parse(argv);
 		const options = command.opts<CommandOptions>();
+		if (options.watch === true && options.status === undefined) {
+			throw new Error('--watch requires --status.');
+		}
 		if (options.status !== undefined) {
 			if (options.from !== undefined || options.to !== undefined
 				|| options.restore !== undefined || options.apply === true) {
 				throw new Error('--status cannot be combined with a rename or restoration.');
 			}
-			this._report(OperationJob.status(this._absolute(options.status)));
+			const directory = this._absolute(options.status);
+			this._report(options.watch === true ? await this._wait(directory, Infinity) : OperationJob.status(directory));
 			return;
 		}
 		if (options.restore !== undefined) {
@@ -73,6 +78,7 @@ export class Cli {
 				throw new Error('--restore cannot be combined with --from, --to, or --backup.');
 			}
 			const directory = this._absolute(options.restore);
+			console.log('Checking project and conversation backups for restoration...');
 			const record = OperationJob.restore(directory, options.apply === true);
 			if (options.apply !== true) {
 				console.log(Chalk.yellow(
@@ -81,7 +87,7 @@ export class Cli {
 			} else if (options.detach === true) {
 				console.log(`Restoration started. Status and backup: ${Chalk.cyan(directory)}`);
 			} else {
-				this._report(await OperationJob.wait(record.directory, undefined, (progress) => this._waiting(progress)));
+				this._report(await this._wait(record.directory));
 			}
 			return;
 		}
@@ -112,6 +118,7 @@ export class Cli {
 			claudeConfig: options.claudeConfig,
 			only,
 		};
+		console.log('Inspecting project conversations...');
 		const plan = ConversationPlan.build(migrationOptions);
 		for (const warning of plan.warnings ?? []) {
 			console.error(Chalk.yellow(warning));
@@ -135,10 +142,27 @@ export class Cli {
 		console.log(`Independent rename started. Status and backup: ${Chalk.cyan(directory)}`);
 		if (options.detach !== true && plan.conversations.some((entry) => entry.id === process.env.CODEX_THREAD_ID)
 			=== false) {
-			this._report(await OperationJob.wait(directory, undefined, (progress) => this._waiting(progress)));
+			this._report(await this._wait(directory), plan.warnings);
 		} else {
 			console.log(Chalk.yellow('Close affected clients manually. The shared server and unrelated clients stay running.'));
-			console.log(`Read waiting instructions with --status ${Chalk.cyan(directory)}`);
+			console.log(`Watch progress from another terminal with --status ${Chalk.cyan(directory)} --watch`);
+		}
+	}
+
+	/**
+	 * @param directory Durable operation directory.
+	 * @param timeout Maximum wait in milliseconds; an explicit watch has no deadline.
+	 * @returns Terminal operation state after showing current activity and elapsed time.
+	 */
+	private static async _wait(directory: string, timeout?: number): Promise<OperationRecord> {
+		const cliProgress = new CliProgress();
+		try {
+			return await OperationJob.wait(directory, timeout, (record) => {
+				cliProgress.clear();
+				this._waiting(record);
+			}, (record) => cliProgress.update(record));
+		} finally {
+			cliProgress.clear();
 		}
 	}
 
@@ -156,9 +180,10 @@ export class Cli {
 
 	/**
 	 * @param record Durable operation result.
+	 * @param previousWarnings Warnings already printed during this command's preview.
 	 * @returns No value; sets a failure exit status when the operation did not succeed.
 	 */
-	private static _report(record: OperationRecord): void {
+	private static _report(record: OperationRecord, previousWarnings: string[] = []): void {
 		const stateColor = record.state === 'complete' ? Chalk.green
 			: record.state === 'failed' || record.state === 'recovery_required' ? Chalk.red : Chalk.yellow;
 		console.log(`${stateColor(record.state)}: ${record.phase}`);
@@ -173,7 +198,9 @@ export class Cli {
 		}
 		if (record.state === 'complete') {
 			for (const limitation of record.limitations) {
-				console.log(Chalk.yellow(limitation));
+				if (previousWarnings.includes(limitation) === false) {
+					console.log(Chalk.yellow(limitation));
+				}
 			}
 		}
 		if (record.state === 'failed' || record.state === 'recovery_required'
@@ -204,6 +231,63 @@ export class Cli {
 			return Path.join(Os.homedir(), '.claude.json');
 		}
 		return Path.join(home, '.claude.json');
+	}
+}
+
+/** Displays a live activity indicator without inventing a completion percentage. */
+class CliProgress {
+	/** Start of this command's wait, including manual client closure. */
+	private _started = Date.now();
+	/** Last phase written to redirected output. */
+	private _phase = '';
+	/** Spinner animation frame. */
+	private _frame = 0;
+	/** Whether a terminal activity line is visible. */
+	private _isVisible = false;
+
+	/**
+	 * @param record Current durable worker progress.
+	 * @returns No value after updating the terminal or logging a new phase.
+	 */
+	update(record: OperationRecord): void {
+		const labels: Record<string, string> = {
+			'preparing-worker': 'Preparing worker',
+			'preparing-restore-worker': 'Preparing restoration',
+			'worker-starting': 'Starting worker',
+			'checking-applications': 'Checking applications',
+			'waiting-for-clients': 'Waiting for affected clients to close',
+			'clients-closed': 'Planning and checking project contents',
+			'backing-up-project': 'Backing up and checking project files',
+			'migrating-conversations': 'Backing up and migrating conversations',
+			'renaming-project': 'Checking and moving the project',
+			'repairing-worktrees': 'Repairing Git worktrees',
+			'verifying-result': 'Verifying the renamed project and conversations',
+			'restoring': 'Restoring project and conversation records',
+		};
+		const elapsed = Math.floor((Date.now() - this._started) / 1000);
+		const duration = `${Math.floor(elapsed / 60)}m ${String(elapsed % 60).padStart(2, '0')}s`;
+		const label = labels[record.phase] ?? record.phase.replace(/-/g, ' ');
+		const text = `${label} | elapsed ${duration}`;
+		if (process.stdout.isTTY === true) {
+			const frame = ['|', '/', '-', '\\'][this._frame++ % 4];
+			const width = Math.max(1, (process.stdout.columns ?? 80) - 1);
+			const suffix = ` | elapsed ${duration}`;
+			const available = Math.max(0, width - 2 - suffix.length);
+			const line = `${frame} ${label.slice(0, available)}${suffix}`.slice(0, width);
+			process.stdout.write(`\u001b[1G\u001b[2K${line}`);
+			this._isVisible = true;
+		} else if (this._phase !== record.phase) {
+			console.log(text);
+		}
+		this._phase = record.phase;
+	}
+
+	/** @returns No value after clearing the live row before instructions or final results. */
+	clear(): void {
+		if (this._isVisible === true) {
+			process.stdout.write('\u001b[1G\u001b[2K');
+			this._isVisible = false;
+		}
 	}
 }
 

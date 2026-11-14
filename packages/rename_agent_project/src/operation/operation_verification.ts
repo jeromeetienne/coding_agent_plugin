@@ -84,6 +84,9 @@ export class OperationVerification {
 			}
 		}
 		for (const transcript of operation.verification.transcripts) {
+			if (operation.plan.files.some((file) => file.path === transcript.path)) {
+				continue;
+			}
 			if (StorageStream.hash(transcript.path) !== transcript.hash) {
 				throw new Error(`A Codex transcript changed unexpectedly: ${transcript.path}`);
 			}

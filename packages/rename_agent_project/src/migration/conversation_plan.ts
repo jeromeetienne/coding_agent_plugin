@@ -85,7 +85,7 @@ export class ConversationPlan {
 	}
 
 	/**
-	 * Select indexed Codex conversations without rewriting transcript bytes.
+	 * Select indexed Codex conversations and update only their initial session metadata path.
 	 * @param options Command options.
 	 * @param plan Prepared migration.
 	 * @returns The result of the operation, or no value for writes and checks.
@@ -180,6 +180,14 @@ export class ConversationPlan {
 			if (metadata.type !== 'session_meta' || JsonRecords.object(metadata.payload, path).id !== row.id) {
 				throw new Error(`Missing or mismatched Codex session metadata: ${path}`);
 			}
+			const cwd = JsonRecords.object(metadata.payload, path).cwd;
+			if (typeof cwd !== 'string' || Path.isAbsolute(cwd) === false) {
+				throw new Error(`Missing or invalid Codex session working directory: ${path}`);
+			}
+			this._recordFile(plan, path, 'payload.cwd', {
+				from: cwd,
+				to: this.replace(row.cwd, options),
+			});
 			plan.conversations.push({
 				application: 'Codex',
 				id: row.id,
@@ -369,14 +377,14 @@ export class ConversationPlan {
 	/**
 	 * @param plan Migration under construction.
 	 * @param path Transcript or history file.
-	 * @param field Top-level path field.
+	 * @param field Supported project association field.
 	 * @param mapping Project path replacement.
 	 * @returns No value; records checksums and the transformation only when bytes change.
 	 */
 	private static _recordFile(
 		plan: MigrationPlan,
 		path: string,
-		field: 'cwd' | 'project',
+		field: 'cwd' | 'project' | 'payload.cwd',
 		mapping: PathMapping,
 	): void {
 		const rewrite = {
