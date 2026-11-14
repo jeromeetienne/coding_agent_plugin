@@ -3,7 +3,7 @@
 - Created: 14 November 2026
 - Last updated: 14 November 2026
 - Status: Open discussion notes
-- Related framing: [Agent instructions](../../AGENTS.md)
+- Related framing: [Agent instructions](../../../AGENTS.md)
 - Related issue: [Issue 77](https://github.com/jeromeetienne/coding_agent_plugins/issues/77), [Issue 78](https://github.com/jeromeetienne/coding_agent_plugins/issues/78)
 
 ## The problem raised by Jérôme Étienne
@@ -61,7 +61,7 @@ The assistant proposed reviewing the description before code verification. The o
 
 ## Symbiospec as the basis for wanted behavior
 
-Jérôme Étienne identifies Symbiospec as the shared product specification for humans and AI, providing a basis for deciding whether a proposed feature is wanted. The discussion refers to the repository's [Symbiospec skill](../../skills/symbio_spec/SKILL.md).
+Jérôme Étienne identifies Symbiospec as the shared product specification for humans and AI, providing a basis for deciding whether a proposed feature is wanted. The discussion refers to the repository's [Symbiospec skill](../../../skills/symbio_spec/SKILL.md).
 
 The skill separates observed implementation, proposed specification, and approved specification. Humans approve product decisions, and coding agents use approved decisions to guide implementation and verification. Existing code and tests provide evidence; existing code and tests do not automatically authorize product behavior.
 
@@ -82,21 +82,9 @@ Acceptance of the proposal establishes the intended product decision. Verificati
 
 This sequence records Jérôme Étienne's proposed approach for the discussion. The precise timing of incorporating the accepted proposal into the approved specification and the handling of proposal history remain to be defined. The reusable Symbiospec workflow instructions have not been changed; the skill overview has been updated to explain the name.
 
-## Explicit repository rules and their framework
 
-Jérôme Étienne identifies The Rules of the Repo as another part of the review approach. Repository requirements must be clearly expressed and formalized inside the repository so coding agents can find, understand, and apply the requirements. Expectations left unstated cannot provide a dependable basis for automated review.
 
-The Rules of the Repo provides the common entry point: a rules list identifies which rule skills apply to a change and supplies the configuration for each rule skill. The framework distinguishes static rules from living rules, including rules whose changes require human approval. See [The Rules of the Repo](../../skills/rules_of_the_repo/SKILL.md).
-
-Examples raised by Jérôme Étienne include maintaining Symbiospec alongside authorized product changes, following Repo Folders Constraints when placing code or creating packages, and following the repository's coding style. Repo Folders Constraints is one rule within the framework, rather than a competing framework. See [Repo Folders Constraints](../../skills/repo_folders_constraints/SKILL.md).
-
-The assistant suggested additional possible rule areas: dependencies, security, verification evidence, compatibility, database changes, and documentation. These examples are possibilities for discussion, not newly adopted rules for this repository.
-
-Applied to pull request review, the approach adds a check that the change follows the applicable repository rules. A useful review report would identify the applicable rules, evidence of compliance, violations, and checks that could not be completed. Writing down a rule does not by itself prove that an agent enforced the rule correctly.
-
-## The meaning of the name Symbiospec
-
-Jérôme Étienne defines the symbiotic relationship as collaboration between humans and AI toward one shared goal. The preferred introduction is “the shared product specification for humans and AI”. The [Symbiospec skill overview](../../skills/symbio_spec/README.md) now explains that meaning.
+The broader discussion of repository rules and the name Symbiospec is maintained in the [overall discussion notes](../discussion_notes.md).
 
 ## Questions still open
 

@@ -1,9 +1,9 @@
-# PR in AI era index
+# Pull request review index
 
 - Created: 14 November 2026
 - Last updated: 14 November 2026
 - Status: Maintained index for agents and tools
-- Related framing: [Agent instructions](../../AGENTS.md)
+- Related framing: [Agent instructions](../../../AGENTS.md)
 - Related issue: [Issue 77](https://github.com/jeromeetienne/coding_agent_plugins/issues/77)
 
 This file lists the discussion documents for agents and tools.

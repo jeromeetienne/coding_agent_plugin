@@ -20,4 +20,4 @@ This folder explains the skill collection for people. Start with [How the skills
 
 - [Preserve conversations after a folder rename](conversations_after_folder_rename.md): tested command-line recovery, preparation, and rollback for Codex and Claude Code.
 
-- [PR in AI era](<pr_in_ai_era/README.md>): discussion notes about preserving informed acceptance when AI code production exceeds human review capacity.
+- [Coding in AI era](coding_in_ai_era/README.md): the broader approach to retaining human control, including pull request review.
