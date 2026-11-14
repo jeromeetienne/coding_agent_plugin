@@ -1,10 +1,10 @@
 # Repo Folders Constraints
 
 - Created: 9 November 2026
-- Last updated: 9 November 2026
+- Last updated: 14 November 2026
 - Status: Explanation and adoption guide for people
-- Related framing: [Agent instructions](../AGENTS.md)
-- Related rules: [Docs folder system](../skills/docs_folder_system/SKILL.md)
+- Related framing: [Agent instructions](../../AGENTS.md)
+- Related rules: [Docs folder system](../../skills/docs_folder_system/SKILL.md)
 - Related issue: [Issue 26](https://github.com/jeromeetienne/coding_agent_plugin/issues/26), [Issue 41](https://github.com/jeromeetienne/coding_agent_plugin/issues/41)
 
 ## Purpose and ownership
@@ -13,7 +13,7 @@ Repo Folders Constraints records the responsibilities and boundaries of reposito
 
 The human owns and reviews the rules file. The coding agent reads and obeys the rules file, checks proposed changes against the rules file, and proposes rule changes for approval. Code that already violates a rule does not automatically authorize changing the rule.
 
-The [repo_folders_constraints README](../skills/repo_folders_constraints/README.md) gives installation and a short adoption example. The [instructions](../skills/repo_folders_constraints/SKILL.md) are authoritative for the exact procedure. This guide explains existing behaviour; the examples do not create folder rules for this repository.
+The [repo_folders_constraints README](../../skills/repo_folders_constraints/README.md) gives installation and a short adoption example. The [instructions](../../skills/repo_folders_constraints/SKILL.md) are authoritative for the exact procedure. This guide explains existing behaviour; the examples do not create folder rules for this repository.
 
 ## What the rules file records
 
@@ -55,7 +55,7 @@ These package and folder names are example inputs. The example assumes the recei
 
 ## Standalone setup
 
-Install `repo_folders_constraints` as described in the [README](../skills/repo_folders_constraints/README.md#install). No other skill is inherently required. Install additional skills when the chosen rules require those skills; the example `docs` workflow requires `docs_folder_system`.
+Install `repo_folders_constraints` as described in the [README](../../skills/repo_folders_constraints/README.md#install). No other skill is inherently required. Install additional skills when the chosen rules require those skills; the example `docs` workflow requires `docs_folder_system`.
 
 For a project without The Rules of the Repo, place this section in `AGENTS.md` after the human agrees to the path and rules:
 
@@ -67,11 +67,11 @@ Every folder and every package of this repository follows the skill [repo_folder
 - Rules file: .agents/repo_folders_constraints.md
 ```
 
-Create the human-approved rules file at that path, using the two-table form above. If adopting the example documentation workflow, also configure `docs_folder_system` using its [standalone example](../skills/docs_folder_system/README.md#configuration). The path is supplied explicitly; the skill does not search for or guess the rules file.
+Create the human-approved rules file at that path, using the two-table form above. If adopting the example documentation workflow, also configure `docs_folder_system` using its [standalone example](../../skills/docs_folder_system/README.md#configuration). The path is supplied explicitly; the skill does not search for or guess the rules file.
 
 ## Setup through The Rules of the Repo
 
-Start with the [complete coordinated documentation example](../skills/rules_of_the_repo/README.md#configuration), which supplies `AGENTS.md`, a rules list and Docs folder system configuration. Install the additional selected skill:
+Start with the [complete coordinated documentation example](../../skills/rules_of_the_repo/README.md#configuration), which supplies `AGENTS.md`, a rules list and Docs folder system configuration. Install the additional selected skill:
 
 ```bash
 npx skills add jeromeetienne/coding_agent_plugin --skill repo_folders_constraints
@@ -123,7 +123,7 @@ Review the resulting rules-file change alongside the implementation. A new packa
 
 ## Relationship to CONTEXT.md notes
 
-Repo Folders Constraints states human-owned decisions. The [CONTEXT.md system](../skills/context_md_system/README.md) maintains short notes for coding agents about folder purpose, exports and boundaries. The coding agent can update those notes without human approval, but note maintenance does not authorize changing human-owned decisions.
+Repo Folders Constraints states human-owned decisions. The [CONTEXT.md system](../../skills/context_md_system/README.md) maintains short notes for coding agents about folder purpose, exports and boundaries. The coding agent can update those notes without human approval, but note maintenance does not authorize changing human-owned decisions.
 
 When a context file says `packages/core` may call services while the rules file forbids service calls, the rules file takes precedence. The coding agent corrects the context file. A desired change to the human-owned boundary requires the proposal and approval described above. History and reasons can remain in context notes and linked issues while the rules table stays concise.
 
@@ -131,6 +131,6 @@ When a context file says `packages/core` may call services while the rules file 
 
 Expected outcomes are a change checked against all affected rows, an explicit missing-input report, or a rule-change proposal. Review responsibility, prohibitions, dependencies, technologies and workflow together. Installation alone supplies no project rules, and the skill does not prove application correctness, run a deployment or publish documentation.
 
-- [Repo Folders Constraints instructions](../skills/repo_folders_constraints/SKILL.md): exact rules-file form and approval procedure.
+- [Repo Folders Constraints instructions](../../skills/repo_folders_constraints/SKILL.md): exact rules-file form and approval procedure.
 - [The Rules of the Repo](rules_of_the_repo.md): coordination and rule types.
-- [Docs folder system](../skills/docs_folder_system/README.md): document form, configuration and navigation.
+- [Docs folder system](../../skills/docs_folder_system/README.md): document form, configuration and navigation.

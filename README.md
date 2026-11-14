@@ -6,7 +6,7 @@ Read the **[documentation website](https://jeromeetienne.github.io/coding_agent_
 
 ## Choose skills
 
-Start with [How the skills work together](docs/skills_together.md) for required dependencies, optional combinations, and complete examples. Each link below opens the skill’s introduction for people; exact coding-agent instructions are linked from that introduction.
+Start with [How the skills work together](docs/using_skills/skills_together.md) for required dependencies, optional combinations, and complete examples. Each link below opens the skill’s introduction for people; exact coding-agent instructions are linked from that introduction.
 
 | Skill | Purpose |
 | --- | --- |
@@ -42,13 +42,13 @@ Or install one skill:
 npx skills add jeromeetienne/coding_agent_plugin --skill issue_fix_workflow
 ```
 
-Installation provides instructions; required receiving-project values still need configuration. Read [Install and configure the skills](docs/installing_skills.md) for prerequisites, companion skills, local copies, and installation options. Read the selected skill’s configuration section before starting work.
+Installation provides instructions; required receiving-project values still need configuration. Read [Install and configure the skills](docs/using_skills/installing_skills.md) for prerequisites, companion skills, local copies, and installation options. Read the selected skill’s configuration section before starting work.
 
 ## Maintain the skills
 
-This repository is the authoritative source. Shared skill changes belong here; installed copies in other projects are updated separately. Read [Maintain the shared skills](docs/maintaining_skills.md) for ownership, history, and documentation updates.
+This repository is the authoritative source. Shared skill changes belong here; installed copies in other projects are updated separately. Read [Maintain the shared skills](docs/contributing/maintaining_skills.md) for ownership, history, and documentation updates.
 
-The [skill inventory](docs/skill_inventory.md) records readiness, dependencies, and coverage. The [documentation structure](docs/documentation_structure.md) explains where content belongs. The [publication guide](docs/publishing.md) explains how the same Markdown is published and checked after updates.
+The [shared workflow guide](docs/using_skills/skills_together.md) explains dependencies and examples. Contributor [documentation conventions](docs/contributing/maintaining_skills.md#documentation-conventions) explain where content belongs. The [publication guide](docs/contributing/publishing.md) explains website updates and checks.
 
 ## License
 
@@ -56,4 +56,4 @@ The [skill inventory](docs/skill_inventory.md) records readiness, dependencies, 
 
 ## Conversation migration script
 
-The [rename_agent_project package](packages/rename_agent_project/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.
+The [rename_agent_project package](packages/rename_agent_project/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/tools/rename_agent_project/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.

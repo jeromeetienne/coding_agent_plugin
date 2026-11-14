@@ -81,4 +81,4 @@ No companion skill is required. [issue_fix_workflow](../issue_fix_workflow/READM
 ## Instructions and references
 
 - [SKILL.md](SKILL.md): authoritative operations, evidence, preservation and format rules.
-- [Documentation structure](../../docs/documentation_structure.md): reader documentation conventions.
+- [Documentation conventions](../../docs/contributing/maintaining_skills.md#documentation-conventions): reader documentation conventions.

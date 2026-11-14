@@ -32,7 +32,7 @@ Every folder and every package of this repository follows the skill [repo_folder
 - Rules file: .agents/repo_folders_constraints.md
 ```
 
-Put the rules below in `.agents/repo_folders_constraints.md`, after human approval. The [dedicated guide](../../docs/repo_folders_constraints.md) expands the example and supplies coordinated setup through The Rules of the Repo. The caller always supplies the path; the skill never searches for or guesses the path. Without the path, the coding agent warns, shows the template, asks for the path and stops folder/package changes.
+Put the rules below in `.agents/repo_folders_constraints.md`, after human approval. The [dedicated guide](../../docs/using_skills/repo_folders_constraints.md) expands the example and supplies coordinated setup through The Rules of the Repo. The caller always supplies the path; the skill never searches for or guesses the path. Without the path, the coding agent warns, shows the template, asks for the path and stops folder/package changes.
 
 ## Concrete example
 
@@ -72,7 +72,7 @@ The human owns the rules file. The coding agent never changes the rules file wit
 
 ## Related skills and guides
 
-- [Repo Folders Constraints guide](../../docs/repo_folders_constraints.md): complete rule columns, setup alternatives, missing decisions and review examples.
+- [Repo Folders Constraints guide](../../docs/using_skills/repo_folders_constraints.md): complete rule columns, setup alternatives, missing decisions and review examples.
 - [rules_of_the_repo](../rules_of_the_repo/README.md): optional coordination with other rule skills.
 - [context_md_system](../context_md_system/README.md): optional agent-maintained folder notes. When notes disagree with Repo Folders Constraints, the human-owned rules file wins and the coding agent corrects the notes.
 - [docs_folder_system](../docs_folder_system/README.md): required by the illustrative `docs` workflow above, rather than by Repo Folders Constraints itself.

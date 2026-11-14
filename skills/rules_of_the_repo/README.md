@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The skill `rules_of_the_repo` is The Rules of the Repo: one entry point that finds the rule skills applicable to a repository change and supplies each rule skill with its configuration. The skill holds no rule itself. The [shared guide](../../docs/rules_of_the_repo.md) explains the rule types and ownership in detail.
+The skill `rules_of_the_repo` is The Rules of the Repo: one entry point that finds the rule skills applicable to a repository change and supplies each rule skill with its configuration. The skill holds no rule itself. The [shared guide](../../docs/using_skills/rules_of_the_repo.md) explains the rule types and ownership in detail.
 
 ## When to use
 
@@ -63,7 +63,7 @@ For maintained repository-local examples, read this repository's [AGENTS.md](../
 
 Request: “Add `docs/setup.md` explaining how to install the project's tools.” With the example configuration, the coding agent reads the rules list, selects `docs_folder_system`, supplies its configuration, and checks the guide's metadata and navigation. The coding agent adds the guide and updates `docs/index.md`; every documentation folder also needs `README.md` and `index.md`.
 
-A change outside `docs` does not select that documentation row. In a project also using Repo Folders Constraints, adding the guide selects both rows: folder constraints check whether the guide belongs in `docs`, and documentation rules check the form. The [Repo Folders Constraints guide](../../docs/repo_folders_constraints.md#setup-through-the-rules-of-the-repo) shows the additional row and its complete rules file.
+A change outside `docs` does not select that documentation row. In a project also using Repo Folders Constraints, adding the guide selects both rows: folder constraints check whether the guide belongs in `docs`, and documentation rules check the form. The [Repo Folders Constraints guide](../../docs/using_skills/repo_folders_constraints.md#setup-through-the-rules-of-the-repo) shows the additional row and its complete rules file.
 
 ## Results
 
@@ -89,4 +89,4 @@ Selected rule skills are required only when the receiving rules list calls for t
 ## Instructions and references
 
 - [SKILL.md](SKILL.md): authoritative selection procedure, rule types and setup templates.
-- [The Rules of the Repo guide](../../docs/rules_of_the_repo.md): shared explanation and adoption responsibilities.
+- [The Rules of the Repo guide](../../docs/using_skills/rules_of_the_repo.md): shared explanation and adoption responsibilities.

@@ -7,7 +7,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - `packages/`: executable tools with their own dependencies and tests; see [packages/CONTEXT.md](packages/CONTEXT.md).
 - `skills/`: the skill folders, each with instructions for the coding agent in `SKILL.md` and an overview of its purpose for people in `README.md`.
 - [README.md](README.md): installation commands, receiving-project configuration, and skill maintenance.
-- `docs/`: the documentation of this repository for people, organized by the skill `docs_folder_system`; start at [docs/index.md](docs/index.md).
+- `docs/`: the documentation of this repository for people, organized by the skill `docs_folder_system`; start at [docs/README.md](docs/README.md).
 - [AGENTS.md](AGENTS.md): the instructions for the coding agents, with the values of the skill `docs_folder_system`.
 
 ## Rules
@@ -18,6 +18,8 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - The [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) skill requires `symbio_spec` and project Symbiospec data; project configuration and generated documentation stay outside the reusable skill.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
 - The `jerome-rust-style` skill is ready for use and contains clearly transferable rules and adaptations explicitly approved by Jérôme; its bundled adaptation review records uncertain rules separately from the active Rust rules.
+- New documentation names its reader and the question answered; update an existing explanation when it already answers the question.
+- The folder `docs` groups skill adoption, contribution, and tool guides separately, with current instructions separate from historical verification evidence.
 - The folder `docs` explains concepts to people and links to the files of a skill; the folder `docs` does not copy the instructions of a skill.
 - Repository-specific commands and branch choices for the Issue Fix Workflow and the Issue Batch Workflow belong in the receiving project's `AGENTS.md`, in the section "Issue Fix Workflow values".
 
