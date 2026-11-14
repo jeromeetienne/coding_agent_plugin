@@ -18,7 +18,7 @@ The skill reads the repository-specific values below.
 - Target branch: `main`.
 - Worktree creation command: from the main checkout, run `git fetch origin main`, then `git worktree add -b <branch-name> .agents/worktrees/<branch-name> origin/main`. Replace `<branch-name>` with the temporary branch name for the issue or group.
 - Worktree folder: `.agents/worktrees/<branch-name>` in the main checkout of this repository.
-- Launch command: there is no application to launch. For the conversation script, run `pnpm --filter rename_agent_project start --help`, `pnpm test`, and `pnpm check` from the temporary worktree. Review changed Markdown and verify relative links from the temporary worktree.
+- Launch command: there is no application to launch. Review changed Markdown and verify relative links from the temporary worktree.
 - Issue tracker commands: use the commands below with `--repo jeromeetienne/coding_agent_plugin`. Write multiline descriptions and comments to temporary files and pass them with `--body-file`.
   - Read an issue: `gh issue view <number> --json title,body,comments,state,url`.
   - Comment on an issue: `gh issue comment <number> --body-file <file>`.
