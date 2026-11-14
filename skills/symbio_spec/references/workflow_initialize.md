@@ -4,9 +4,11 @@ Before setup, follow [version detection and migration](versioning.md). Existing 
 
 ## 1. New software
 
-Read [format.md](format.md), repository instructions, and existing documentation. Create the agreed structure at `docs/symbio_spec/`, including `format-version.md` with version `1.0.0`, folder contracts in the overviews, and accurate navigation in the indexes. Include the version record in the initial root index. Start `decisions.md` and `coverage.md` with honest, empty initial records. Do not invent product concepts or approvals to fill the folders.
+Read [format.md](format.md), repository instructions, and existing documentation. Create the agreed structure at `docs/symbio_spec/`, including `format-version.md` with version `2.0.0`, folder contracts in the overviews, and accurate navigation in the indexes. Include the version record in the initial root index. Initialize `decisions/` and `decisions/summaries/` with overviews and indexes that honestly state that no decisions have been recorded. Start `coverage.md` with an honest, empty initial record. Create dated decision folders and topic summaries only when useful records exist. Do not invent product concepts or approvals to fill the folders.
 
 Add the repository instruction pointer described in the format reference during authorized setup. Then use Update as the first concepts and capabilities are developed. Product decisions already supplied by the human can populate the specification within their actual scope.
+
+Existing supported `1.0.0` folders retain their original decision file and conventions unless migration is authorized. For new Symbiospec folders in existing software, use `2.0.0`; do not treat adoption of version metadata as authorization for storage migration.
 
 ## 2. Existing software: slow growth
 

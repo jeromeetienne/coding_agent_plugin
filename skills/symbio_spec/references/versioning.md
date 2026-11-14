@@ -23,7 +23,7 @@ Store the version at `docs/symbio_spec/format-version.md`:
 ```markdown
 # Symbiospec format version
 
-- Format version: 1.0.0
+- Format version: 2.0.0
 ```
 
 Apply the receiving repository's document header conventions when required. The title must be `Symbiospec format version`. Require exactly one field line of the form `- Format version: MAJOR.MINOR.PATCH`, outside code blocks. Each component is a non-negative decimal integer with no leading zeros except `0`. Accept published versions only; release suffixes and build metadata are not used. Missing, duplicate, conflicting, or invalid fields in an existing record are malformed, not an unversioned folder. An unreadable record is an error, not an absent record. Dates and other document metadata do not approve product content.
@@ -42,7 +42,7 @@ A new requirement that invalidates an existing valid folder requires a major ver
 
 ## 2. Check before normal work
 
-Every Symbiospec skill declares its expected format and supported formats in its entry point and follows this procedure, including skills that only read specifications. Currently `symbio_spec`, `symbio_spec_to_docs`, and `symbio_spec_to_ux` expect and support `1.0.0`, including the unversioned equivalent. New releases update these declarations together with the registry and definitions.
+Every Symbiospec skill declares its expected format and supported formats in its entry point and follows this procedure, including skills that only read specifications. Currently `symbio_spec`, `symbio_spec_to_docs`, and `symbio_spec_to_ux` expect `2.0.0` and support both `2.0.0` and `1.0.0`, including the unversioned `1.0.0` equivalent. Use the detected version's complete definition. Supporting `1.0.0` permits ordinary work in that format without forcing migration. The [1.0.0 to 2.0.0 transition](migration-1-to-2.md) is available only within migration authorization. New releases update these declarations together with the registry and definitions.
 
 At the beginning of setup and before any normal initialization, update, audit, Realignment, documentation generation, or interface proposal:
 

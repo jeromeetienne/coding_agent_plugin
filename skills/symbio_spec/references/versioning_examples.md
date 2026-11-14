@@ -2,7 +2,7 @@
 
 ## 1. Purpose and limits
 
-For contributors checking the [versioning and migration procedure](versioning.md). Use disposable copies of specification files for these exercises. Only `1.0.0` is a published Symbiospec format. Exercise layouts A, B, and C are illustrative layouts, not additional published versions or proposals for future storage.
+For contributors checking the [versioning and migration procedure](versioning.md). Use disposable copies of specification files for these exercises. Published Symbiospec formats are `1.0.0` and `2.0.0`; see [decision storage examples](decision_examples.md) for the production transition. Exercise layouts A, B, and C are illustrative layouts, not additional published versions or proposals for future storage.
 
 Include the six specification areas, two ordered decision records with sources, dates, scope and an unresolved condition, coverage, a glossary topic, a behaviour topic, and relative references. Compare file inventories, content, and references using the tools available in the receiving environment. These examples require no particular programming language or executable migration tool.
 
@@ -10,7 +10,7 @@ Include the six specification areas, two ordered decision records with sources, 
 
 Begin with an existing unversioned folder. Report its effective format as `1.0.0` and propose adding the version record. Verify that preparing or declining adoption makes no changes. After adoption is authorized in the exercise, add only `format-version.md`; compare every pre-existing path and byte with the original inventory. Remove the record on a separate reverse-adoption pass and verify exact restoration.
 
-Read the supported version record. Reject a missing component, a leading zero, a release suffix, duplicate version fields, and an empty field. Reject unknown `1.1.0` and `2.0.0` as unsupported without mutation. An unknown minor version is not automatically supported by the installed skill. An absent folder requires initialization; an absent record in an existing folder means unversioned data.
+Read the supported version record. Reject a missing component, a leading zero, a release suffix, duplicate version fields, and an empty field. Accept supported `2.0.0`. Reject unknown `1.1.0` and `3.0.0` as unsupported without mutation. An unknown minor version is not automatically supported by the installed skill. An absent folder requires initialization; an absent record in an existing folder means unversioned data.
 
 ## 3. Consecutive migration and preservation
 

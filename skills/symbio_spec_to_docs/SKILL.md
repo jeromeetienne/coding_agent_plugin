@@ -7,7 +7,9 @@ description: Generate and update documentation inside a repository from its appr
 
 Use the project's approved Symbiospec and implementation evidence to generate documentation inside the repository. This skill requires the installed skill `symbio_spec` and the project's Symbiospec data. Read `symbio_spec`, perform the version check below, and then read the relevant project data before generating documentation. If either dependency is unavailable, identify the missing dependency and stop generation. Initializing or correcting Symbiospec is a separate task through `symbio_spec`.
 
-**Expected Symbiospec format: `1.0.0`. Supported formats: `1.0.0` and its unversioned equivalent.** Before consuming project specifications or generating output, follow the shared [version detection and migration procedure](../symbio_spec/references/versioning.md) from the installed `symbio_spec` skill. If that procedure or the required definition is unavailable, or a version is malformed or unsupported, or migration is incomplete, stop generation before changing output. Compatible format numbers do not automatically require migration. Adoption and migration are separate authorized work through `symbio_spec`; generation does not authorize changing the source specification.
+**Expected Symbiospec format: `2.0.0`. Supported formats: `2.0.0`, `1.0.0`, and the unversioned `1.0.0` equivalent.** Before consuming project specifications or generating output, follow the shared [version detection and migration procedure](../symbio_spec/references/versioning.md) from the installed `symbio_spec` skill. If that procedure or the required definition is unavailable, or a version is malformed or unsupported, or migration is incomplete, stop generation before changing output. Compatible format numbers do not automatically require migration. Adoption and migration are separate authorized work through `symbio_spec`; generation does not authorize changing the source specification.
+
+For `2.0.0`, use the shared [decision reading procedure](../symbio_spec/references/format-v2.0.0.md#423-reading-procedure) to select relevant topic summaries and original decision evidence, checking later replacements and unresolved conditions. Do not read the complete history by default or treat a summary as approval. For `1.0.0`, use its retained decision file.
 
 Keep reusable instructions independent of a particular application, documentation renderer or hosting service. Product information belongs to the project's Symbiospec; audience and editorial choices belong to the documentation configuration.
 
@@ -37,7 +39,7 @@ An explicit `none` is valid where appropriate, for example no excluded topics or
 
 ## Establish the scope
 
-Use the supplied configuration to select the audience, sources and output. Follow the repository rules for changes. Read decision and coverage records before topic specifications: folder location or a general overview is not proof of approval or implementation.
+Use the supplied configuration to select the audience, sources and output. Follow the repository rules for changes. Locate the affected topic, then read relevant original decision evidence and coverage before treating topic specifications as approved: folder location or a general overview is not proof of approval or implementation.
 
 Distinguish approved behaviour, unapproved proposals, implemented behaviour and behaviour observed in the running application. Check approval for the relevant decision, including later amendments. Existing guides and skills help locate evidence but do not override approved decisions or establish live behaviour.
 
