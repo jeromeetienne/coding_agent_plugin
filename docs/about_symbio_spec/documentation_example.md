@@ -1,7 +1,7 @@
 # A configured audience documentation example
 
 - Created: 9 November 2026
-- Last updated: 9 November 2026
+- Last updated: 14 November 2026
 - Status: Illustrative configuration and generated documentation example
 - Related framing: [Agent instructions](../../AGENTS.md)
 - Related rules: [docs_folder_system](../../skills/docs_folder_system/SKILL.md)
@@ -26,12 +26,16 @@ Assume these receiving-project sources exist and can be read:
 | Source | Role |
 | --- | --- |
 | `docs/symbio_spec/index.md` | Entry point to the six areas. |
-| `docs/symbio_spec/decisions.md` | Actual approval for saving a Note and any later amendments. |
+| `docs/symbio_spec/decisions/index.md` | Routes to topic summaries and dated original decision records. |
+| `docs/symbio_spec/decisions/summaries/note-saving.md` | Helps locate saving decisions and later amendments; check freshness and original approval evidence. |
+| `docs/symbio_spec/decisions/2026/11/decision-000001-note-saving.md` | Original human decision, with actual approval scope and evidence. |
 | `docs/symbio_spec/coverage.md` | Saving examined; sharing, deletion and phone support unexamined. |
 | `docs/symbio_spec/glossary/note.md` | Approved Note definition. |
 | `docs/symbio_spec/behaviour/save_note.md` | Approved saving and failure expectations. |
 | `docs/symbio_spec/user_interface/note_editor.md` | Approved editor entry point and Save placement. |
 | `src/note_editor/` and `tests/note_editor/` | Current implementation and relevant test expectations; inspecting tests does not execute tests. |
+
+These example source locations use format `2.0.0`. A supported `1.0.0` project still uses its single decision file; documentation generation does not authorize migration. See the [decision reading procedure](../../skills/symbio_spec/references/format-v2.0.0.md#423-reading-procedure).
 
 No page should claim autosave merely because autosave was approved for future implementation. No page should describe an implemented sharing feature if approved Symbiospec does not cover sharing. Both gaps belong in the review record when relevant to the requested scope.
 
@@ -46,7 +50,7 @@ The example project chooses `documentation_config/note_editor_help/config.md`. T
 - Documentation type: User documentation
 - Audience: People editing their first Note; readers know how to open the application but need no programming knowledge.
 - Application: Note editor; implementation in src/note_editor/; relevant tests in tests/note_editor/.
-- Symbiospec: docs/symbio_spec/index.md; decisions in docs/symbio_spec/decisions.md; coverage in docs/symbio_spec/coverage.md.
+- Symbiospec: docs/symbio_spec/index.md; decisions via docs/symbio_spec/decisions/index.md; coverage in docs/symbio_spec/coverage.md.
 - Included topics: Opening the Note editor, saving one Note and recognizing save success or failure.
 - Excluded topics: Developer setup, internal storage, sharing, deletion and phone instructions.
 - User workflow: Open the application's Note editor, edit a Note and select Save; describe only entry points supported by the approved interface and current implementation.

@@ -1,7 +1,7 @@
 # A small Symbiospec example
 
 - Created: 9 November 2026
-- Last updated: 9 November 2026
+- Last updated: 14 November 2026
 - Status: Illustrative specification and review example
 - Related framing: [Agent instructions](../../AGENTS.md)
 - Related rules: [docs_folder_system](../../skills/docs_folder_system/SKILL.md)
@@ -25,7 +25,21 @@ Assume a receiving project is introducing Symbiospec and has authorized inspecti
 docs/symbio_spec/
   README.md
   index.md
-  decisions.md
+  format-version.md
+  decisions/
+    README.md
+    index.md
+    summaries/
+      README.md
+      index.md
+      note-saving.md
+    2026/
+      README.md
+      index.md
+      11/
+        README.md
+        index.md
+        decision-000001-note-saving.md
   coverage.md
   glossary/note.md
   behaviour/save_note.md
@@ -34,6 +48,8 @@ docs/symbio_spec/
   platform_support/desktop.md
   system_overview/note_editor.md
 ```
+
+This example uses Symbiospec format `2.0.0`. The decision record and summary shown above would exist only after an actual human decision; initialization does not fabricate either record. Existing `1.0.0` projects remain valid with their single decision file until migration is authorized. See the [current decision format](../../skills/symbio_spec/references/format-v2.0.0.md#42-decisions) and [migration procedure](../../skills/symbio_spec/references/migration-1-to-2.md).
 
 Each of the six area folders also has its own README.md and index.md. Create topic files only when useful content exists, and register each file in the owning index. The area README explains contents, exclusions and references. Register `symbio_spec/index.md` in the receiving project's documentation index during authorized initialization.
 
@@ -45,7 +61,7 @@ The following excerpt would be `docs/symbio_spec/glossary/note.md`. The excerpt 
 # Note
 
 - Created: 9 November 2026
-- Last updated: 9 November 2026
+- Last updated: 14 November 2026
 - Status: Proposal
 - Related framing: [Symbiospec overview](../README.md)
 
@@ -111,7 +127,7 @@ The disabled state appearance belongs to Styling; conditions that disable Save b
 
 The coding agent prepares actual source references, confidence, examples, affected scope, consequences and dependencies before requesting review. For this example, the decisions might be the Note definition, whether failed saves preserve editor text, and where Save appears. Definition review precedes adopting authoritative dependent descriptions.
 
-If the human actually accepts the definition and save expectations, `decisions.md` records the decision source, date, approved scope, affected documents and conditions. The approved topic identifies that decision as approval evidence. Until that decision exists, the topic remains proposed or observed. Never copy a fictional acceptance into a real decision record.
+If the human actually accepts the definition and save expectations, the dated original record under `decisions/` records the decision source, date, approved scope, affected documents and conditions. The note-saving summary links the original record and identifies later replacements or unresolved conditions without establishing approval independently. The approved topic identifies that decision as approval evidence. Until that decision exists, the topic remains proposed or observed. Never copy a fictional acceptance into a real decision record.
 
 Reject, revise and defer remain valid outcomes. For example, a deferred decision about failure recovery stays outside the approved scope. High confidence in code or a passing save test does not establish approval. An administrative status such as “Maintained overview for people” does not approve the product content linked by the overview.
 

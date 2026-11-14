@@ -30,7 +30,7 @@ See the [collection installation guidance](../../README.md#install-the-skills). 
 
 `symbio_spec` needs no separate configuration file. Project data belongs at `docs/symbio_spec/`, relative to the receiving repository root. During authorized initialization, the coding agent adds a short instruction pointer using the actual installed skill path. The [format reference](references/format.md#1-repository-structure) gives the structure and pointer requirements.
 
-The whole-folder format starts at `1.0.0`, separately from the skill release version. The [versioning reference](references/versioning.md) defines the Markdown version record, Semantic Versioning, compatibility checks, and consecutive migrations. An absent record means the existing unversioned format, equivalent to `1.0.0`; adopting the record preserves every existing specification file. Malformed or unsupported versions and incomplete migrations stop normal work. Installation alone does not add the record or migrate a project.
+New projects use whole-folder format `2.0.0`, separately from the skill release version. Existing `1.0.0` projects remain supported; adopting a version record does not migrate decision storage. The [decision storage transition](references/migration-1-to-2.md) requires authorization and preservation checks. The [versioning reference](references/versioning.md) defines the Markdown version record, Semantic Versioning, compatibility checks, and consecutive migrations. An absent record means the existing unversioned format, equivalent to `1.0.0`; adopting the record preserves every existing specification file. Malformed or unsupported versions and incomplete migrations stop normal work. Installation alone does not add the record or migrate a project.
 
 New software starts with folder overviews, indexes, decisions and coverage records, then develops useful content through Update. Empty templates are not approved definitions. Existing software requires a bounded inspection, prepared human review and repeated small increments. Adoption effort depends on the examined scope, evidence quality and decisions needed; installation does not reconstruct a whole product. Preserve useful existing specifications and approvals, proposing moves or splits before migration.
 
@@ -52,7 +52,7 @@ These are fictional proposals, not approved requirements or claims about any rea
 
 ## Results and review
 
-Initialization produces a useful, explicitly scoped foundation, with proposals separated from approved specifications. `decisions.md` records actual authorization and `coverage.md` records examined areas, partial coverage and known differences. Update changes affected specifications alongside authorized software changes. Both audits produce scoped findings with evidence and limitations. Realignment can use those findings to prepare and apply authorized corrections; a saved report belongs under `docs/symbio_spec/reports/` when saving is authorized.
+Initialization produces a useful, explicitly scoped foundation, with proposals separated from approved specifications. In `2.0.0`, dated files under `decisions/` record actual human decisions and topic summaries help locate original evidence. Format `1.0.0` retains its single decision file. `coverage.md` records examined areas, partial coverage and known differences. Update changes affected specifications alongside authorized software changes. Both audits produce scoped findings with evidence and limitations. Realignment can use those findings to prepare and apply authorized corrections; a saved report belongs under `docs/symbio_spec/reports/` when saving is authorized.
 
 Review product meaning, supporting evidence, approval references, links and coverage. Documentation approval does not prove that application tests ran. Results distinguish documentation checks, implementation checks and unresolved findings.
 
@@ -71,6 +71,9 @@ Existing product authorization applies without asking again. Additional product 
 
 - [SKILL.md](SKILL.md): workflow selection, intent, human review and evidence requirements.
 - [Format registry](references/format.md): published versions and links to retained definitions.
+- [Format 2.0.0](references/format-v2.0.0.md): current complete format, dated decisions, stable identity, topic summaries and reading procedure.
+- [Decision storage migration](references/migration-1-to-2.md): forward and reverse conversion, preservation and limitations.
+- [Decision storage examples](references/decision_examples.md): representative retrieval, maintenance and conversion checks.
 - [Format 1.0.0](references/format-v1.0.0.md): authoritative structure, six area responsibilities, document conventions, decisions and coverage.
 - [Versioning and migration](references/versioning.md): version record, detection, compatibility, consecutive conversion and recovery.
 - [Worked verification examples](references/versioning_examples.md): representative adoption, detection, conversion and interruption exercises.

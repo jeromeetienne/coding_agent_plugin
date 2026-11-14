@@ -14,6 +14,7 @@ The standalone repository for shared workflow skills and Jérôme Étienne’s p
 - The repository has no plugin manifest; installation currently installs individual skills.
 - This independent repository is the authoritative location for all skills; make future skill changes here, as [README.md](README.md#maintain-the-skills) describes.
 - Projects and user configurations that receive the skills are not synchronized automatically.
+- Symbiospec format `2.0.0` stores original decisions in dated files and maintains topic summaries under the [current definition](skills/symbio_spec/references/format-v2.0.0.md); `1.0.0` remains supported without implicit migration.
 - Symbiospec skills share the [format version and migration procedure](skills/symbio_spec/references/versioning.md); reusable definitions stay in the skill, and project version records stay with project specifications.
 - The [symbio_spec_to_docs](skills/symbio_spec_to_docs/SKILL.md) skill requires `symbio_spec` and project Symbiospec data; project configuration and generated documentation stay outside the reusable skill.
 - The `jerome-typescript-javascript-style` skill expresses Jérôme Étienne’s personal preferences and includes its full rules without depending on his user configuration.
