@@ -8,7 +8,7 @@ Symbiospec is short for “Symbiotic Spec”. “Symbiotic” expresses the coll
 
 ## When to use
 
-Use `symbio_spec` to introduce Symbiospec into new or existing software, maintain approved expectations during development, or investigate differences between approved expectations, software and tests. The [shared workflow guide](../../docs/about_symbio_spec/workflows.md) explains Initialization, Update and Realignment with examples.
+Use `symbio_spec` to introduce Symbiospec into new or existing software, maintain approved expectations during development, or investigate differences between approved expectations, software and tests. Request **Symbiospec Audit for self-consistency** to review agreement within Symbiospec, or **Symbiospec Audit for software compliance** to compare software and approved Symbiospec in both directions, including undocumented software capabilities. The [shared workflow guide](../../docs/about_symbio_spec/workflows.md) explains Initialization, Update, Realignment, and both audits with examples.
 
 The specification separates Glossary, Behaviour, User Interface, Styling, Platform Support and System Overview. The [shared definition](../../docs/about_symbio_spec/what_is_symbio_spec.md) explains the purpose and current limits; the [area guide](../../docs/about_symbio_spec/areas.md) explains which area owns each fact.
 
@@ -50,13 +50,13 @@ These are fictional proposals, not approved requirements or claims about any rea
 
 ## Results and review
 
-Initialization produces a useful, explicitly scoped foundation, with proposals separated from approved specifications. `decisions.md` records actual authorization and `coverage.md` records examined areas, partial coverage and known differences. Update changes affected specifications alongside authorized software changes. Realignment produces findings with expected and observed results, evidence, confidence and proposed corrections; a saved report belongs under `docs/symbio_spec/reports/` when saving is authorized.
+Initialization produces a useful, explicitly scoped foundation, with proposals separated from approved specifications. `decisions.md` records actual authorization and `coverage.md` records examined areas, partial coverage and known differences. Update changes affected specifications alongside authorized software changes. Both audits produce scoped findings with evidence and limitations. Realignment can use those findings to prepare and apply authorized corrections; a saved report belongs under `docs/symbio_spec/reports/` when saving is authorized.
 
 Review product meaning, supporting evidence, approval references, links and coverage. Documentation approval does not prove that application tests ran. Results distinguish documentation checks, implementation checks and unresolved findings.
 
 ## Approval boundaries
 
-Existing product authorization applies without asking again. Additional product decisions require review before adoption. Observed behaviour, proposed specifications and approved expectations remain distinct. A request to inspect or review permits investigation and a report, not unrequested corrections. Realignment does not create a recurring automation. Never rewrite approved expectations silently to accommodate a regression or conflicting test.
+Existing product authorization applies without asking again. Additional product decisions require review before adoption. Observed behaviour, proposed specifications and approved expectations remain distinct. A request to inspect or review permits investigation and a report, not unrequested corrections. The human controls which audit runs, the scope, and the timing, and may defer an audit. Neither audit runs automatically after every rule change or becomes a prerequisite for approving a rule. Apparent conflicts already noticed during discussion are reported without automatically launching deeper review. Undocumented software behaviour is a finding for discussion, not an approved requirement. Realignment does not create a recurring automation. Never rewrite approved expectations silently to accommodate a regression or conflicting test.
 
 ## Related skills and guides
 
@@ -69,4 +69,6 @@ Existing product authorization applies without asking again. Additional product 
 
 - [SKILL.md](SKILL.md): workflow selection, intent, human review and evidence requirements.
 - [Format](references/format.md): authoritative structure, six area responsibilities, document conventions, decisions and coverage.
-- [Workflows](references/workflows.md): authoritative Initialization, Update and Realignment procedures.
+- [Workflows](references/workflows.md): overview linking to the separate workflow procedures.
+- [Symbiospec Audit for self-consistency](references/workflow_audit_self_consistency.md): review agreement within the selected specification scope.
+- [Symbiospec Audit for software compliance](references/workflow_audit_software_compliance.md): compare software and approved Symbiospec in both directions.

@@ -1,6 +1,6 @@
 ---
 name: symbio_spec
-description: Create and maintain Symbiospec, the shared product specification in docs/symbio_spec/. Use to initialize Symbiospec for new or existing software, update the specification alongside authorized software changes, or inspect and resolve drift between the specification, software, and tests.
+description: Create and maintain Symbiospec, the shared product specification in docs/symbio_spec/. Use to initialize Symbiospec for new or existing software, update the specification alongside authorized software changes, request Symbiospec Audit for self-consistency or Symbiospec Audit for software compliance, or resolve drift between the specification, software, and tests.
 ---
 
 # Symbiospec
@@ -23,7 +23,11 @@ Read [format.md](references/format.md) before creating or restructuring Symbiosp
 | Introduce Symbiospec into existing software | [Initialize Symbiospec](references/workflow_initialize.md) through slow growth: establish a small validated foundation and expand iteratively. |
 | Adopt existing specifications | [Initialize Symbiospec](references/workflow_initialize.md): inspect and preserve useful content and approvals; propose an incremental migration. |
 | Develop an authorized software change with an established Symbiospec | [Update Symbiospec as the software changes](references/workflow_update.md): update the affected specifications in the same task. |
-| Check whether Symbiospec still matches the software and tests | [Realign Symbiospec when drift is detected](references/workflow_realign.md): compare without modifying, report differences, then apply authorized corrections. |
+| Check whether approved Symbiospec descriptions agree internally | [Symbiospec Audit for self-consistency](references/workflow_audit_self_consistency.md): review the requested specification scope without testing software. |
+| Compare approved Symbiospec with software in both directions | [Symbiospec Audit for software compliance](references/workflow_audit_software_compliance.md): report conflicting, missing, and unverified behaviour. |
+| Investigate and resolve differences between Symbiospec, software, and tests | [Realign Symbiospec when drift is detected](references/workflow_realign.md): compare without modifying, report differences, then apply authorized corrections. |
+
+Read only the workflow references relevant to the request. Both audits require an explicit request; the human chooses either audit or both audits, the scope, and the timing, including deferral until later. Do not automatically launch either audit or check affected approved user scenarios after every rule change. During discussion, mention apparent conflicts already noticed; a warning does not launch an investigation or make an audit a prerequisite for approving a rule. Never silently change approved user scenarios to remove a warning.
 
 Keep checks scoped to the request. A request to inspect or review permits investigation and a report, not unrequested corrections. Realignment is a repeatable operation, not permission to create a scheduled automation.
 
