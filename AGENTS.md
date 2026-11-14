@@ -2,6 +2,11 @@
 
 This repository holds the skills for coding agents. Read [CONTEXT.md](CONTEXT.md) for the purpose and the rules of the repository.
 
+## Codex voice mode
+
+- Speak very slowly when using voice mode.
+- When enumerating, present only one item at a time. After each item, ask for confirmation before continuing to the next item, and wait for the user's confirmation.
+
 ## The Rules of the Repo
 
 Before every change of this repository, follow the skill [rules_of_the_repo](skills/rules_of_the_repo/SKILL.md): read the rules list, and obey each rule skill that applies to the change, with its configuration.
