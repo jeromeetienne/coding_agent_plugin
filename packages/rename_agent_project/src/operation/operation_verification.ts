@@ -2,6 +2,8 @@ import Crypto from 'node:crypto';
 import Fs from 'node:fs';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
+import { StorageStream } from '../migration/storage_stream.js';
+import { JsonRecords } from '../migration/json_records.js';
 import { ConversationPlan } from '../migration/conversation_plan.js';
 import type { MigrationPlan } from '../migration/migration_types.js';
 import type { OperationRecord, VerificationRecord } from './operation_types.js';
@@ -38,7 +40,7 @@ export class OperationVerification {
 						const path = String(row.rollout_path);
 						record.transcripts.push({
 							path,
-							hash: this._hash(Fs.readFileSync(path)),
+							hash: StorageStream.hash(path),
 						});
 						row.cwd = selected.after.cwd;
 						row.sandbox_policy = selected.after.sandbox_policy;
@@ -82,7 +84,7 @@ export class OperationVerification {
 			}
 		}
 		for (const transcript of operation.verification.transcripts) {
-			if (this._hash(Fs.readFileSync(transcript.path)) !== transcript.hash) {
+			if (StorageStream.hash(transcript.path) !== transcript.hash) {
 				throw new Error(`A Codex transcript changed unexpectedly: ${transcript.path}`);
 			}
 		}
@@ -93,8 +95,9 @@ export class OperationVerification {
 					path = ConversationPlan.replace(path, move);
 				}
 			}
-			const expected = isRestore ? file.original : file.updated;
-			if (this._hash(Fs.readFileSync(path)) !== this._hash(expected)) {
+			const expected = 'before' in file ? (isRestore ? file.before : file.after)
+				: JsonRecords.hash(isRestore ? file.original : file.updated);
+			if (StorageStream.hash(path) !== expected) {
 				throw new Error(`Migrated file verification failed: ${path}`);
 			}
 		}

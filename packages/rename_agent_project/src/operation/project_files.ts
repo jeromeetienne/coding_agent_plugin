@@ -1,7 +1,7 @@
-import Crypto from 'node:crypto';
 import ChildProcess from 'node:child_process';
 import Fs from 'node:fs';
 import Path from 'node:path';
+import { StorageStream } from '../migration/storage_stream.js';
 import { ConversationPlan } from '../migration/conversation_plan.js';
 import type { OperationOptions, ProjectEntry, Worktree } from './operation_types.js';
 
@@ -160,7 +160,7 @@ export class ProjectFiles {
 			entry.value = Fs.readlinkSync(path);
 		} else if (stat.isFile()) {
 			entry.kind = 'file';
-			entry.value = Crypto.createHash('sha256').update(Fs.readFileSync(path)).digest('hex');
+			entry.value = StorageStream.hash(path);
 		} else if (stat.isDirectory() === false) {
 			throw new Error(`Unsupported project entry: ${path}`);
 		}

@@ -93,6 +93,36 @@ export class OperationJob {
 	}
 
 	/**
+	 * @param directory Private operation directory.
+	 * @returns Durable status, recording unexpected worker exit without changing project data.
+	 */
+	static status(directory: string): OperationRecord {
+		let record = OperationJournal.read(directory);
+		if ((record.state !== 'queued' && record.state !== 'running') || record.pid === undefined
+			|| this._isAlive(record.pid)) {
+			return record;
+		}
+		record = OperationJournal.read(directory);
+		if ((record.state !== 'queued' && record.state !== 'running') || record.pid === undefined
+			|| this._isAlive(record.pid)) {
+			return record;
+		}
+		const isBeforeWrites = record.action === 'rename' && record.original === undefined
+			&& ['preparing-worker', 'worker-starting', 'checking-applications', 'waiting-for-clients', 'clients-closed']
+				.includes(record.phase);
+		record.error = `The operation worker exited unexpectedly during ${record.phase}. `
+			+ `Inspect ${Path.join(directory, 'worker.log')}. `
+			+ (isBeforeWrites ? 'No project or conversation changes started; the project lock was released.'
+				: 'Preserve this operation directory and use --restore to inspect checked recovery.');
+		record.waitingFor = undefined;
+		OperationJournal.write(record, 'worker-exited', isBeforeWrites ? 'failed' : 'recovery_required');
+		if (isBeforeWrites) {
+			OperationJournal.release(record);
+		}
+		return record;
+	}
+
+	/**
 	 * @param directory Existing operation directory.
 	 * @param isApply Whether to launch restoration rather than preview it.
 	 * @returns The recorded operation, possibly queued for restoration.
@@ -149,7 +179,7 @@ export class OperationJob {
 		progressFn?: (record: OperationRecord) => void,
 	): Promise<OperationRecord> {
 		const deadline = Date.now() + timeout;
-		let record = OperationJournal.read(directory);
+		let record = this.status(directory);
 		let previous = '';
 		while ((record.state === 'queued' || record.state === 'running') && Date.now() < deadline) {
 			const current = JSON.stringify(record.waitingFor ?? []);
@@ -158,7 +188,7 @@ export class OperationJob {
 			}
 			previous = current;
 			await new Promise((resolveFn) => setTimeout(resolveFn, 200));
-			record = OperationJournal.read(directory);
+			record = this.status(directory);
 		}
 		return record;
 	}

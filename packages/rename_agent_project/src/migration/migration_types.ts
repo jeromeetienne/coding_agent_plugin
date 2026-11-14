@@ -35,15 +35,56 @@ export type MigrationOptions = PathMapping & {
 	only: 'codex' | 'claude' | 'both';
 };
 
-/** Planned replacement of one file. */
+/** Checksums before and after a streamed transformation. */
+export type FileHashes = {
+	/** Original file checksum. */
+	before: string;
+	/** Replacement file checksum. */
+	after: string;
+};
+
+/** A top-level path field to rewrite in newline-separated JSON records. */
+export type RecordRewrite = {
+	/** Only this field is eligible for changes; message content is never traversed. */
+	field: 'cwd' | 'project';
+	/** Ordered complete path-prefix mappings. */
+	mappings: PathMapping[];
+};
+
+/** Exact replacement within a file, using JavaScript string offsets. */
+export type FileEdit = {
+	/** Inclusive start in the original text. */
+	start: number;
+	/** Exclusive end in the original text. */
+	end: number;
+	/** Replacement text. */
+	value: string;
+};
+
+/** Planned file replacement, with compatibility for existing operation records. */
 export type FileChange = {
 	/** Original absolute file path. */
 	path: string;
-	/** Contents before migration. */
+} & ({
+	/** Original contents in an older saved plan. */
 	original: string;
-	/** Contents after migration. */
+	/** Replacement contents in an older saved plan. */
 	updated: string;
-};
+} | {
+	/** Original contents checksum. */
+	before: string;
+	/** Replacement contents checksum. */
+	after: string;
+	/** Ordered, nonoverlapping replacements in the original text. */
+	edits: FileEdit[];
+} | {
+	/** Original contents checksum. */
+	before: string;
+	/** Replacement contents checksum. */
+	after: string;
+	/** Record transformation; no transcript text or per-record edits are stored. */
+	rewrite: RecordRewrite;
+});
 
 /** Codex conversation fields changed by migration. */
 export type DatabaseFields = {
@@ -97,6 +138,8 @@ export type MigrationPlan = PathMapping & {
 	moves: PathMapping[];
 	/** Planned database updates. */
 	databases: DatabaseChange[];
+	/** Warnings about excluded records; absent in older saved plans. */
+	warnings?: string[];
 	/** Conversations included in the preview. */
 	conversations: Conversation[];
 };

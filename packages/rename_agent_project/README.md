@@ -24,6 +24,12 @@ pnpm --filter rename_agent_project start --restore /absolute/operation-directory
 
 Verification requires every migrated conversation to remain discoverable and allows additional Codex conversations already associated with the destination. Those existing conversations are preserved during rename and restoration.
 
+When an indexed Codex transcript is missing, the command reports the conversation identifier and transcript path. The index record stays unchanged and is excluded from migration and conversation counts. Available conversations still migrate with the same backup, verification, and restoration checks. Missing transcript warnings are also saved in the operation status. The command hides only the SQLite experimental warning; other warnings and errors remain visible.
+
+Transcript and history files are processed one JSON record at a time. Plans store checksums and the field and path mapping to apply, without retaining transcript text or a replacement for every record. Replacement files are prepared on disk, checked against the plan, and copied to temporary files beside their targets before atomic replacement. Backup, restoration, project-file checksums, and Codex transcript verification use block-by-block file reads. Transcript memory use depends on the largest individual record, not the complete file. Configuration documents, session indexes, and operation metadata are still parsed as JSON documents. Existing saved plans remain supported.
+
+If a worker exits unexpectedly, the waiting command and `--status` report the failure and the path to the worker log. An exit before project backup and migration releases the project lock so a new rename can be started. An exit after preparation may require recovery; the project lock remains held and `--restore` performs the existing checked restoration.
+
 Restoration refuses to overwrite newer project work or changed conversation records. Keep the operation directory until you have checked the renamed project and conversations.
 
 Use `--help` for every option, including `--only`, custom application storage, `--backup`, and `--detach`. All options are defined in [src/cli.ts](src/cli.ts). A rename started inside an affected Codex conversation returns immediately. Use the printed status command to see which clients to close manually. Closing a client can leave its task running; the tool also waits for affected tasks to finish.

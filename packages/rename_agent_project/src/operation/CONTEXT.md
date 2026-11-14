@@ -6,7 +6,7 @@ Coordinate a recoverable project folder rename with manual client closure, backu
 
 ## Key Exports & Entry Points
 
-- `OperationJob`: launch an independent worker and inspect its durable result.
+- `OperationJob`: launch an independent worker, wait, and read status with worker-exit detection.
 - `RenameOperation`: run or recover a recorded rename operation.
 - `AgentProcesses`: identify affected terminals and wait for manual closure while shared servers and unrelated clients continue.
 - `ProjectFiles`: snapshot, back up, and verify project files and Git worktrees.
@@ -20,7 +20,9 @@ Coordinate a recoverable project folder rename with manual client closure, backu
 - Affected clients must be closed manually and affected turns must finish before writes.
 - Unrelated clients and unrelated turns may remain active; verification checks only selected conversation rows.
 - Source data is backed up and verified before migration or rename writes.
+- Project-file and Codex transcript checksums use block-by-block reads; Claude Code idle checks retain only the last message status.
 - Failed operations restore only state whose expected contents still match.
+- An unexpected worker exit clears waiting instructions and releases the project lock only before project and conversation writes can have started.
 - Application-level development tests use the approved synthetic project and six new conversations only.
 
 ## Background

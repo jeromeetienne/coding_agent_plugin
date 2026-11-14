@@ -6,6 +6,8 @@ import Path from 'node:path';
 import Sqlite from 'node:sqlite';
 import Test from 'node:test';
 import { ConversationPlan } from '../src/migration/conversation_plan.js';
+import { StorageStream } from '../src/migration/storage_stream.js';
+import { JsonRecords } from '../src/migration/json_records.js';
 import { MigrationStorage } from '../src/migration/migration_storage.js';
 import type { BackupManifest, JsonObject, MigrationOptions } from '../src/migration/migration_types.js';
 
@@ -71,6 +73,194 @@ class MigrateConversationsTest {
 			const repeat = ConversationPlan.build(fixture.options);
 			Assert.equal(repeat.files.length + repeat.moves.length + repeat.databases.length, 0);
 			MigrationStorage.restore(fixture.backup, false);
+			MigrationStorage.restore(fixture.backup, true);
+			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
+		});
+
+		Test('preview reports missing transcripts without the SQLite experimental warning', (context) => {
+			const fixture = this._fixture(context);
+			Fs.unlinkSync(fixture.transcript);
+			const before = this._snapshot(fixture.root);
+			const preview = this._cli(fixture);
+			Assert.equal(preview.status, 0, preview.stderr);
+			Assert.match(preview.stderr, /Missing Codex transcript for a:/);
+			Assert.ok(preview.stderr.includes(fixture.transcript));
+			Assert.doesNotMatch(preview.stderr, /SQLite is an experimental feature/);
+			Assert.match(preview.stdout, /4 conversations/);
+			Assert.deepEqual(this._snapshot(fixture.root), before);
+		});
+
+		Test('command preserves other experimental warnings and useful errors', (context) => {
+			this._fixture(context);
+			const result = ChildProcess.spawnSync(process.execPath, [
+				'--import', import.meta.resolve('tsx'), '--input-type=module', '-e',
+				`import { Cli } from ${JSON.stringify(Path.join(__dirname, '../src/cli.ts'))};
+				await Cli.run(['node', 'rename_agent_project']).catch((error) => console.error(error.message));
+				process.emitWarning('Other experimental feature', 'ExperimentalWarning');
+				process.emitWarning('Useful warning');`,
+			], {
+				encoding: 'utf8',
+			});
+			Assert.equal(result.status, 0, result.stderr);
+			Assert.match(result.stderr, /Both --from and --to are required/);
+			Assert.match(result.stderr, /Other experimental feature/);
+			Assert.match(result.stderr, /Useful warning/);
+			Assert.doesNotMatch(result.stderr, /SQLite is an experimental feature/);
+		});
+
+		Test('large transcript migration and restoration fit a 256 MiB heap', (context) => {
+			const fixture = this._fixture(context);
+			const line = JSON.stringify({
+				type: 'user',
+				cwd: fixture.options.from,
+				message: {
+					content: 'synthetic transcript text é '.repeat(150000),
+				},
+			}) + '\n';
+			for (let index = 0; index < 64; index++) {
+				Fs.writeFileSync(Path.join(fixture.claudeSource, `large-${index}.jsonl`), line);
+			}
+			const source = `
+import Fs from 'node:fs';
+import Assert from 'node:assert/strict';
+import { ConversationPlan } from ${JSON.stringify(new URL('../src/migration/conversation_plan.ts', import.meta.url).href)};
+import { MigrationStorage } from ${JSON.stringify(new URL('../src/migration/migration_storage.ts', import.meta.url).href)};
+const options = ${JSON.stringify(fixture.options)};
+let plan;
+for (let pass = 0; pass < 2; pass++) {
+	plan = ConversationPlan.build(options);
+	const saved = JSON.stringify(plan);
+	Assert.ok(Buffer.byteLength(saved) < 1024 * 1024);
+	plan = JSON.parse(saved);
+}
+MigrationStorage.apply(plan, ${JSON.stringify(fixture.backup)});
+MigrationStorage.restore(${JSON.stringify(fixture.backup)}, true);
+console.log('large migration and restore verified');
+`;
+			const result = ChildProcess.spawnSync(process.execPath, [
+				'--max-old-space-size=256', '--import', import.meta.resolve('tsx'), '--input-type=module', '-e', source,
+			], {
+				encoding: 'utf8',
+				timeout: 60000,
+			});
+			Assert.equal(result.status, 0, result.stderr);
+			Assert.match(result.stdout, /large migration and restore verified/);
+			Assert.equal(Fs.readFileSync(Path.join(fixture.claudeSource, 'large-63.jsonl'), 'utf8'), line);
+		});
+
+		Test('record boundaries preserve Unicode, blank lines, CRLF, and a final record without a newline', (context) => {
+			const fixture = this._fixture(context);
+			const path = Path.join(fixture.root, 'boundaries.jsonl');
+			const padding = ' '.repeat(65535 - Buffer.byteLength('{"cwd":"/old/'));
+			const original = padding + JSON.stringify({
+				cwd: '/old/😀',
+				message: 'é😀 /old must stay in the message',
+			}) + '\r\n\r\n {"cwd":"/other","message":"unchanged formatting"}\n{"cwd":"/old/child"}';
+			Fs.writeFileSync(path, original);
+			const destination = Path.join(fixture.root, 'replacement');
+			const hashes = StorageStream.rewrite(path, {
+				field: 'cwd',
+				mappings: [{
+					from: '/old',
+					to: '/new',
+				}],
+			}, destination);
+			const updated = Fs.readFileSync(destination, 'utf8');
+			Assert.equal(hashes.before, JsonRecords.hash(original));
+			Assert.equal(hashes.after, JsonRecords.hash(updated));
+			Assert.equal(updated, '{"cwd":"/new/😀","message":"é😀 /old must stay in the message"}'
+				+ '\r\n\r\n {"cwd":"/other","message":"unchanged formatting"}\n{"cwd":"/new/child"}');
+			Assert.equal(Fs.readFileSync(path, 'utf8'), original);
+		});
+
+		Test('malformed final records leave source data intact and remove incomplete replacements', (context) => {
+			const fixture = this._fixture(context);
+			const path = Path.join(fixture.root, 'invalid.jsonl');
+			const original = '{"cwd":"/old"}\n{partial';
+			const destination = Path.join(fixture.root, 'replacement');
+			Fs.writeFileSync(path, original);
+			Assert.throws(() => StorageStream.rewrite(path, {
+				field: 'cwd',
+				mappings: [{
+					from: '/old',
+					to: '/new',
+				}],
+			}, destination), /Invalid JSON.*record 2/);
+			Assert.equal(Fs.existsSync(destination), false);
+			Assert.equal(Fs.readFileSync(path, 'utf8'), original);
+		});
+
+		Test('compact replacements preserve Unicode and line endings and reject corruption', (context) => {
+			const fixture = this._fixture(context);
+			const original = ' {"cwd":"/old/😀","message":"é"}\r\n{"cwd":"/old/child"}';
+			const updated = ' {"cwd":"/new/😀","message":"é"}\r\n{"cwd":"/new/child"}';
+			Fs.writeFileSync(fixture.transcript, original);
+			const file = JsonRecords.changes(fixture.transcript, original, updated);
+			Assert.ok('edits' in file);
+			Assert.equal(file.before, JsonRecords.hash(original));
+			Assert.equal(file.after, JsonRecords.hash(updated));
+			Assert.equal(JsonRecords.content(file), updated);
+			Assert.equal(JsonRecords.content(file, true), original);
+			file.edits[0].value = 'corrupt replacement';
+			Assert.throws(() => JsonRecords.content(file), /checksum failed/);
+			Assert.equal(Fs.readFileSync(fixture.transcript, 'utf8'), original);
+		});
+
+		Test('a corrupted record transformation is rejected before any live file changes', (context) => {
+			const fixture = this._fixture(context);
+			const before = this._snapshot(fixture.root);
+			const plan = ConversationPlan.build(fixture.options);
+			const file = [...plan.files].reverse().find((entry) => 'rewrite' in entry);
+			Assert.ok(file !== undefined && 'rewrite' in file);
+			file.rewrite.mappings = [{
+				from: fixture.options.from,
+				to: '/synthetic/corrupt',
+			}];
+			Assert.throws(() => MigrationStorage.apply(plan, fixture.backup), /changed since migration planning/);
+			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
+		});
+
+		Test('a failed atomic replacement removes its temporary file and preserves originals', (context) => {
+			const fixture = this._fixture(context);
+			const before = this._snapshot(fixture.root);
+			const plan = ConversationPlan.build(fixture.options);
+			const copyFileSync = Fs.copyFileSync;
+			const mock = context.mock.method(Fs, 'copyFileSync', (...args: Parameters<typeof Fs.copyFileSync>) => {
+				const target = args[1];
+				copyFileSync(...args);
+				if (String(target).includes('.migration-')) {
+					throw new Error('Synthetic disk failure during atomic replacement');
+				}
+			});
+			Assert.throws(() => MigrationStorage.apply(plan, fixture.backup), /Synthetic disk failure/);
+			mock.mock.restore();
+			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
+			Assert.equal(ConversationPlan.walk(fixture.claudeSource).some((path) => path.includes('.migration-')), false);
+			MigrationStorage.restore(fixture.backup, true);
+			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
+		});
+
+		Test('older complete-text plans remain migratable and restorable', (context) => {
+			const fixture = this._fixture(context);
+			const plan = ConversationPlan.build(fixture.options);
+			plan.files = plan.files.map((file, index) => {
+				let updated: string;
+				if ('rewrite' in file) {
+					const path = Path.join(fixture.root, `legacy-${index}`);
+					StorageStream.rewrite(file.path, file.rewrite, path);
+					updated = Fs.readFileSync(path, 'utf8');
+					Fs.unlinkSync(path);
+				} else {
+					updated = JsonRecords.content(file);
+				}
+				return {
+					path: file.path,
+					original: Fs.readFileSync(file.path, 'utf8'),
+					updated,
+				};
+			});
+			const before = this._snapshot(fixture.root);
+			MigrationStorage.apply(plan, fixture.backup);
 			MigrationStorage.restore(fixture.backup, true);
 			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
 		});
