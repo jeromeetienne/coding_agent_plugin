@@ -49,6 +49,7 @@ export class RenameOperation {
 				codex: record.plan.conversations.filter((entry) => entry.application === 'Codex').length,
 				claude: record.plan.conversations.filter((entry) => entry.application === 'Claude Code').length,
 			};
+			record.limitations = [...new Set([...record.limitations, ...(record.plan.warnings ?? [])])];
 			record.original = ProjectFiles.snapshot(record.options.from);
 			record.worktrees = ProjectFiles.worktrees(record.options);
 			record.verification = OperationVerification.capture(record.plan);

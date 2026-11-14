@@ -1,6 +1,7 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
+import { StorageStream } from './storage_stream.js';
 import { JsonRecords } from './json_records.js';
 import type {
 	CodexRow,
@@ -33,6 +34,7 @@ export class ConversationPlan {
 			moves: [],
 			databases: [],
 			conversations: [],
+			warnings: [],
 		};
 		if (options.only !== 'claude' && Fs.existsSync(options.codexHome)) {
 			this._codex(options, plan);
@@ -132,7 +134,9 @@ export class ConversationPlan {
 							throw new Error(`Indexed Codex transcript is outside session storage: ${rollout}`);
 						}
 						if (Fs.existsSync(rollout) === false) {
-							throw new Error(`Missing Codex transcript for ${row.id}: ${row.rollout_path}`);
+							plan.warnings?.push(`Missing Codex transcript for ${row.id}: ${row.rollout_path}; `
+								+ 'index record left unchanged and excluded from migration.');
+							continue;
 						}
 						const before = {
 							cwd: row.cwd,
@@ -169,7 +173,7 @@ export class ConversationPlan {
 			}
 		}
 		for (const [path, row] of indexed) {
-			if (this.contains(row.cwd, options.from) === false) {
+			if (this.contains(row.cwd, options.from) === false || Fs.existsSync(path) === false) {
 				continue;
 			}
 			const metadata = this._metadata(path);
@@ -211,7 +215,7 @@ export class ConversationPlan {
 			const files = this.walk(from);
 			const candidates = new Set(Object.keys(projects).filter((path) => this._encode(path) === name));
 			for (const path of files.filter((file) => file.endsWith('.jsonl'))) {
-				for (const record of this._records(Fs.readFileSync(path, 'utf8'), path)) {
+				for (const record of StorageStream.records(path)) {
 					if (typeof record?.cwd === 'string' && this._encode(record.cwd) === name) {
 						candidates.add(record.cwd);
 					}
@@ -236,14 +240,8 @@ export class ConversationPlan {
 				to,
 			});
 			for (const path of files) {
-				const original = Fs.readFileSync(path, 'utf8');
 				if (path.endsWith('.jsonl')) {
-					const updated = this._lines(original, path, (record) => {
-						if (typeof record.cwd === 'string') {
-							record.cwd = this.replace(record.cwd, options);
-						}
-					});
-					this._file(plan, path, original, updated);
+					this._recordFile(plan, path, 'cwd', options);
 					if (Path.dirname(path) === from) {
 						plan.conversations.push({
 							application: 'Claude Code',
@@ -253,6 +251,7 @@ export class ConversationPlan {
 						});
 					}
 				} else if (Path.basename(path) === 'sessions-index.json') {
+					const original = Fs.readFileSync(path, 'utf8');
 					const value = JsonRecords.object(JsonRecords.parse(original), path);
 					if (Array.isArray(value.entries) === false) {
 						throw new Error(`Unsupported Claude Code session index: ${path}`);
@@ -274,13 +273,7 @@ export class ConversationPlan {
 		}
 		const history = Path.join(options.claudeHome, 'history.jsonl');
 		if (Fs.existsSync(history)) {
-			const original = Fs.readFileSync(history, 'utf8');
-			const updated = this._lines(original, history, (record) => {
-				if (typeof record.project === 'string') {
-					record.project = this.replace(record.project, options);
-				}
-			});
-			this._file(plan, history, original, updated);
+			this._recordFile(plan, history, 'project', options);
 		}
 		if (config !== null) {
 			const original = Fs.readFileSync(options.claudeConfig, 'utf8');
@@ -331,11 +324,7 @@ export class ConversationPlan {
 	 */
 	private static _file(plan: MigrationPlan, path: string, original: string, updated: string): void {
 		if (original !== updated) {
-			plan.files.push({
-				path,
-				original,
-				updated,
-			});
+			plan.files.push(JsonRecords.changes(path, original, updated));
 		}
 	}
 
@@ -378,41 +367,32 @@ export class ConversationPlan {
 	}
 
 	/**
-	 * Parse complete newline-separated records before planning changes.
-	 * @param value File contents.
-	 * @param path File path for diagnostics.
-	 * @returns The result of the operation, or no value for writes and checks.
+	 * @param plan Migration under construction.
+	 * @param path Transcript or history file.
+	 * @param field Top-level path field.
+	 * @param mapping Project path replacement.
+	 * @returns No value; records checksums and the transformation only when bytes change.
 	 */
-	private static _records(value: string, path: string): JsonObject[] {
-		return value.split('\n').filter((line) => line.trim().length > 0).map((line, index) => {
-			try {
-				return JsonRecords.object(JsonRecords.parse(line), path);
-			} catch {
-				throw new Error(`Invalid JSON in ${path}, record ${index + 1}; no changes were made.`);
-			}
-		});
-	}
-
-	/**
-	 * Preserve unchanged records and historical message contents.
-	 * @param value File contents.
-	 * @param path Source path.
-	 * @param updateFn Record mutation callback.
-	 * @returns The result of the operation, or no value for writes and checks.
-	 */
-	private static _lines(
-		value: string,
+	private static _recordFile(
+		plan: MigrationPlan,
 		path: string,
-		updateFn: (record: JsonObject) => void,
-	): string {
-		return value.split('\n').map((line) => {
-			if (line.trim().length === 0) {
-				return line;
-			}
-			const record = JsonRecords.object(JsonRecords.parse(line), path);
-			const original = JSON.stringify(record);
-			updateFn(record);
-			return original === JSON.stringify(record) ? line : JSON.stringify(record) + (line.endsWith('\r') ? '\r' : '');
-		}).join('\n');
+		field: 'cwd' | 'project',
+		mapping: PathMapping,
+	): void {
+		const rewrite = {
+			field,
+			mappings: [{
+				from: mapping.from,
+				to: mapping.to,
+			}],
+		};
+		const hashes = StorageStream.rewrite(path, rewrite);
+		if (hashes.before !== hashes.after) {
+			plan.files.push({
+				path,
+				...hashes,
+				rewrite,
+			});
+		}
 	}
 }

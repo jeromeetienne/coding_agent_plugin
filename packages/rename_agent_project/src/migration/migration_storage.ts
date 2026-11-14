@@ -2,10 +2,13 @@ import Crypto from 'node:crypto';
 import Fs from 'node:fs';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
+import { StorageStream } from './storage_stream.js';
+import { JsonRecords } from './json_records.js';
 import { ConversationPlan } from './conversation_plan.js';
 import type {
 	BackupManifest,
 	BackupMove,
+	FileChange,
 	MigrationPlan,
 	OpenDatabase,
 	TreeReplacement,
@@ -33,14 +36,17 @@ export class MigrationStorage {
 			files: plan.files.map((file, index) => ({
 				path: file.path,
 				backup: `file_${index}`,
-				before: this._hash(Buffer.from(file.original)),
-				after: this._hash(Buffer.from(file.updated)),
+				before: 'before' in file ? file.before : JsonRecords.hash(file.original),
+				after: 'before' in file ? file.after : JsonRecords.hash(file.updated),
 				mode: Fs.statSync(file.path).mode & 0o777,
 			})),
 			moves: plan.moves.map((move) => ({
 				...move,
 				before: this._tree(move.from),
-				after: this._tree(move.from, plan.files),
+				after: this._tree(move.from, plan.files.map((file) => ({
+					path: file.path,
+					hash: 'before' in file ? file.after : JsonRecords.hash(file.updated),
+				}))),
 			})),
 			databases: plan.databases,
 		};
@@ -52,10 +58,10 @@ export class MigrationStorage {
 				mode: 0o700,
 			});
 			for (const [index, file] of plan.files.entries()) {
-				Fs.writeFileSync(Path.join(backup, manifest.files[index].backup), file.original, {
-					mode: 0o600,
-					flag: 'wx',
-				});
+				const original = Path.join(backup, manifest.files[index].backup);
+				Fs.copyFileSync(file.path, original, Fs.constants.COPYFILE_EXCL);
+				Fs.chmodSync(original, 0o600);
+				this._prepare(file, Path.join(backup, `replacement_${index}`));
 			}
 			for (const [index, move] of manifest.moves.entries()) {
 				Fs.cpSync(move.from, Path.join(backup, `project_${index}`), {
@@ -65,9 +71,8 @@ export class MigrationStorage {
 			}
 			this._manifest(backup, manifest);
 			this.verifyBackup(backup);
-			for (const file of plan.files) {
-				this._assertHash(file.path, this._hash(Buffer.from(file.original)));
-				this._write(file.path, file.updated);
+			for (const [index, file] of manifest.files.entries()) {
+				this._replace(file.path, Path.join(backup, `replacement_${index}`), file.after, [file.before]);
 			}
 			for (const move of manifest.moves) {
 				if (this._tree(move.from) !== move.after || Fs.existsSync(move.to)) {
@@ -100,8 +105,7 @@ export class MigrationStorage {
 			throw new Error('Unsupported backup manifest.');
 		}
 		for (const file of manifest.files) {
-			const content = Fs.readFileSync(Path.join(backup, file.backup));
-			if (this._hash(content) !== file.before) {
+			if (StorageStream.hash(Path.join(backup, file.backup)) !== file.before) {
 				throw new Error(`Backup file failed its checksum: ${file.backup}`);
 			}
 		}
@@ -120,8 +124,7 @@ export class MigrationStorage {
 				}
 			}
 			for (const file of manifest.files) {
-				const content = Fs.readFileSync(Path.join(backup, file.backup));
-				this._write(file.path, content);
+				this._replace(file.path, Path.join(backup, file.backup), file.before, [file.before, file.after]);
 				Fs.chmodSync(file.path, file.mode);
 			}
 			this._updateDatabases(databases, true);
@@ -165,7 +168,7 @@ export class MigrationStorage {
 				}
 			}
 			this._safePath(path);
-			const hash = this._hash(Fs.readFileSync(path));
+			const hash = StorageStream.hash(path);
 			if (hash !== file.before && (isRestore === false || hash !== file.after)) {
 				throw new Error(`File changed since migration planning; refusing to overwrite: ${path}`);
 			}
@@ -205,7 +208,7 @@ export class MigrationStorage {
 	private static _partialTree(move: BackupMove, manifest: BackupManifest): boolean {
 		const files = manifest.files.filter((file) => ConversationPlan.contains(file.path, move.from));
 		for (const file of files) {
-			const hash = this._hash(Fs.readFileSync(file.path));
+			const hash = StorageStream.hash(file.path);
 			if (hash !== file.before && hash !== file.after) {
 				return false;
 			}
@@ -305,7 +308,7 @@ export class MigrationStorage {
 			const content = replacement?.updated;
 			entries.push([
 				Path.relative(root, path),
-				replacement?.hash ?? this._hash(content === undefined ? Fs.readFileSync(path) : Buffer.from(content)),
+				replacement?.hash ?? (content === undefined ? StorageStream.hash(path) : JsonRecords.hash(content)),
 				Fs.statSync(path).mode & 0o777,
 			]);
 		}
@@ -335,7 +338,7 @@ export class MigrationStorage {
 	 */
 	private static _assertHash(path: string, expected: string): void {
 		this._safePath(path);
-		if (this._hash(Fs.readFileSync(path)) !== expected) {
+		if (StorageStream.hash(path) !== expected) {
 			throw new Error(`File changed since planning: ${path}`);
 		}
 	}
@@ -350,19 +353,48 @@ export class MigrationStorage {
 	}
 
 	/**
-	 * Replace a file atomically while preserving its access permissions.
-	 * @param path Existing path.
-	 * @param content New file contents.
-	 * @returns The result of the operation, or no value for writes and checks.
+	 * @param file Checksum-based transformation or an older saved file replacement.
+	 * @param destination New private replacement path.
+	 * @returns No value after preparing and verifying replacement bytes before any live writes.
 	 */
-	private static _write(path: string, content: string | Uint8Array): void {
-		this._safePath(path);
-		const temporary = `${path}.migration-${Crypto.randomUUID()}`;
-		try {
-			Fs.writeFileSync(temporary, content, {
-				mode: Fs.statSync(path).mode & 0o777,
+	private static _prepare(file: FileChange, destination: string): void {
+		if ('rewrite' in file) {
+			const hashes = StorageStream.rewrite(file.path, file.rewrite, destination);
+			if (hashes.before !== file.before || hashes.after !== file.after) {
+				throw new Error(`File changed since migration planning: ${file.path}`);
+			}
+		} else {
+			Fs.writeFileSync(destination, JsonRecords.content(file), {
+				mode: 0o600,
 				flag: 'wx',
 			});
+		}
+		const expected = 'after' in file ? file.after : JsonRecords.hash(file.updated);
+		if (StorageStream.hash(destination) !== expected) {
+			throw new Error(`Replacement file failed its checksum: ${file.path}`);
+		}
+	}
+
+	/**
+	 * @param path Existing live target.
+	 * @param source Prepared replacement or verified original backup.
+	 * @param expected Expected replacement checksum.
+	 * @param allowed Expected current target checksums.
+	 * @returns No value after a checked atomic replacement without loading file contents.
+	 */
+	private static _replace(path: string, source: string, expected: string, allowed: string[]): void {
+		this._safePath(path);
+		this._safePath(source);
+		const temporary = `${path}.migration-${Crypto.randomUUID()}`;
+		try {
+			Fs.copyFileSync(source, temporary, Fs.constants.COPYFILE_EXCL);
+			Fs.chmodSync(temporary, Fs.statSync(path).mode & 0o777);
+			if (StorageStream.hash(temporary) !== expected) {
+				throw new Error(`Replacement file failed its checksum: ${path}`);
+			}
+			if (allowed.includes(StorageStream.hash(path)) === false) {
+				throw new Error(`File changed since migration planning; refusing to overwrite: ${path}`);
+			}
 			Fs.renameSync(temporary, path);
 		} finally {
 			if (Fs.existsSync(temporary)) {

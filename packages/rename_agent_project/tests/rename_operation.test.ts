@@ -23,6 +23,93 @@ import type { AgentProcess, OperationOptions, OperationRecord } from '../src/ope
 
 class RenameOperationTest {
 	static register(): void {
+		Test('large individual transcripts and project files rename and restore without whole-file reads', (context) => {
+			const record = this._fixture(context);
+			const source = `
+import Fs from 'node:fs';
+import Path from 'node:path';
+import Assert from 'node:assert/strict';
+import { RenameOperation } from ${JSON.stringify(new URL('../src/operation/rename_operation.ts', import.meta.url).href)};
+import { OperationJournal } from ${JSON.stringify(new URL('../src/operation/operation_journal.ts', import.meta.url).href)};
+import { StorageStream } from ${JSON.stringify(new URL('../src/migration/storage_stream.ts', import.meta.url).href)};
+const record = ${JSON.stringify(record)};
+const directory = Path.join(record.options.claudeHome, 'projects', record.options.from.replace(/[^a-zA-Z0-9-]/g, '-'));
+const claude = Path.join(directory, 'large.jsonl');
+const codex = Path.join(record.options.codexHome, 'sessions', 'synthetic.jsonl');
+const project = Path.join(record.options.from, 'large.bin');
+const message = 'synthetic é😀 '.repeat(2000);
+const line = JSON.stringify({ type: 'assistant', cwd: record.options.from,
+	message: { content: message, stop_reason: 'end_turn' } }) + String.fromCharCode(10);
+for (const path of [claude, codex, project]) {
+	const descriptor = Fs.openSync(path, path === codex ? 'a' : 'w');
+	try {
+		for (let index = 0; index < 8192; index++) {
+			Fs.writeSync(descriptor, line);
+		}
+	} finally {
+		Fs.closeSync(descriptor);
+	}
+	Assert.ok(Fs.statSync(path).size > 128 * 1024 * 1024);
+}
+const originals = [claude, codex, project].map((path) => StorageStream.hash(path));
+const readFileSync = Fs.readFileSync;
+Fs.readFileSync = (path, ...options) => {
+	if (typeof path === 'string' && Fs.statSync(path).size > 1024 * 1024) {
+		throw new Error('Whole-file read forbidden for large data: ' + path);
+	}
+	return readFileSync(path, ...options);
+};
+const result = await RenameOperation.execute(record);
+Assert.equal(result.state, 'complete', result.error);
+Assert.ok(Fs.statSync(Path.join(record.directory, 'operation.json')).size < 1024 * 1024);
+const completed = OperationJournal.read(record.directory);
+completed.action = 'restore';
+const restored = await RenameOperation.execute(completed);
+Assert.equal(restored.state, 'rolled_back', restored.error);
+Assert.deepEqual([claude, codex, project].map((path) => StorageStream.hash(path)), originals);
+console.log('large individual files renamed and restored; peak RSS KiB=' + process.resourceUsage().maxRSS);
+`;
+			const result = ChildProcess.spawnSync(process.execPath, [
+				'--max-old-space-size=64', '--import', import.meta.resolve('tsx'), '--input-type=module', '-e', source,
+			], {
+				encoding: 'utf8',
+				timeout: 90000,
+			});
+			Assert.equal(result.status, 0, result.stderr);
+			Assert.match(result.stdout, /large individual files renamed and restored/);
+			console.log(result.stdout.trim().split('\n').slice(-1)[0]);
+		});
+
+		Test('an exited worker before writes stops waiting, reports failure, and releases its lock', async (context) => {
+			const record = this._fixture(context);
+			const childProcess = ChildProcess.spawn(process.execPath, ['-e', 'process.exit(0)']);
+			await new Promise<void>((resolveFn) => childProcess.once('exit', () => resolveFn()));
+			record.pid = childProcess.pid;
+			record.waitingFor = ['outdated client instruction'];
+			Fs.writeFileSync(record.lock, record.directory);
+			OperationJournal.write(record, 'waiting-for-clients', 'running');
+			const start = Date.now();
+			const result = await OperationJob.wait(record.directory, 10000);
+			Assert.ok(Date.now() - start < 2000);
+			Assert.equal(result.state, 'failed');
+			Assert.equal(result.waitingFor, undefined);
+			Assert.match(result.error ?? '', /worker exited unexpectedly during waiting-for-clients/);
+			Assert.match(result.error ?? '', /worker.log/);
+			Assert.equal(Fs.existsSync(record.lock), false);
+			Assert.equal(Fs.existsSync(record.options.from), true);
+			Assert.equal(Fs.existsSync(record.options.to), false);
+			Assert.equal(OperationJob.status(record.directory).state, 'failed');
+		});
+
+		Test('a live worker remains running and keeps its lock', (context) => {
+			const record = this._fixture(context);
+			record.pid = process.pid;
+			Fs.writeFileSync(record.lock, record.directory);
+			OperationJournal.write(record, 'waiting-for-clients', 'running');
+			Assert.equal(OperationJob.status(record.directory).state, 'running');
+			Assert.equal(Fs.existsSync(record.lock), true);
+		});
+
 		Test('independent worker renames the folder and both applications then restores everything', async (context) => {
 			const record = this._fixture(context, true);
 			const original = ProjectFiles.snapshot(record.options.from);
@@ -45,6 +132,33 @@ class RenameOperationTest {
 			Assert.equal(restored.state, 'rolled_back', restored.error);
 			Assert.equal(Fs.existsSync(record.options.to), false);
 			ProjectFiles.verify(record.options.from, original, true);
+		});
+
+		Test('missing indexed transcript preserves its row while available conversations rename and restore', async (context) => {
+			const record = this._fixture(context);
+			const path = Path.join(record.options.codexHome, 'sessions', 'missing.jsonl');
+			const databaseSync = new Sqlite.DatabaseSync(Path.join(record.options.codexHome, 'state_5.sqlite'));
+			context.after(() => databaseSync.close());
+			databaseSync.prepare('INSERT INTO threads VALUES (?, ?, ?, ?)')
+				.run('missing', record.options.from, path, '{"type":"read-only"}');
+			const row = databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('missing');
+			const plan = ConversationPlan.build(record.options);
+			Assert.match(plan.warnings?.join('\n') ?? '', /Missing Codex transcript for missing/);
+			Assert.ok(plan.warnings?.[0].includes(path));
+			Assert.equal(plan.conversations.filter((entry) => entry.application === 'Codex').length, 1);
+			Fs.rmdirSync(record.directory);
+			const directory = OperationJob.start(record.options);
+			const result = await OperationJob.wait(directory, 30000);
+			Assert.equal(result.state, 'complete', result.error);
+			Assert.ok(result.limitations.some((message) => message.includes(path)));
+			Assert.equal(Fs.existsSync(record.options.to), true);
+			Assert.deepEqual(databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('missing'), row);
+			OperationVerification.verify(result);
+			OperationJob.restore(directory, true);
+			const restored = await OperationJob.wait(directory, 30000);
+			Assert.equal(restored.state, 'rolled_back', restored.error);
+			Assert.deepEqual(databaseSync.prepare('SELECT * FROM threads WHERE id = ?').get('missing'), row);
+			OperationVerification.verify(restored, true);
 		});
 
 		Test('existing destination conversation survives an independent rename and checked restore', async (context) => {
@@ -182,6 +296,11 @@ await InterruptedWorker.run();
 				childProcess.once('exit', () => resolveFn());
 				childProcess.kill('SIGKILL');
 			});
+			Fs.writeFileSync(record.lock, record.directory);
+			const stopped = await OperationJob.wait(record.directory, 10000);
+			Assert.equal(stopped.state, 'recovery_required');
+			Assert.equal(Fs.existsSync(record.lock), true);
+			Assert.equal(Fs.existsSync(record.options.to), true);
 			OperationJob.restore(record.directory, true);
 			const restored = await OperationJob.wait(record.directory, 30000);
 			Assert.equal(restored.state, 'rolled_back', restored.error);

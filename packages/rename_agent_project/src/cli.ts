@@ -6,7 +6,6 @@ import { Command } from 'commander';
 import Chalk from 'chalk';
 import { ConversationPlan } from './migration/conversation_plan.js';
 import { OperationJob } from './operation/operation_job.js';
-import { OperationJournal } from './operation/operation_journal.js';
 import type { OperationRecord } from './operation/operation_types.js';
 import type { CommandOptions, MigrationOptions } from './migration/migration_types.js';
 
@@ -23,6 +22,19 @@ export class Cli {
 	 * @returns Prints a preview or applies the requested migration or restore.
 	 */
 	static async run(argv: string[]): Promise<void> {
+		const listeners = process.listeners('warning');
+		for (const listener of listeners) {
+			if (listener.name === 'onWarning') {
+				process.removeListener('warning', listener);
+				process.on('warning', (warning) => {
+					if (warning.name === 'ExperimentalWarning'
+						&& warning.message === 'SQLite is an experimental feature and might change at any time') {
+						return;
+					}
+					listener.call(process, warning);
+				});
+			}
+		}
 		const command = new Command();
 		command.name('rename_agent_project')
 			.description('Rename a project folder and preserve its Codex and Claude Code conversations.')
@@ -53,7 +65,7 @@ export class Cli {
 				|| options.restore !== undefined || options.apply === true) {
 				throw new Error('--status cannot be combined with a rename or restoration.');
 			}
-			this._report(OperationJournal.read(this._absolute(options.status)));
+			this._report(OperationJob.status(this._absolute(options.status)));
 			return;
 		}
 		if (options.restore !== undefined) {
@@ -101,6 +113,9 @@ export class Cli {
 			only,
 		};
 		const plan = ConversationPlan.build(migrationOptions);
+		for (const warning of plan.warnings ?? []) {
+			console.error(Chalk.yellow(warning));
+		}
 		console.log(`${Chalk.cyan(options.from)} -> ${Chalk.cyan(options.to)}`);
 		for (const entry of plan.conversations) {
 			console.log(`${Chalk.bold(entry.application)}: ${entry.id}`

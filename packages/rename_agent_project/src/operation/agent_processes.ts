@@ -4,6 +4,7 @@ import Fs from 'node:fs';
 import Os from 'node:os';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
+import { StorageStream } from '../migration/storage_stream.js';
 import { ConversationPlan } from '../migration/conversation_plan.js';
 import type { MigrationPlan } from '../migration/migration_types.js';
 import type { AgentProcess, OperationOptions } from './operation_types.js';
@@ -154,7 +155,7 @@ export class AgentProcesses {
 			});
 
 			try {
-				const turns = databaseSync.prepare('SELECT thread_id, status FROM thread_turns').all();
+				const turns = databaseSync.prepare('SELECT thread_id, status FROM thread_turns').iterate();
 				for (const turn of turns) {
 					if (['completed', 'failed', 'interrupted', 'cancelled'].includes(String(turn.status))) {
 						continue;
@@ -174,17 +175,16 @@ export class AgentProcesses {
 		}
 		for (const move of plan.moves) {
 			for (const file of Fs.readdirSync(move.from).filter((name) => name.endsWith('.jsonl'))) {
-				const records = Fs.readFileSync(Path.join(move.from, file), 'utf8').split('\n')
-					.filter((line) => line.trim().length > 0)
-					.map((line) => JSON.parse(line) as {
-						type?: string;
-						isMeta?: boolean;
-						message?: { stop_reason?: string; content?: unknown };
-					});
-				const messages = records.filter((record) =>
-					(record.type === 'assistant' || record.type === 'user') && record.isMeta !== true);
-				const last = messages[messages.length - 1];
-				if (last !== undefined && (last.type !== 'assistant' || last.message?.stop_reason !== 'end_turn')) {
+				let isUnfinished = false;
+				for (const record of StorageStream.records(Path.join(move.from, file))) {
+					if ((record.type === 'assistant' || record.type === 'user') && record.isMeta !== true) {
+						const message = record.message;
+						const reason = typeof message === 'object' && message !== null && Array.isArray(message) === false
+							? message.stop_reason : undefined;
+						isUnfinished = record.type !== 'assistant' || reason !== 'end_turn';
+					}
+				}
+				if (isUnfinished) {
 					throw new ActiveConversationError(`Wait for Claude Code conversation ${file} to finish.`);
 				}
 			}
