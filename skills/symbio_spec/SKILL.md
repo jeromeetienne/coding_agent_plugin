@@ -15,15 +15,15 @@ Read the target repository's instructions and applicable context files first. Fo
 
 ## 2. Select the workflow
 
-Read [format.md](references/format.md) before creating or restructuring Symbiospec. Read the relevant workflow in [workflows.md](references/workflows.md).
+Read [format.md](references/format.md) before creating or restructuring Symbiospec. Use the [workflow overview](references/workflows.md) to select the relevant workflow below.
 
 | Request | Workflow |
 | --- | --- |
-| Start a new project with Symbiospec | Initialize the structure and templates, then use Update as development begins. |
-| Introduce Symbiospec into existing software | Initialize through slow growth: establish a small validated foundation and expand iteratively. |
-| Adopt existing specifications | Inspect and preserve useful content and approvals; propose an incremental migration. |
-| Develop an authorized software change with an established Symbiospec | Update the affected specifications in the same task. |
-| Check whether Symbiospec still matches the software and tests | Realign: compare without modifying, report differences, then apply authorized corrections. |
+| Start a new project with Symbiospec | [Initialize Symbiospec](references/workflow_initialize.md): initialize the structure and templates, then use Update as development begins. |
+| Introduce Symbiospec into existing software | [Initialize Symbiospec](references/workflow_initialize.md) through slow growth: establish a small validated foundation and expand iteratively. |
+| Adopt existing specifications | [Initialize Symbiospec](references/workflow_initialize.md): inspect and preserve useful content and approvals; propose an incremental migration. |
+| Develop an authorized software change with an established Symbiospec | [Update Symbiospec as the software changes](references/workflow_update.md): update the affected specifications in the same task. |
+| Check whether Symbiospec still matches the software and tests | [Realign Symbiospec when drift is detected](references/workflow_realign.md): compare without modifying, report differences, then apply authorized corrections. |
 
 Keep checks scoped to the request. A request to inspect or review permits investigation and a report, not unrequested corrections. Realignment is a repeatable operation, not permission to create a scheduled automation.
 
