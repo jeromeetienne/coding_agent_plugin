@@ -10,3 +10,5 @@ This file lists the discussion documents for agents and tools.
 
 - [README.md](README.md): the purpose of the discussion and how to read the notes.
 - [Discussion notes](discussion_notes.md): the human review capacity problem, proposed approaches, and unresolved questions.
+
+- [Requirements](requirements.md): requirements captured during discussion, with unresolved details stated explicitly.
