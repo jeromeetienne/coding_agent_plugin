@@ -4,21 +4,13 @@
 - Last updated: 14 November 2026
 - Status: Maintained index for agents and tools
 - Related framing: [Agent instructions](../AGENTS.md)
-- Related issue: [#15](https://github.com/jeromeetienne/coding_agent_plugin/issues/15), [Issue 38](https://github.com/jeromeetienne/coding_agent_plugin/issues/38), [Issue 39](https://github.com/jeromeetienne/coding_agent_plugin/issues/39), [Issue 61](https://github.com/jeromeetienne/coding_agent_plugin/issues/61)
+- Related issue: [Issue 80](https://github.com/jeromeetienne/coding_agent_plugins/issues/80)
 
-This file lists shared documentation for coding agents and tools.
+For people using or maintaining this collection: choose the question you want answered.
 
-- [README.md](README.md): the documentation overview for people.
-- [Skill inventory](skill_inventory.md): readiness, dependencies, initial gaps, and resulting coverage.
-- [How the skills work together](skills_together.md): required dependencies, optional combinations, and complete development examples.
-- [Install and configure the skills](installing_skills.md): installation options, local copies, and receiving-project configuration.
-- [Maintain the shared skills](maintaining_skills.md): ownership, installed copies, contributor guidance, and history.
-- [The Rules of the Repo](rules_of_the_repo.md): rule selection, configuration, and ownership.
-- [Repo Folders Constraints](repo_folders_constraints.md): folder boundaries, setup, and human review with an example.
-- [About Symbiospec](about_symbio_spec/index.md): the six areas, workflows, and specification and documentation examples.
-- [Documentation structure](documentation_structure.md): documentation locations and agreed README coverage.
-- [Publish and maintain the documentation](publishing.md): website publication, updates, and verification.
-
-- [Preserve conversations after a folder rename](conversations_after_folder_rename.md): tested command-line recovery, preparation, and rollback for Codex and Claude Code.
-
-- [Coding in AI era](coding_in_ai_era/index.md): the broader approach to retaining human control, including pull request review.
+- [README.md](README.md): Overview for people.
+- [Using skills](using_skills/index.md): How to install, configure, and combine skills.
+- [Contributing](contributing/index.md): How to maintain skills and publish documentation.
+- [Tools](tools/index.md): How to use the executable tools.
+- [About Symbiospec](about_symbio_spec/index.md): What Symbiospec means and how its workflows work.
+- [Coding in AI era](coding_in_ai_era/index.md): How to retain human control while coding with AI.

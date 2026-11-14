@@ -1,10 +1,10 @@
 # The Rules of the Repo
 
 - Created: 30 October 2026
-- Last updated: 9 November 2026
+- Last updated: 14 November 2026
 - Status: Explanation for people
-- Related framing: [Repository purpose](../CONTEXT.md)
-- Related rules: [Docs folder system](../skills/docs_folder_system/SKILL.md)
+- Related framing: [Repository purpose](../../CONTEXT.md)
+- Related rules: [Docs folder system](../../skills/docs_folder_system/SKILL.md)
 - Related issue: [#24](https://github.com/jeromeetienne/coding_agent_plugin/issues/24), [Issue 40](https://github.com/jeromeetienne/coding_agent_plugin/issues/40), [Issue 26](https://github.com/jeromeetienne/coding_agent_plugin/issues/26)
 
 ## Why The Rules of the Repo exists
@@ -13,7 +13,7 @@ A repository has decisions that should remain true as the repository changes: wh
 
 The Rules of the Repo brings those rules together through one entry point. The purpose is to make repository changes follow explicit rules and preserve human control over decisions that need human approval. Selecting the applicable rule skills is the mechanism that connects a proposed change to those rules.
 
-The skill [rules_of_the_repo](../skills/rules_of_the_repo/SKILL.md) coordinates that work. The skill holds no rule itself. Each individual rule skill explains how to check a particular kind of rule, while repository-specific configuration supplies the values for that repository.
+The skill [rules_of_the_repo](../../skills/rules_of_the_repo/SKILL.md) coordinates that work. The skill holds no rule itself. Each individual rule skill explains how to check a particular kind of rule, while repository-specific configuration supplies the values for that repository.
 
 ## How the parts work together
 
@@ -24,7 +24,7 @@ The skill [rules_of_the_repo](../skills/rules_of_the_repo/SKILL.md) coordinates 
 | Rule skill | Explains how to read, obey, and check a particular kind of rule. |
 | Repository-specific configuration | Gives the values that a rule skill requires for the receiving repository. |
 
-For example, the skill [docs_folder_system](../skills/docs_folder_system/README.md) defines the form of documentation files. The receiving repository supplies the documentation folder path and any files exempt from the metadata header. The same skill can then work in several repositories with different folder paths.
+For example, the skill [docs_folder_system](../../skills/docs_folder_system/README.md) defines the form of documentation files. The receiving repository supplies the documentation folder path and any files exempt from the metadata header. The same skill can then work in several repositories with different folder paths.
 
 Configuration stays outside the folder of the rule skill. Each rule skill that needs configuration has a separate configuration file, in a folder named after the rule skill. Keeping repository values separate allows the skill to be reused without carrying the decisions of one repository into another repository.
 
@@ -50,7 +50,7 @@ The configuration file follows the rule type recorded in the rules list for that
 
 ## Where Repo Folders Constraints fits
 
-[Repo Folders Constraints](../skills/repo_folders_constraints/README.md) is one rule skill within The Rules of the Repo. Repo Folders Constraints covers the responsibilities and boundaries of folders and packages. The rules file records what each folder or package does, what each folder or package must never contain or do, the permitted imports between packages, required languages and technologies, and the workflow for changing content.
+[Repo Folders Constraints](../../skills/repo_folders_constraints/README.md) is one rule skill within The Rules of the Repo. Repo Folders Constraints covers the responsibilities and boundaries of folders and packages. The rules file records what each folder or package does, what each folder or package must never contain or do, the permitted imports between packages, required languages and technologies, and the workflow for changing content.
 
 The human owns the rules file. Repo Folders Constraints is a living rule with human approval: the coding agent reads and obeys the rules file, and proposes rule changes for human review. A folder without a rule, or a decision marked “not decided yet” that the work now needs, requires a proposal.
 
@@ -70,16 +70,16 @@ Installing the skill gives the coding agent the instructions; the receiving repo
 
 For an existing repository, the coding agent first reads the repository and proposes suitable rule skills and configuration values. Each value needs human approval. The coding agent then identifies differences between the repository and the agreed rules, and proposes a plan for human approval before removing those differences. A large plan is divided into steps that can be reviewed separately, with the repository's tests run after each step.
 
-Individual rule skills can also work without The Rules of the Repo when another caller supplies their configuration. This repository uses The Rules of the Repo: [AGENTS.md](../AGENTS.md) points to the [rules list](../.agents/rules_of_the_repo/rules_list.md), whose Docs folder system row points to the [documentation configuration](../.agents/rules_of_the_repo/config/docs_folder_system/config.md). That configuration chooses `docs` and no metadata exceptions. Publishing a rule skill in this repository does not automatically configure that rule skill for this repository.
+Individual rule skills can also work without The Rules of the Repo when another caller supplies their configuration. This repository uses The Rules of the Repo: [AGENTS.md](../../AGENTS.md) points to the [rules list](../../.agents/rules_of_the_repo/rules_list.md), whose Docs folder system row points to the [documentation configuration](../../.agents/rules_of_the_repo/config/docs_folder_system/config.md). That configuration chooses `docs` and no metadata exceptions. Publishing a rule skill in this repository does not automatically configure that rule skill for this repository.
 
-The [rules_of_the_repo README](../skills/rules_of_the_repo/README.md#configuration) provides a complete receiving-project example connecting all three files with installed rule skills. The [Repo Folders Constraints guide](repo_folders_constraints.md) shows standalone configuration and coordinated setup for a human-owned rules file. These examples explain setup without adopting new folder rules here.
+The [rules_of_the_repo README](../../skills/rules_of_the_repo/README.md#configuration) provides a complete receiving-project example connecting all three files with installed rule skills. The [Repo Folders Constraints guide](repo_folders_constraints.md) shows standalone configuration and coordinated setup for a human-owned rules file. These examples explain setup without adopting new folder rules here.
 
-The older [docs_folder_agents_rules_system](../skills/docs_folder_agents_rules_system/README.md) is **obsolete**, superseded by [symbio_spec](../skills/symbio_spec/README.md), and retained for existing projects. Listing the obsolete skill is not a recommendation for new adoption or an automatic migration.
+The older [docs_folder_agents_rules_system](../../skills/docs_folder_agents_rules_system/README.md) is **obsolete**, superseded by [symbio_spec](../../skills/symbio_spec/README.md), and retained for existing projects. Listing the obsolete skill is not a recommendation for new adoption or an automatic migration.
 
 ## Further reading
 
-- [The Rules of the Repo instructions](../skills/rules_of_the_repo/SKILL.md): the full procedure and setup templates for coding agents.
-- [The Rules of the Repo overview](../skills/rules_of_the_repo/README.md): installation and related skills.
+- [The Rules of the Repo instructions](../../skills/rules_of_the_repo/SKILL.md): the full procedure and setup templates for coding agents.
+- [The Rules of the Repo overview](../../skills/rules_of_the_repo/README.md): installation and related skills.
 - [Repo Folders Constraints guide](repo_folders_constraints.md): rule columns, configuration alternatives, missing decisions and human review.
-- [Repo Folders Constraints instructions](../skills/repo_folders_constraints/SKILL.md): the rules file format and the procedure for proposing a rule change.
-- [Docs folder system instructions](../skills/docs_folder_system/SKILL.md): documentation metadata and folder navigation.
+- [Repo Folders Constraints instructions](../../skills/repo_folders_constraints/SKILL.md): the rules file format and the procedure for proposing a rule change.
+- [Docs folder system instructions](../../skills/docs_folder_system/SKILL.md): documentation metadata and folder navigation.

@@ -70,7 +70,7 @@ Context files are agent-maintained notes and can be updated without human approv
 
 - [repo_folders_constraints](../repo_folders_constraints/README.md): optional human-owned boundaries complementing context notes.
 - [rules_of_the_repo](../rules_of_the_repo/README.md): optional coordination of applicable rule skills.
-- [Repo Folders Constraints guide](../../docs/repo_folders_constraints.md): ownership and conflict examples.
+- [Repo Folders Constraints guide](../../docs/using_skills/repo_folders_constraints.md): ownership and conflict examples.
 
 ## Instructions and references
 
