@@ -11,7 +11,9 @@ description: Draft workflow to propose screens and navigation from an approved S
 
 Propose user interface structure from a bounded, approved Symbiospec through Object-Oriented UX, Sophia Prater's approach to organizing interfaces around things users recognize. ORCA names four concerns: objects, relationships, calls to action, and attributes. This is a focused adaptation, not the complete ORCA process. See the [method reference](https://ooux.com/offerings/fourfails).
 
-Read repository instructions and affected approved specifications first. Use the [Symbiospec skill](../symbio_spec/SKILL.md) and [format reference](../symbio_spec/references/format.md) for specification ownership, proposals, decisions, and coverage. Follow the receiving project's documentation rules.
+Read repository instructions first. Perform the version check below before reading affected approved specifications. Use the [Symbiospec skill](../symbio_spec/SKILL.md) and [format reference](../symbio_spec/references/format.md) for specification ownership, proposals, decisions, and coverage. Follow the receiving project's documentation rules.
+
+**Expected Symbiospec format: `1.0.0`. Supported formats: `1.0.0` and its unversioned equivalent.** Before consuming project specifications or preparing proposals, follow the shared [version detection and migration procedure](../symbio_spec/references/versioning.md) from the installed `symbio_spec` skill. If that procedure or the required definition is unavailable, or a version is malformed or unsupported, or migration is incomplete, stop before normal work. Compatible format numbers do not automatically require migration. Adoption and migration are separate authorized work through `symbio_spec`; a proposal request does not authorize converting the source specification.
 
 A proposal does not authorize implementation, installation, a prototype, or changes to approved behaviour. Use existing authorization without requesting the same approval again.
 

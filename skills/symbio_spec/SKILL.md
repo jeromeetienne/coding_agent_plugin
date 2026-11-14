@@ -15,7 +15,9 @@ Read the target repository's instructions and applicable context files first. Fo
 
 ## 2. Select the workflow
 
-Read [format.md](references/format.md) before creating or restructuring Symbiospec. Use the [workflow overview](references/workflows.md) to select the relevant workflow below.
+**Expected Symbiospec format: `1.0.0`. Supported formats: `1.0.0` and its unversioned equivalent.** Before setup or normal work, including read-only audits, follow the shared [version detection and migration procedure](references/versioning.md). Installation that only copies skill files defers this check to first project use. A malformed version, unsupported format, or incomplete migration blocks normal work; report the problem before changing project data. Use existing authorization for adoption or migration; a version mismatch alone does not authorize conversion.
+
+Read [format.md](references/format.md) and the detected version's complete definition before creating or restructuring Symbiospec. Use the [workflow overview](references/workflows.md) to select the relevant workflow below.
 
 | Request | Workflow |
 | --- | --- |
