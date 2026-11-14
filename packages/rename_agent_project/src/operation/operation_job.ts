@@ -110,6 +110,7 @@ export class OperationJob {
 		const isBeforeWrites = record.action === 'rename' && record.original === undefined
 			&& ['preparing-worker', 'worker-starting', 'checking-applications', 'waiting-for-clients', 'clients-closed']
 				.includes(record.phase);
+		record.recoveryPhase ??= record.phase;
 		record.error = `The operation worker exited unexpectedly during ${record.phase}. `
 			+ `Inspect ${Path.join(directory, 'worker.log')}. `
 			+ (isBeforeWrites ? 'No project or conversation changes started; the project lock was released.'
@@ -155,6 +156,7 @@ export class OperationJob {
 				});
 			}
 			try {
+				record.recoveryPhase ??= record.phase;
 				record.action = 'restore';
 				OperationJournal.write(record, 'preparing-restore-worker', 'queued');
 				this._spawn(record);
@@ -171,12 +173,14 @@ export class OperationJob {
 	 * @param directory Private operation directory.
 	 * @param progressFn Optional notification when manual action is required.
 	 * @param timeout Maximum wait in milliseconds before returning current progress.
+	 * @param activityFn Optional activity display refreshed while the independent worker runs.
 	 * @returns Current or terminal progress; the worker continues if the caller disconnects.
 	 */
 	static async wait(
 		directory: string,
 		timeout = 900000,
 		progressFn?: (record: OperationRecord) => void,
+		activityFn?: (record: OperationRecord) => void,
 	): Promise<OperationRecord> {
 		const deadline = Date.now() + timeout;
 		let record = this.status(directory);
@@ -186,6 +190,7 @@ export class OperationJob {
 			if (record.waitingFor !== undefined && previous !== current) {
 				progressFn?.(record);
 			}
+			activityFn?.(record);
 			previous = current;
 			await new Promise((resolveFn) => setTimeout(resolveFn, 200));
 			record = this.status(directory);
@@ -204,6 +209,9 @@ export class OperationJob {
 			outfile: Path.join(record.directory, 'worker.mjs'),
 			bundle: true,
 			format: 'esm',
+			banner: {
+				js: "import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);",
+			},
 			platform: 'node',
 			target: 'node24',
 			logLevel: 'silent',

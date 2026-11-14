@@ -1,6 +1,7 @@
 import Assert from 'node:assert/strict';
 import ChildProcess from 'node:child_process';
 import Fs from 'node:fs';
+import FsExtra from 'fs-extra';
 import Os from 'node:os';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
@@ -41,7 +42,11 @@ class MigrateConversationsTest {
 	static register(): void {
 		Test('batch migration preserves messages, unrelated projects, and archived conversations', (context) => {
 			const fixture = this._fixture(context);
+			const modified = new Date('2024-01-02T03:04:05.000Z');
+			Fs.utimesSync(fixture.transcript, modified, modified);
+			Fs.utimesSync(Path.join(fixture.claudeSource, 'claude-one.jsonl'), modified, modified);
 			const before = this._snapshot(fixture.root);
+			const transcriptBefore = Fs.readFileSync(fixture.transcript);
 			const preview = this._cli(fixture);
 			Assert.equal(preview.status, 0, preview.stderr);
 			Assert.match(preview.stdout, /5 conversations/);
@@ -57,10 +62,15 @@ class MigrateConversationsTest {
 			Assert.equal(rows[0].title, 'A preserved title');
 			Assert.equal(rows[1].archived, 1);
 			const records = Fs.readFileSync(fixture.transcript, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
-			Assert.equal(records[0].payload.cwd, fixture.options.from);
+			Assert.equal(records[0].payload.cwd, fixture.options.to);
+			const transcriptAfter = Fs.readFileSync(fixture.transcript);
+			Assert.deepEqual(transcriptAfter.subarray(transcriptAfter.indexOf(10) + 1),
+				transcriptBefore.subarray(transcriptBefore.indexOf(10) + 1));
 			Assert.equal(records[1].payload.permission_profile.root, fixture.options.from);
 			Assert.equal(records[2].payload.text, `Remember 731 and this historical path: ${fixture.options.from}`);
 			Assert.equal(Fs.existsSync(fixture.claudeSource), false);
+			Assert.equal(Fs.statSync(fixture.transcript).mtimeMs, modified.getTime());
+			Assert.equal(Fs.statSync(Path.join(fixture.claudeTarget, 'claude-one.jsonl')).mtimeMs, modified.getTime());
 			Assert.equal(Fs.readFileSync(Path.join(fixture.claudeTarget, 'memory/MEMORY.md'), 'utf8'), 'keep memory bytes');
 			const config = JSON.parse(Fs.readFileSync(fixture.options.claudeConfig, 'utf8')) as {
 				projects: Record<string, JsonObject>;
@@ -75,6 +85,33 @@ class MigrateConversationsTest {
 			MigrationStorage.restore(fixture.backup, false);
 			MigrationStorage.restore(fixture.backup, true);
 			Assert.deepEqual(this._snapshot(fixture.root, [fixture.backup]), before);
+			Assert.equal(Fs.statSync(fixture.transcript).mtimeMs, modified.getTime());
+			Assert.equal(Fs.statSync(Path.join(fixture.claudeSource, 'claude-one.jsonl')).mtimeMs, modified.getTime());
+		});
+
+		Test('Codex metadata follows its current indexed association and preserves all later history bytes', (context) => {
+			const fixture = this._fixture(context);
+			const bytes = Fs.readFileSync(fixture.transcript);
+			const end = bytes.indexOf(10);
+			const header = JSON.parse(bytes.subarray(0, end).toString('utf8'));
+			header.payload.cwd = '/synthetic/an-older-project-name';
+			const history = Buffer.concat([bytes.subarray(end + 1), Buffer.from(JSON.stringify({
+				type: 'session_meta',
+				payload: {
+					id: 'historical-embedded-record',
+					cwd: fixture.options.from,
+				},
+			}) + '\r\n')]);
+			const original = Buffer.concat([Buffer.from(JSON.stringify(header) + '\r\n'), history]);
+			Fs.writeFileSync(fixture.transcript, original);
+			const plan = ConversationPlan.build(fixture.options);
+			MigrationStorage.apply(plan, fixture.backup);
+			const updated = Fs.readFileSync(fixture.transcript);
+			Assert.equal(JSON.parse(updated.subarray(0, updated.indexOf(10)).toString('utf8')).payload.cwd,
+				fixture.options.to);
+			Assert.deepEqual(updated.subarray(updated.indexOf(10) + 1), history);
+			MigrationStorage.restore(fixture.backup, true);
+			Assert.deepEqual(Fs.readFileSync(fixture.transcript), original);
 		});
 
 		Test('preview reports missing transcripts without the SQLite experimental warning', (context) => {
@@ -224,10 +261,10 @@ console.log('large migration and restore verified');
 			const fixture = this._fixture(context);
 			const before = this._snapshot(fixture.root);
 			const plan = ConversationPlan.build(fixture.options);
-			const copyFileSync = Fs.copyFileSync;
-			const mock = context.mock.method(Fs, 'copyFileSync', (...args: Parameters<typeof Fs.copyFileSync>) => {
+			const copySync = FsExtra.copySync;
+			const mock = context.mock.method(FsExtra, 'copySync', (...args: Parameters<typeof FsExtra.copySync>) => {
 				const target = args[1];
-				copyFileSync(...args);
+				copySync(...args);
 				if (String(target).includes('.migration-')) {
 					throw new Error('Synthetic disk failure during atomic replacement');
 				}

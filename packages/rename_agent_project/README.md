@@ -2,7 +2,7 @@
 
 Rename a local repository folder and keep its Codex and Claude Code conversations available when you open the renamed folder normally.
 
-One command lists affected terminals, waits for you to close those clients manually, creates verified backups, renames the folder, updates conversation associations, repairs linked Git worktrees, and verifies the result. Failed operations attempt a checked rollback. The independent worker continues if the initiating terminal closes.
+One command lists affected terminals, waits for you to close those clients manually, creates verified backups, renames the folder, updates conversation associations, repairs linked Git worktrees, and verifies the result. Failed operations attempt a checked rollback. The independent worker continues if the initiating terminal closes. While waiting, the terminal shows an animated activity indicator, the current phase, and elapsed time. The indicator fits within the terminal width and uses explicit cursor positioning. Redirected output records phase changes as ordinary log lines. Warnings already printed before a foreground rename are retained in the operation record and are not repeated at completion.
 
 ## Use
 
@@ -18,15 +18,18 @@ Add `--apply` to perform the complete rename. A private backup and operation dir
 
 ```bash
 pnpm --filter rename_agent_project start --status /absolute/operation-directory
+pnpm --filter rename_agent_project start --status /absolute/operation-directory --watch
 pnpm --filter rename_agent_project start --restore /absolute/operation-directory
 pnpm --filter rename_agent_project start --restore /absolute/operation-directory --apply
 ```
+
+Codex migration updates both the index association and the initial transcript metadata path, because normal pickers can use filesystem metadata rather than the index. Message and tool-history records and paginated history remain unchanged. Both metadata changes have verified backups and checked restoration. Transcript modification times remain unchanged so recent conversations retain their place in normal pickers.
 
 Verification requires every migrated conversation to remain discoverable and allows additional Codex conversations already associated with the destination. Those existing conversations are preserved during rename and restoration.
 
 When an indexed Codex transcript is missing, the command reports the conversation identifier and transcript path. The index record stays unchanged and is excluded from migration and conversation counts. Available conversations still migrate with the same backup, verification, and restoration checks. Missing transcript warnings are also saved in the operation status. The command hides only the SQLite experimental warning; other warnings and errors remain visible.
 
-Transcript and history files are processed one JSON record at a time. Plans store checksums and the field and path mapping to apply, without retaining transcript text or a replacement for every record. Replacement files are prepared on disk, checked against the plan, and copied to temporary files beside their targets before atomic replacement. Backup, restoration, project-file checksums, and Codex transcript verification use block-by-block file reads. Transcript memory use depends on the largest individual record, not the complete file. Configuration documents, session indexes, and operation metadata are still parsed as JSON documents. Existing saved plans remain supported.
+Codex migration transforms only the bounded first metadata record and copies every later history byte in fixed-size blocks. Claude Code transcripts and history are processed one JSON record at a time. Plans store checksums and the field and path mapping to apply, without retaining transcript text or a replacement for every record. Replacement files are prepared on disk, checked against the plan, and copied to temporary files beside their targets before atomic replacement. Backup, restoration, project-file checksums, and Codex transcript verification use block-by-block file reads. Transcript memory use depends on the largest individual record, not the complete file. Configuration documents, session indexes, and operation metadata are still parsed as JSON documents. Existing saved plans remain supported.
 
 If a worker exits unexpectedly, the waiting command and `--status` report the failure and the path to the worker log. An exit before project backup and migration releases the project lock so a new rename can be started. An exit after preparation may require recovery; the project lock remains held and `--restore` performs the existing checked restoration.
 
@@ -36,7 +39,7 @@ Use `--help` for every option, including `--only`, custom application storage, `
 
 ## Supported scope
 
-Codex and Claude Code command-line applications on macOS and Linux. Affected open clients and affected background tasks cause waiting, with instructions in the terminal. Unrelated clients and unrelated background tasks may continue. Unknown storage formats and conflicting destinations cause refusal. Live application testing currently covers macOS with Codex 0.167.0 and Claude Code 2.1.322; Linux is not live-verified.
+Codex and Claude Code command-line applications on macOS and Linux. Affected open clients and affected background tasks cause waiting, with instructions in the terminal. Unrelated clients and unrelated background tasks may continue. Unknown storage formats and conflicting destinations cause refusal. Live application testing currently covers macOS with Codex 0.169.0 and Claude Code 2.1.323 and 2.1.325; Linux is not live-verified.
 
 Completed Codex review root turns do not block migration because an older child record still says work is in progress. Missing or active root turns continue to block migration.
 
@@ -51,4 +54,6 @@ pnpm --filter rename_agent_project check
 
 Tests stay in [tests](tests), beside [src](src). Strict TypeScript targets ES2020 and runs through `tsx`. [src/index.ts](src/index.ts) exports the package interface; implementation belongs in [src/migration](src/migration) and [src/operation](src/operation).
 
-The approved synthetic testbed uses `rename_agent_test_project`, synthetic files, three new Claude Code conversations, and three new Codex conversations. All six were selected from the normal pickers after renaming, recalled their distinct earlier facts, and wrote verification files in the renamed folder. Actual user projects and existing conversations were excluded. See the [testing evidence and recovery notes](../../docs/tools/rename_agent_project/verification_history.md) and [implementation issue](https://github.com/jeromeetienne/coding_agent_plugin/issues/64).
+The earlier synthetic testbed used `rename_agent_test_project`, synthetic files, three new Claude Code conversations, and three new Codex conversations. All six were selected from the normal pickers after renaming, recalled their distinct earlier facts, and wrote verification files in the renamed folder. Actual user projects and existing conversations were excluded. See the [testing evidence and recovery notes](../../docs/tools/rename_agent_project/verification_history.md) and [implementation issue](https://github.com/jeromeetienne/coding_agent_plugin/issues/64).
+
+The [representative synthetic test procedure](SYNTHETIC_TEST.md) defines the ordered acceptance work for issue #76, including scale targets, independent checks, faults, resource limits, and evidence requirements. The [measured results](SYNTHETIC_RESULTS.md) distinguish passing cases, confirmed defects, and remaining coverage.

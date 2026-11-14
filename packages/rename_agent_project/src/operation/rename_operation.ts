@@ -1,4 +1,5 @@
 import Fs from 'node:fs';
+import FsExtra from 'fs-extra';
 import Path from 'node:path';
 import type { MigrationPlan } from '../migration/migration_types.js';
 import { ConversationPlan } from '../migration/conversation_plan.js';
@@ -64,7 +65,9 @@ export class RenameOperation {
 				throw new Error('Destination appeared during the operation; refusing to overwrite it.');
 			}
 			AgentProcesses.assertReady(record.options, record.plan);
-			Fs.renameSync(record.options.from, record.options.to);
+			FsExtra.moveSync(record.options.from, record.options.to, {
+				overwrite: false,
+			});
 			record.renamed = ProjectFiles.snapshot(record.options.to);
 			this._checkpoint(record, 'repairing-worktrees', checkpointFn);
 			ProjectFiles.repair(record.options.to, record.worktrees);
@@ -77,6 +80,7 @@ export class RenameOperation {
 			}
 			OperationJournal.write(record, 'verified', 'complete');
 		} catch (error) {
+			record.recoveryPhase ??= record.phase;
 			record.error = error instanceof Error ? error.message : String(error);
 			OperationJournal.write(record, record.phase, record.action === 'restore' ? 'recovery_required' : 'failed');
 			if (record.original !== undefined && record.action !== 'restore') {
@@ -128,7 +132,7 @@ export class RenameOperation {
 				})),
 			});
 		}
-		const phase = record.phase;
+		const phase = record.recoveryPhase ?? record.phase;
 		OperationJournal.write(record, 'restoring', 'running');
 		const isOriginal = Fs.existsSync(record.options.from);
 		if (isOriginal === false) {
@@ -136,11 +140,13 @@ export class RenameOperation {
 			if (record.renamed !== undefined && phase !== 'repairing-worktrees') {
 				ProjectFiles.verify(record.options.to, record.renamed);
 			}
-			Fs.renameSync(record.options.to, record.options.from);
-			ProjectFiles.repair(record.options.from, record.worktrees ?? [], true);
+			FsExtra.moveSync(record.options.to, record.options.from, {
+				overwrite: false,
+			});
 		} else {
 			ProjectFiles.verify(record.options.from, record.original, true);
 		}
+		ProjectFiles.repair(record.options.from, record.worktrees ?? [], true);
 		const migration = Path.join(record.directory, 'migration');
 		if (Fs.existsSync(Path.join(migration, 'manifest.json'))) {
 			MigrationStorage.restore(migration, true);

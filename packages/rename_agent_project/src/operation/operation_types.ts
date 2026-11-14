@@ -66,6 +66,8 @@ export type OperationRecord = {
 	waitingFor?: string[];
 	/** Current or last completed step. */
 	phase: string;
+	/** Original interrupted phase retained while recovery launches and waits for clients. */
+	recoveryPhase?: string;
 	/** Last update in ISO format. */
 	updated: string;
 	/** Action taken by this worker. */
