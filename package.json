@@ -1,8 +1,0 @@
-{
-  "name": "coding-agent-plugin-workspace",
-  "private": true,
-  "scripts": {
-    "test": "pnpm --filter rename_agent_project test",
-    "check": "pnpm --filter rename_agent_project check"
-  }
-}

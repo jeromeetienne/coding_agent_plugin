@@ -18,7 +18,6 @@ include:
   - docs/coding_in_ai_era/pull_request/README.md
   - docs/contributing/README.md
   - docs/tools/README.md
-  - docs/tools/rename_agent_project/README.md
   - docs/using_skills/README.md
   # Publish the repository rules configuration linked from the documentation.
   - .agents

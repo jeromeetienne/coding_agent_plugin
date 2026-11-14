@@ -11,6 +11,6 @@ For people using or maintaining this collection: choose the question you want an
 - [README.md](README.md): Overview for people.
 - [Using skills](using_skills/index.md): How to install, configure, and combine skills.
 - [Contributing](contributing/index.md): How to maintain skills and publish documentation.
-- [Tools](tools/index.md): How to use the executable tools.
+- [Tools](tools/index.md): Where to find independently maintained executable tools.
 - [About Symbiospec](about_symbio_spec/index.md): What Symbiospec means and how its workflows work.
 - [Coding in AI era](coding_in_ai_era/index.md): How to retain human control while coding with AI.
