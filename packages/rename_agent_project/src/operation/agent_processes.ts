@@ -155,9 +155,18 @@ export class AgentProcesses {
 			});
 
 			try {
-				const turns = databaseSync.prepare('SELECT thread_id, status FROM thread_turns').iterate();
+				const columns = databaseSync.prepare('PRAGMA table_info(thread_turns)').all().map((column) => column.name);
+				const isRootSupported = columns.includes('root_turn_id') && columns.includes('turn_id');
+				const query = isRootSupported
+					? `SELECT child.thread_id, child.status, root.status AS root_status
+						FROM thread_turns AS child LEFT JOIN thread_turns AS root
+						ON root.thread_id = child.thread_id AND root.turn_id = child.root_turn_id`
+					: 'SELECT thread_id, status, NULL AS root_status FROM thread_turns';
+				const terminalStatuses = ['completed', 'failed', 'interrupted', 'cancelled'];
+				const turns = databaseSync.prepare(query).iterate();
 				for (const turn of turns) {
-					if (['completed', 'failed', 'interrupted', 'cancelled'].includes(String(turn.status))) {
+					if (terminalStatuses.includes(String(turn.status))
+						|| terminalStatuses.includes(String(turn.root_status))) {
 						continue;
 					}
 					if (plan.conversations.some((conversation) =>

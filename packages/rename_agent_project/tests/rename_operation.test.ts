@@ -347,6 +347,53 @@ await InterruptedWorker.run();
 			});
 		}
 
+		for (const status of ['completed', 'failed', 'interrupted', 'cancelled', 'inProgress', 'missing']) {
+			Test(`review child activity follows root status ${status}`, (context) => {
+				const record = this._fixture(context);
+				const databaseSync = new Sqlite.DatabaseSync(Path.join(record.options.codexHome, 'thread_history_1.sqlite'));
+				databaseSync.exec('CREATE TABLE thread_turns (thread_id TEXT, turn_id TEXT, root_turn_id TEXT, status TEXT)');
+				const insert = databaseSync.prepare('INSERT INTO thread_turns VALUES (?, ?, ?, ?)');
+				insert.run('synthetic-codex', 'review-child', 'review-root', 'inProgress');
+				if (status !== 'missing') {
+					insert.run('synthetic-codex', 'review-root', 'review-root', status);
+				}
+				insert.run('unrelated', 'review-root', 'review-root', 'completed');
+				databaseSync.close();
+				const checkFn = (): void => AgentProcesses.assertIdle(record.options,
+					ConversationPlan.build(record.options), [{
+						pid: 42,
+						application: 'codex',
+						isDaemon: true,
+						isRelated: false,
+						identity: 'synthetic-process-record',
+					}]);
+				if (status === 'inProgress' || status === 'missing') {
+					Assert.throws(checkFn, /Wait for Codex conversation/);
+				} else {
+					Assert.doesNotThrow(checkFn);
+				}
+			});
+		}
+
+		Test('a completed review does not hide a separate active turn in the same conversation', (context) => {
+			const record = this._fixture(context);
+			const databaseSync = new Sqlite.DatabaseSync(Path.join(record.options.codexHome, 'thread_history_1.sqlite'));
+			databaseSync.exec('CREATE TABLE thread_turns (thread_id TEXT, turn_id TEXT, root_turn_id TEXT, status TEXT)');
+			const insert = databaseSync.prepare('INSERT INTO thread_turns VALUES (?, ?, ?, ?)');
+			insert.run('synthetic-codex', 'review-child', 'review-root', 'inProgress');
+			insert.run('synthetic-codex', 'review-root', 'review-root', 'completed');
+			insert.run('synthetic-codex', 'new-turn', 'new-turn', 'inProgress');
+			databaseSync.close();
+			Assert.throws(() => AgentProcesses.assertIdle(record.options,
+				ConversationPlan.build(record.options), [{
+					pid: 42,
+					application: 'codex',
+					isDaemon: true,
+					isRelated: false,
+					identity: 'synthetic-process-record',
+				}]), /Wait for Codex conversation/);
+		});
+
 		Test('unfinished affected Claude Code work prevents migration', (context) => {
 			const record = this._fixture(context);
 			Assert.throws(() => AgentProcesses.assertIdle(record.options,

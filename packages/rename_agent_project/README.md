@@ -38,6 +38,8 @@ Use `--help` for every option, including `--only`, custom application storage, `
 
 Codex and Claude Code command-line applications on macOS and Linux. Affected open clients and affected background tasks cause waiting, with instructions in the terminal. Unrelated clients and unrelated background tasks may continue. Unknown storage formats and conflicting destinations cause refusal. Live application testing currently covers macOS with Codex 0.167.0 and Claude Code 2.1.322; Linux is not live-verified.
 
+Completed Codex review root turns do not block migration because an older child record still says work is in progress. Missing or active root turns continue to block migration.
+
 Keep affected clients closed until completion. The command checks for reopened affected clients before writes and preserves conversation identity and history. Embedded absolute paths in instructions, launchers, installed skill links, and editor workspaces are not rewritten. Desktop applications and editor integrations are outside the supported scope.
 
 ## Development and evidence
