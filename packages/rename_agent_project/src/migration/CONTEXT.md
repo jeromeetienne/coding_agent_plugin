@@ -17,11 +17,13 @@ Discover Codex and Claude Code conversations and prepare, apply, and restore con
 
 - This folder does not parse command-line arguments or import tests.
 - Migration does not rename the project folder or stop applications.
-- Codex transcript bytes and paginated history remain unchanged; only selected index fields change.
+- Codex migration changes selected index fields and only the initial session_meta payload.cwd; all later transcript bytes and paginated history remain unchanged.
 - Claude Code message contents remain unchanged and existing destination directories are never merged.
 - Transcript plans retain checksums and field transformations, never transcript text or per-record replacement arrays; older saved plans remain readable.
 - New transcript and history operations read one record at a time; file checksums use fixed-size buffers.
 - Backups precede storage changes and remain outside the project and active application stores.
+- Transcript replacements preserve modification times so normal conversation ordering stays stable.
+- Copies and directory moves call installed fs-extra operations; checked file replacements retain atomic filesystem rename.
 - Unknown formats, conflicting destinations, and changed rollback targets cause refusal.
 
 ## Background

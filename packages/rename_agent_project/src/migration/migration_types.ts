@@ -43,10 +43,10 @@ export type FileHashes = {
 	after: string;
 };
 
-/** A top-level path field to rewrite in newline-separated JSON records. */
+/** A supported project association field to rewrite without traversing message content. */
 export type RecordRewrite = {
 	/** Only this field is eligible for changes; message content is never traversed. */
-	field: 'cwd' | 'project';
+	field: 'cwd' | 'project' | 'payload.cwd';
 	/** Ordered complete path-prefix mappings. */
 	mappings: PathMapping[];
 };
@@ -218,6 +218,8 @@ export type CommandOptions = {
 	apply?: boolean;
 	/** Operation directory whose durable status should be displayed. */
 	status?: string;
+	/** Keep showing phase and elapsed time until an existing operation finishes. */
+	watch?: boolean;
 	/** Return after the independent worker starts. */
 	detach?: boolean;
 };

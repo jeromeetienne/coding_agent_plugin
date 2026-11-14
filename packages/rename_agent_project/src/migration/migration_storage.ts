@@ -1,5 +1,6 @@
 import Crypto from 'node:crypto';
 import Fs from 'node:fs';
+import FsExtra from 'fs-extra';
 import Path from 'node:path';
 import Sqlite from 'node:sqlite';
 import { StorageStream } from './storage_stream.js';
@@ -59,14 +60,20 @@ export class MigrationStorage {
 			});
 			for (const [index, file] of plan.files.entries()) {
 				const original = Path.join(backup, manifest.files[index].backup);
-				Fs.copyFileSync(file.path, original, Fs.constants.COPYFILE_EXCL);
+				FsExtra.copySync(file.path, original, {
+					preserveTimestamps: true,
+					overwrite: false,
+					errorOnExist: true,
+				});
 				Fs.chmodSync(original, 0o600);
 				this._prepare(file, Path.join(backup, `replacement_${index}`));
 			}
 			for (const [index, move] of manifest.moves.entries()) {
-				Fs.cpSync(move.from, Path.join(backup, `project_${index}`), {
-					recursive: true,
+				FsExtra.copySync(move.from, Path.join(backup, `project_${index}`), {
 					preserveTimestamps: true,
+					overwrite: false,
+					errorOnExist: true,
+					dereference: false,
 				});
 			}
 			this._manifest(backup, manifest);
@@ -78,7 +85,9 @@ export class MigrationStorage {
 				if (this._tree(move.from) !== move.after || Fs.existsSync(move.to)) {
 					throw new Error(`Storage changed while migrating: ${move.from}`);
 				}
-				Fs.renameSync(move.from, move.to);
+				FsExtra.moveSync(move.from, move.to, {
+					overwrite: false,
+				});
 			}
 			this._updateDatabases(databases, false);
 			console.log(`Migration complete. Rollback backup: ${backup}`);
@@ -120,7 +129,9 @@ export class MigrationStorage {
 			}
 			for (const move of [...manifest.moves].reverse()) {
 				if (Fs.existsSync(move.to)) {
-					Fs.renameSync(move.to, move.from);
+					FsExtra.moveSync(move.to, move.from, {
+						overwrite: false,
+					});
 				}
 			}
 			for (const file of manifest.files) {
@@ -385,16 +396,21 @@ export class MigrationStorage {
 	private static _replace(path: string, source: string, expected: string, allowed: string[]): void {
 		this._safePath(path);
 		this._safePath(source);
+		const stat = Fs.statSync(path);
 		const temporary = `${path}.migration-${Crypto.randomUUID()}`;
 		try {
-			Fs.copyFileSync(source, temporary, Fs.constants.COPYFILE_EXCL);
-			Fs.chmodSync(temporary, Fs.statSync(path).mode & 0o777);
+			FsExtra.copySync(source, temporary, {
+				overwrite: false,
+				errorOnExist: true,
+			});
+			Fs.chmodSync(temporary, stat.mode & 0o777);
 			if (StorageStream.hash(temporary) !== expected) {
 				throw new Error(`Replacement file failed its checksum: ${path}`);
 			}
 			if (allowed.includes(StorageStream.hash(path)) === false) {
 				throw new Error(`File changed since migration planning; refusing to overwrite: ${path}`);
 			}
+			Fs.utimesSync(temporary, stat.atime, stat.mtime);
 			Fs.renameSync(temporary, path);
 		} finally {
 			if (Fs.existsSync(temporary)) {

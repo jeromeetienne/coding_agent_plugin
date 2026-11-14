@@ -95,11 +95,8 @@ export class StorageStream {
 		try {
 			const before = Crypto.createHash('sha256');
 			const after = Crypto.createHash('sha256');
-			let index = 0;
-			for (const bytes of this.lines(path)) {
-				index++;
+			for (const [bytes, updated] of this._chunks(path, rewrite)) {
 				before.update(bytes);
-				const updated = this._record(bytes, path, index, rewrite);
 				after.update(updated);
 				if (descriptor !== undefined) {
 					this._write(descriptor, updated);
@@ -126,7 +123,43 @@ export class StorageStream {
 		}
 	}
 
-	/** Transform only the selected top-level path field and preserve all unrelated record bytes. */
+	/**
+	 * @param path Source transcript or history file.
+	 * @param rewrite Selected association field and path mapping.
+	 * @returns Original and transformed chunks; Codex history after the header is never decoded.
+	 */
+	private static *_chunks(path: string, rewrite: RecordRewrite): Generator<[Buffer, Buffer]> {
+		if (rewrite.field !== 'payload.cwd') {
+			let index = 0;
+			for (const bytes of this.lines(path)) {
+				yield [bytes, this._record(bytes, path, ++index, rewrite)];
+			}
+			return;
+		}
+		const descriptor = Fs.openSync(path, 'r');
+		try {
+			const buffer = Buffer.allocUnsafe(65536);
+			let length = Fs.readSync(descriptor, buffer, 0, buffer.length, null);
+			const end = buffer.subarray(0, length).indexOf(10);
+			if (end < 0) {
+				throw new Error(`Unsupported or incomplete Codex transcript header: ${path}`);
+			}
+			const header = buffer.subarray(0, end + 1);
+			yield [header, this._record(header, path, 1, rewrite)];
+			if (end + 1 < length) {
+				const bytes = buffer.subarray(end + 1, length);
+				yield [bytes, bytes];
+			}
+			while ((length = Fs.readSync(descriptor, buffer, 0, buffer.length, null)) > 0) {
+				const bytes = buffer.subarray(0, length);
+				yield [bytes, bytes];
+			}
+		} finally {
+			Fs.closeSync(descriptor);
+		}
+	}
+
+	/** Transform only the supported association field, preserving all message and history bytes. */
 	private static _record(bytes: Buffer, path: string, index: number, rewrite: RecordRewrite): Buffer {
 		const line = bytes.toString('utf8');
 		if (line.trim().length === 0) {
@@ -138,7 +171,13 @@ export class StorageStream {
 		} catch {
 			throw new Error(`Invalid JSON in ${path}, record ${index}; no changes were made.`);
 		}
-		const original = record[rewrite.field];
+		const isCodex = rewrite.field === 'payload.cwd';
+		if (isCodex && (index !== 1 || record.type !== 'session_meta')) {
+			return bytes;
+		}
+		const target = isCodex ? JsonRecords.object(record.payload, path) : record;
+		const field = isCodex ? 'cwd' : rewrite.field;
+		const original = target[field];
 		if (typeof original !== 'string') {
 			return bytes;
 		}
@@ -151,7 +190,7 @@ export class StorageStream {
 		if (updated === original) {
 			return bytes;
 		}
-		record[rewrite.field] = updated;
+		target[field] = updated;
 		const ending = line.endsWith('\r\n') ? '\r\n' : line.endsWith('\n') ? '\n' : line.endsWith('\r') ? '\r' : '';
 		return Buffer.from(JSON.stringify(record) + ending);
 	}

@@ -1,5 +1,6 @@
 import ChildProcess from 'node:child_process';
 import Fs from 'node:fs';
+import FsExtra from 'fs-extra';
 import Path from 'node:path';
 import { StorageStream } from '../migration/storage_stream.js';
 import { ConversationPlan } from '../migration/conversation_plan.js';
@@ -72,14 +73,12 @@ export class ProjectFiles {
 	 * @returns No value; verifies the copy and detects concurrent source changes.
 	 */
 	static backup(root: string, destination: string, expected: ProjectEntry[]): void {
-		Fs.cpSync(root, destination, {
-			recursive: true,
+		FsExtra.copySync(root, destination, {
 			preserveTimestamps: true,
-			verbatimSymlinks: true,
+			dereference: false,
 			errorOnExist: true,
-			force: false,
+			overwrite: false,
 		});
-		Fs.chmodSync(destination, Fs.statSync(root).mode & 0o777);
 		this.verify(destination, expected);
 		this.verify(root, expected);
 	}
