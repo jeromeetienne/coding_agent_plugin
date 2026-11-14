@@ -36,3 +36,37 @@ Applied to pull request review, the approach adds a check that the change follow
 
 Jérôme Étienne defines the symbiotic relationship as collaboration between humans and AI toward one shared goal. The preferred introduction is “the shared product specification for humans and AI”. The [Symbiospec skill overview](../../skills/symbio_spec/README.md) now explains that meaning.
 
+## Independent skills that cooperate
+
+Jérôme Étienne describes the repository as a collection of skills that should be usable independently unless a dependency is explicitly stated. The collection supports a broader approach to coding in the AI era without requiring every project to adopt every skill.
+
+The repository name is `coding_agent_plugins`. Jérôme Étienne explains that “plugins” came from the idea of bundling skills. Whether the collection and the broader approach should have another name remains an open question. No rename has been decided.
+
+| Skill | Responsibility in the approach |
+| --- | --- |
+| [CONTEXT.md system](../../skills/context_md_system/README.md) | Maintain folder context; independently usable. |
+| [Docs folder system](../../skills/docs_folder_system/README.md) | Organize documentation; independently usable. |
+| [Git Cleanup Review](../../skills/git_cleanup_review/README.md) | Review worktrees and branches and recommend cleanup; independently usable. |
+| [Issue Creation](../../skills/issue_creation/README.md) | Write issues. |
+| [Issue Fix Workflow](../../skills/issue_fix_workflow/README.md) | Carry one issue through implementation, review, and completion. |
+| [Issue Batch Workflow](../../skills/issue_batch_workflow/README.md) | Coordinate a parent issue and related sub-issues; related to Issue Fix Workflow rather than wholly independent of the single-issue process. |
+| [TypeScript and JavaScript style](../../skills/jerome-typescript-javascript-style/README.md) | Express the adopted TypeScript and JavaScript coding preferences. |
+| [Rust style](../../skills/jerome-rust-style/README.md) | Express the adopted Rust coding preferences. |
+| [Keep a Changelog Workflow](../../skills/keep-a-changelog-workflow/README.md) | Produce and maintain changelogs as a utility. |
+| [Repo Folders Constraints](../../skills/repo_folders_constraints/README.md) | Define folder and package responsibilities, code placement, and allowed directions of dependencies between packages. |
+| [The Rules of the Repo](../../skills/rules_of_the_repo/README.md) | Organize how repository rules are found, applied, and maintained. |
+| [Symbiospec](../../skills/symbio_spec/README.md) | Describe the product through a shared specification for humans and AI. |
+| [symbio_spec_to_docs](../../skills/symbio_spec_to_docs/README.md) | Produce audience documentation from approved Symbiospec and implementation evidence. |
+| [symbio_spec_to_ux](../../skills/symbio_spec_to_ux/README.md) | Propose user interface structure from approved Symbiospec for human review; currently a draft not tested on a real project. |
+
+Writing pull request descriptions and reviewing or accepting pull requests are additional skill needs identified during the discussion. Those skills have not been implemented; their requirements are collected in the [pull request requirements](pull_request/requirements.md).
+
+The aim is to automate as much of the work as practical while preserving explicit human product decisions and human approval before merging. Independence describes the intended organization of the collection; each skill's actual prerequisites still need to be read rather than assuming every combination has no dependencies.
+
+## Experience behind symbio_spec_to_ux
+
+Jérôme Étienne distinguishes the purpose and prior use of the approach from the evaluation of the reusable skill. The current discussion describes purpose and intent.
+
+Jérôme Étienne reports applying the approach twice: to the Project Management Plugin in Heidrun Notebook and to Heidrun Store. The approach used object-oriented user experience design to derive user interface structure and navigation from product specifications. Jérôme Étienne considers the resulting user interface structure and navigation good. These are experiences reported by Jérôme Étienne during this discussion; no independent investigation of those implementations was performed here.
+
+The reusable `symbio_spec_to_ux` skill was generated from those experiences. The reusable skill remains a draft because Jérôme Étienne has not yet used the reusable skill itself. The draft status does not mean that the underlying approach has never been applied.
