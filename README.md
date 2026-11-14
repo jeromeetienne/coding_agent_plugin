@@ -54,6 +54,6 @@ The [shared workflow guide](docs/using_skills/skills_together.md) explains depen
 
 [MIT](LICENSE) © 2026 Jérôme Étienne.
 
-## Conversation migration script
+## Project folder rename tool
 
-The [rename_agent_project package](packages/rename_agent_project/README.md) migrates existing Codex and Claude Code conversations after a project folder rename. Read the [tested migration procedure](docs/tools/rename_agent_project/conversations_after_folder_rename.md) for preparation, preview, backup, and rollback.
+The standalone [coding_agent_project_rename](https://github.com/jeromeetienne/coding_agent_project_rename) repository owns the project folder rename tool, its installation instructions, and its recovery documentation.
